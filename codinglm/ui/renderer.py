@@ -67,7 +67,7 @@ class MarkdownRenderer:
         """
         self.console.print(f"[cyan]{message}[/cyan]")
 
-    def _wrap_markdown_text(self, text: str) -> str:
+    def wrap_markdown_text(self, text: str) -> str:
         """Insert soft line breaks into markdown paragraphs so panels wrap cleanly."""
         width = max(20, (self.console.size.width if self.console.size else self.console.width or 80) - 4)
         wrapped_lines: list[str] = []
@@ -183,10 +183,10 @@ class MarkdownRenderer:
 
     def render_user_message(self, text: str) -> None:
         """Render a user message in a styled panel."""
-        md = Markdown(self._wrap_markdown_text(text))
+        md = Markdown(self.wrap_markdown_text(text))
         self.render_panel(md, "You", border_style="magenta")
 
     def render_assistant_markdown(self, text: str) -> None:
         """Render assistant markdown in a consistent style."""
-        md = Markdown(self._wrap_markdown_text(text))
+        md = Markdown(self.wrap_markdown_text(text))
         self.render_panel(md, "Assistant", border_style="cyan")

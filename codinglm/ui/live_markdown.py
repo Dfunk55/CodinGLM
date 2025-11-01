@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Optional
+from typing import Callable, Optional
 
 from rich.console import Console
 from rich.live import Live
@@ -12,10 +12,11 @@ from rich.markdown import Markdown
 class LiveMarkdownStream:
     """Incrementally render markdown during streaming responses."""
 
-    def __init__(self, console: Console) -> None:
+    def __init__(self, console: Console, wrap_text: Optional[Callable[[str], str]] = None) -> None:
         self._console = console
         self._buffer: list[str] = []
         self._live: Optional[Live] = None
+        self._wrap_text = wrap_text
 
     def __enter__(self) -> "LiveMarkdownStream":
         self._live = Live(
@@ -38,8 +39,17 @@ class LiveMarkdownStream:
             return
 
         self._buffer.append(text)
-        if self._live:
-            self._live.update(Markdown(self.content))
+        self._render()
+
+    def _render(self) -> None:
+        """Render the current buffer through the live display."""
+        if not self._live:
+            return
+
+        content = self.content
+        if self._wrap_text:
+            content = self._wrap_text(content)
+        self._live.update(Markdown(content))
 
     @property
     def content(self) -> str:

@@ -28,7 +28,7 @@ def test_wrap_markdown_preserves_code_blocks():
     """Code fence content should remain untouched by the wrapping helper."""
     renderer, _ = _build_renderer()
     text = "```python\nprint('hello world')\n```"
-    wrapped = renderer._wrap_markdown_text(text)
+    wrapped = renderer.wrap_markdown_text(text)
     lines = wrapped.splitlines()
 
     assert lines[0] == "```python"
@@ -39,7 +39,7 @@ def test_wrap_markdown_preserves_code_blocks():
 def test_wrap_markdown_indents_list_items():
     """List items should maintain indentation when wrapped."""
     renderer, _ = _build_renderer()
-    wrapped = renderer._wrap_markdown_text("- " + " ".join(["item"] * 12))
+    wrapped = renderer.wrap_markdown_text("- " + " ".join(["item"] * 12))
     lines = wrapped.splitlines()
 
     assert lines[0].startswith("- ")

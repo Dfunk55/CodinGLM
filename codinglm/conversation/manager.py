@@ -309,7 +309,8 @@ The system handles compression automatically - you don't need to manage it."""
             status.stop()
             self.console.print(f"[dim]{status_message}[/dim]")
 
-        live_stream = LiveMarkdownStream(self.console)
+        wrap_text = renderer.wrap_markdown_text if renderer else None
+        live_stream = LiveMarkdownStream(self.console, wrap_text=wrap_text)
         with live_stream:
             for chunk in stream:
                 if chunk.delta:

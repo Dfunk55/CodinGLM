@@ -88,3 +88,36 @@ def test_live_markdown_stream_skips_empty_chunks(monkeypatch):
     assert stream.content == "token"
     assert len(updates) == 1
     assert isinstance(updates[0], Markdown)
+
+
+def test_live_markdown_stream_applies_wrap(monkeypatch):
+    """Custom wrapping callbacks should transform streamed content."""
+    updates = []
+
+    class DummyLive:
+        def __init__(self, *_args, **_kwargs):
+            pass
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, exc_type, exc, tb):
+            return False
+
+        def update(self, renderable):
+            updates.append(renderable.markup)
+
+    monkeypatch.setattr("codinglm.ui.live_markdown.Live", DummyLive)
+
+    wrap_calls = []
+
+    def _wrap(text: str) -> str:
+        wrap_calls.append(text)
+        return text.upper()
+
+    console = Console(file=io.StringIO(), force_terminal=False, color_system=None)
+    with LiveMarkdownStream(console, wrap_text=_wrap) as stream:
+        stream.append("chunk")
+
+    assert updates == ["CHUNK"]
+    assert wrap_calls == ["chunk"]
