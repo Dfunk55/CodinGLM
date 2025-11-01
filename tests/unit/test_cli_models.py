@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from codinglm.cli import CodinGLMCLI
+from codinglm.cli_app import CodinGLMCLI
 from codinglm.config import Config
 
 
@@ -19,7 +19,10 @@ def cli(monkeypatch) -> CodinGLMCLI:
         def prompt(self, *args, **kwargs):
             raise RuntimeError("prompt should not be used in tests")
 
-    monkeypatch.setattr("codinglm.cli.PromptSession", DummySession)
+    monkeypatch.setattr(
+        "codinglm.ui.prompt.PromptSessionFactory.build",
+        lambda self: DummySession(),
+    )
 
     config = Config(apiKey="test-key", model="glm-4.6")
     return CodinGLMCLI(config=config, cwd=Path.cwd(), debug=False)
@@ -54,7 +57,10 @@ def test_models_command_interactive_selection(monkeypatch, cli: CodinGLMCLI) -> 
         def run(self):
             return "glm-4.5-air"
 
-    monkeypatch.setattr("codinglm.cli.radiolist_dialog", lambda **kwargs: DummyDialog(**kwargs))
+    monkeypatch.setattr(
+        "codinglm.cli_app.radiolist_dialog",
+        lambda **kwargs: DummyDialog(**kwargs),
+    )
 
     cli._print_models()
     assert cli.client.model == "glm-4.5-air"

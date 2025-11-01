@@ -44,6 +44,16 @@ class TranscriptConsole(Console):
         """Path backing the transcript or None if disabled."""
         return self._transcript_path
 
+    def log_transcript_only(self, text: str) -> None:
+        """Write text directly to the transcript without rendering to the terminal."""
+        if not self._transcript_handle:
+            return
+
+        line = text if text.endswith("\n") else f"{text}\n"
+        with self._transcript_lock:
+            self._transcript_handle.write(line)
+            self._transcript_handle.flush()
+
     def print(self, *args: Any, **kwargs: Any) -> None:  # type: ignore[override]
         super().print(*args, **kwargs)
         self._drain_transcript()
@@ -107,4 +117,3 @@ class DebugEventLogger:
         """Close the JSONL stream."""
         with self._lock:
             self._handle.close()
-

@@ -7,7 +7,7 @@ import pytest
 from rich.console import Console
 
 from codinglm.api.models import Message
-from codinglm.cli import CodinGLMCLI
+from codinglm.cli_app import CodinGLMCLI
 from codinglm.config import Config, ContextCompressionConfig
 
 
@@ -22,7 +22,10 @@ def cli(monkeypatch) -> CodinGLMCLI:
         def prompt(self, *args, **kwargs):
             raise RuntimeError("prompt should not be used in tests")
 
-    monkeypatch.setattr("codinglm.cli.PromptSession", DummySession)
+    monkeypatch.setattr(
+        "codinglm.ui.prompt.PromptSessionFactory.build",
+        lambda self: DummySession(),
+    )
 
     config = Config(
         apiKey="test-key",
@@ -137,3 +140,13 @@ def test_metrics_command_reports_metrics(cli: CodinGLMCLI) -> None:
     assert "Compression Metrics" in output
     assert "Compressions: 1" in output
     assert "Tokens saved" in output
+
+
+def test_is_slash_command_handles_paths(cli: CodinGLMCLI) -> None:
+    """Slash commands should only trigger for registered commands."""
+    assert cli._is_slash_command("/help") is True
+    assert cli._is_slash_command("/HELP") is True
+    assert cli._is_slash_command("/model glm-4.6") is True
+    assert cli._is_slash_command("/Users/dustinpainter/Dev-Projects/games") is False
+    assert cli._is_slash_command("/tmp") is False
+    assert cli._is_slash_command("/") is False

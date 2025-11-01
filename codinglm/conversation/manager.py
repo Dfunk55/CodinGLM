@@ -1,16 +1,23 @@
 """Conversation manager with history and tool execution."""
 
-from typing import Callable, Dict, Iterator, List, Optional
+from typing import TYPE_CHECKING, Callable, Dict, Iterator, List, Optional
+
 from rich.console import Console
 
 from ..api.client import GLMClient
 from ..api.models import Message, ToolCall, ToolResult as APIToolResult
-from ..tools.base import ToolRegistry, ToolResult
-from ..tools.task import Task
-from ..config import ContextCompressionConfig, Config
-from ..logging import DebugEventLogger
+from ..config import Config, ContextCompressionConfig
+from ..logging import DebugEventLogger, TranscriptConsole
 from ..mcp import MCPClientManager
+from ..tools.base import ToolRegistry, ToolResult
+from ..tools.history import ToolHistory, ToolHistoryEntry
+from ..tools.task import Task
+from ..ui.live_markdown import LiveMarkdownStream
 from .compression import ContextCompressor, DISPLAY_TRUNCATE_LENGTH
+
+if TYPE_CHECKING:
+    from ..ui.renderer import MarkdownRenderer
+    from ..ui.status import TurnStatus
 
 
 class ConversationManager:
@@ -46,6 +53,7 @@ class ConversationManager:
         self.debug = debug
         self.debug_logger = debug_logger
         self.messages: List[Message] = []
+        self.tool_history = ToolHistory()
         self.compressor = ContextCompressor(
             client=client,
             console=console,
@@ -189,11 +197,16 @@ The system handles compression automatically - you don't need to manage it."""
         self,
         stream: bool = True,
         should_stop: Optional[Callable[[], bool]] = None,
+        status: Optional["TurnStatus"] = None,
+        renderer: Optional["MarkdownRenderer"] = None,
     ) -> Optional[str]:
         """Run a conversation turn with tool execution.
 
         Args:
             stream: Whether to stream the response
+            should_stop: Optional interrupt callback
+            status: Optional status reporter for progress updates
+            renderer: Optional renderer for final assistant output
 
         Returns:
             Final assistant response or None if tools were called
@@ -224,7 +237,11 @@ The system handles compression automatically - you don't need to manage it."""
 
             # Get model response
             if stream:
-                response = self._handle_streaming_response(should_stop=should_stop)
+                response = self._handle_streaming_response(
+                    should_stop=should_stop,
+                    status=status,
+                    renderer=renderer,
+                )
             else:
                 response = self.client.chat(
                     messages=self.messages,
@@ -240,7 +257,7 @@ The system handles compression automatically - you don't need to manage it."""
                         {"pending_tool_calls": len(response)},
                     )
                 # Execute tools
-                self._execute_tools(response)
+                self._execute_tools(response, status=status)
             else:
                 # Text response - we're done
                 if self.debug:
@@ -250,6 +267,11 @@ The system handles compression automatically - you don't need to manage it."""
                     )
                 self.messages.append(Message(role="assistant", content=response))
                 self._maybe_compress_context(trigger="assistant")
+                if not stream and isinstance(response, str):
+                    if renderer:
+                        renderer.render_assistant_markdown(response)
+                    else:
+                        self.console.print(response)
                 return response
 
             iteration += 1
@@ -257,6 +279,8 @@ The system handles compression automatically - you don't need to manage it."""
     def _handle_streaming_response(
         self,
         should_stop: Optional[Callable[[], bool]] = None,
+        status: Optional["TurnStatus"] = None,
+        renderer: Optional["MarkdownRenderer"] = None,
     ) -> str | List[ToolCall]:
         """Handle streaming response from API.
 
@@ -269,8 +293,10 @@ The system handles compression automatically - you don't need to manage it."""
                 {"messages": len(self.messages), "tools_available": len(self._get_all_tools())},
             )
         response_text = ""
-        tool_calls = []
+        tool_calls: List[ToolCall] = []
         interrupted = False
+        first_token = True
+        status_message = "Streaming response… (Esc to interrupt)"
 
         stream = self.client.chat(
             messages=self.messages,
@@ -278,52 +304,75 @@ The system handles compression automatically - you don't need to manage it."""
             stream=True,
         )
 
-        for chunk in stream:
-            if chunk.delta:
-                # Print text as it comes
-                self.console.print(chunk.delta, end="")
-                response_text += chunk.delta
+        if status:
+            status.update(status_message)
+            status.stop()
+            self.console.print(f"[dim]{status_message}[/dim]")
 
-            if chunk.tool_calls:
-                tool_calls.extend(chunk.tool_calls)
+        live_stream = LiveMarkdownStream(self.console)
+        with live_stream:
+            for chunk in stream:
+                if chunk.delta:
+                    if first_token:
+                        first_token = False
+                    live_stream.append(chunk.delta)
+                    response_text += chunk.delta
 
-            if chunk.finish_reason:
-                break
+                if chunk.tool_calls:
+                    tool_calls.extend(chunk.tool_calls)
 
-            if should_stop and should_stop():
-                if self.debug:
-                    self._debug(
-                        "Streaming interrupted by stop callback",
-                        {"response_text_length": len(response_text)},
-                    )
-                interrupted = True
-                break
+                if chunk.finish_reason:
+                    break
 
-        self.console.print()  # Newline
+                if should_stop and should_stop():
+                    if self.debug:
+                        self._debug(
+                            "Streaming interrupted by stop callback",
+                            {"response_text_length": len(response_text)},
+                        )
+                    interrupted = True
+                    break
 
         if tool_calls and not interrupted:
+            if status:
+                status.update("Tool execution requested…")
             if self.debug:
                 self._debug(
                     f"Streaming produced {len(tool_calls)} tool call(s)",
                     {"tool_calls": len(tool_calls)},
                 )
             return tool_calls
-        # If interrupted while tools were pending, fall back to partial text
+
         if tool_calls and interrupted and response_text:
             if self.debug:
                 self._debug(
                     "Streaming interrupted with partial response; returning accumulated text",
                     {"response_text_length": len(response_text), "tool_calls": len(tool_calls)},
                 )
+            if renderer and response_text:
+                renderer.render_assistant_markdown(response_text)
+            elif response_text:
+                self.console.print(response_text)
             return response_text
-        if response_text and self.debug:
-            self._debug(
-                "Streaming produced text response without tool calls",
-                {"response_text_length": len(response_text)},
-            )
+
+        if response_text:
+            if self.debug:
+                self._debug(
+                    "Streaming produced text response without tool calls",
+                    {"response_text_length": len(response_text)},
+                )
+            if renderer:
+                renderer.render_assistant_markdown(response_text)
+            else:
+                self.console.print(response_text)
+
         return response_text
 
-    def _execute_tools(self, tool_calls: List[ToolCall]) -> None:
+    def _execute_tools(
+        self,
+        tool_calls: List[ToolCall],
+        status: Optional["TurnStatus"] = None,
+    ) -> None:
         """Execute tool calls and add results to conversation.
 
         Args:
@@ -350,6 +399,8 @@ The system handles compression automatically - you don't need to manage it."""
             tool_args = tool_call.function["arguments"]
 
             self.console.print(f"\n[cyan]→ Executing: {tool_name}[/cyan]")
+            if status:
+                status.update(f"Running tool {tool_name}…")
             display_args = tool_args if isinstance(tool_args, str) else str(tool_args)
             if isinstance(display_args, str) and len(display_args) > 200:
                 display_args = f"{display_args[:200]}..."
@@ -408,10 +459,14 @@ The system handles compression automatically - you don't need to manage it."""
                 result = self.registry.execute(tool_name, tool_args)
 
             # Display result
+            truncated = False
+            output_for_display = result.output or ""
+
             if result.success:
                 self.console.print("[green]✓[/green] Tool completed")
-                if result.output:
-                    self.console.print(result.output[:DISPLAY_TRUNCATE_LENGTH])  # Truncate for display
+                if output_for_display:
+                    truncated = len(output_for_display) > DISPLAY_TRUNCATE_LENGTH
+                    self.console.print(output_for_display[:DISPLAY_TRUNCATE_LENGTH])
                 if self.debug:
                     self._debug(
                         f"Tool '{tool_name}' completed successfully",
@@ -461,12 +516,31 @@ The system handles compression automatically - you don't need to manage it."""
             )
             self._maybe_compress_context(trigger=tool_name)
 
+            self.tool_history.add(
+                ToolHistoryEntry(
+                    name=tool_name,
+                    call_id=tool_call.id,
+                    success=result.success,
+                    output=result.output if result.output else (result.error or ""),
+                )
+            )
+            if truncated:
+                history_index = len(self.tool_history)
+                self.console.print(
+                    f"[dim]… output truncated. Use /toolout {history_index} to view the full result.[/dim]"
+                )
+
     def clear_history(self) -> None:
         """Clear conversation history (keeping system message)."""
         system_message = self.messages[0]
         self.messages = [system_message]
         self.compressor.reset()
         self.console.print("[yellow]Conversation history cleared[/yellow]")
+        self.tool_history.clear()
+
+    def get_tool_history(self) -> ToolHistory:
+        """Return the stored tool execution history."""
+        return self.tool_history
 
     def _maybe_compress_context(self, trigger: str) -> None:
         """Run context compression if the conversation is too large."""
@@ -493,5 +567,8 @@ The system handles compression automatically - you don't need to manage it."""
     def _debug(self, message: str, extra: Optional[Dict[str, object]] = None) -> None:
         """Emit a debug message when debug mode is active."""
         if self.debug:
-            self.console.print(f"[dim]DEBUG: {message}[/dim]")
+            if isinstance(self.console, TranscriptConsole):
+                self.console.log_transcript_only(f"DEBUG: {message}")
+            else:
+                self.console.print(f"[dim]DEBUG: {message}[/dim]")
         self._emit_debug_event("conversation_debug", message, extra)

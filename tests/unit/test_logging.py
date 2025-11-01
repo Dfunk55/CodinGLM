@@ -27,6 +27,21 @@ def test_transcript_console_streams_to_file(tmp_path):
     console.close()
 
 
+def test_transcript_console_transcript_only(tmp_path):
+    transcript_path = tmp_path / "session.log"
+    console = TranscriptConsole(
+        transcript_path=transcript_path,
+        force_terminal=False,
+        color_system=None,
+    )
+
+    console.log_transcript_only("Debug note")
+    console.close()
+
+    content = transcript_path.read_text()
+    assert "Debug note" in content
+
+
 def test_debug_event_logger_emits_json(tmp_path):
     events_path = tmp_path / "events.jsonl"
     logger = DebugEventLogger(events_path)

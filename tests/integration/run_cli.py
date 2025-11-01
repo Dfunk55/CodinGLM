@@ -83,8 +83,29 @@ class FakeStreamClient:
 @contextmanager
 def patched_cli() -> Iterator[None]:
     """Patch CLI dependencies for integration tests."""
-    with patch("codinglm.cli.GLMClient", FakeStreamClient), patch(
-        "codinglm.cli.radiolist_dialog", None
+    class SimplePromptSession:
+        def prompt(self, prompt_text: str = "") -> str:
+            sys.stdout.write(prompt_text)
+            sys.stdout.flush()
+            line = sys.stdin.readline()
+            if not line:
+                raise EOFError
+            return line.rstrip("\n")
+
+    class DummyInterruptWatcher:
+        def start(self) -> None:
+            pass
+
+        def should_stop(self) -> bool:
+            return False
+
+        def stop(self) -> bool:
+            return False
+
+    with patch("codinglm.cli_app.GLMClient", FakeStreamClient), patch(
+        "codinglm.cli_app.radiolist_dialog", None
+    ), patch("codinglm.ui.prompt.PromptSessionFactory.build", lambda self: SimplePromptSession()), patch(
+        "codinglm.cli_app.StreamInterruptWatcher", lambda: DummyInterruptWatcher()
     ):
         yield
 
