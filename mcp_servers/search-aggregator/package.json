@@ -1,0 +1,15 @@
+{
+  "name": "search-aggregator-mcp",
+  "version": "0.1.0",
+  "description": "Unified multi-provider search MCP server",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.9.0",
+    "cohere-ai": "^7.13.0",
+    "undici": "^6.19.8"
+  }
+}

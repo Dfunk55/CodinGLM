@@ -1,0 +1,46 @@
+{
+  "apiKey": "${Z_AI_API_KEY}",
+  "model": "glm-4.6",
+  "apiBase": "https://api.z.ai/api/anthropic",
+  "apiTimeoutMs": 600000,
+  "temperature": 0.7,
+  "maxTokens": 8192,
+  "mcpServers": {
+    "browser-automation": {
+      "command": "npx",
+      "args": ["-y", "@automatalabs/mcp-server-playwright"]
+    },
+    "shell": {
+      "command": "uvx",
+      "args": ["mcp-server-shell"]
+    },
+    "search-aggregator": {
+      "command": "node",
+      "args": ["mcp_servers/search-aggregator/index.js"],
+      "env": {
+        "TAVILY_API_KEY": "${TAVILY_API_KEY}",
+        "BRAVE_API_KEY": "${BRAVE_API_KEY}"
+      }
+    },
+    "testing-toolbox": {
+      "command": "node",
+      "args": ["mcp_servers/testing-toolbox/index.js"],
+      "env": {}
+    }
+  },
+  "tools": {
+    "autoApprove": [
+      "Read",
+      "Glob",
+      "Grep",
+      "Bash(ls*)",
+      "Bash(git status)",
+      "Bash(git diff)"
+    ]
+  },
+  "ui": {
+    "theme": "monokai",
+    "showTimestamps": false,
+    "compactMode": false
+  }
+}

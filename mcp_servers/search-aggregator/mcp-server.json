@@ -1,0 +1,13 @@
+{
+  "name": "search-aggregator-mcp",
+  "version": "0.1.0",
+  "description": "Unified multi-provider search MCP server",
+  "type": "javascript",
+  "entryPoint": "index.js",
+  "command": "node",
+  "args": ["index.js"],
+  "capabilities": {"tools": true, "prompts": false},
+  "tags": ["search", "aggregator", "deep-research"],
+  "author": "Toolbox",
+  "language": "javascript"
+}
