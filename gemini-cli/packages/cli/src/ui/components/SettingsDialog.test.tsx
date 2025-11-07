@@ -738,7 +738,7 @@ describe('SettingsDialog', () => {
       // Should not show restart prompt initially
       await waitFor(() => {
         expect(lastFrame()).not.toContain(
-          'To see changes, Gemini CLI must be restarted',
+          'To see changes, CodinGLM must be restarted',
         );
       });
 

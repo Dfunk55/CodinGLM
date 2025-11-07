@@ -38,8 +38,8 @@ vi.mock('../AnsiOutput.js', () => ({
 }));
 
 // Mock child components or utilities if they are complex or have side effects
-vi.mock('../GeminiRespondingSpinner.js', () => ({
-  GeminiRespondingSpinner: ({
+vi.mock('../CodinGLMRespondingSpinner.js', () => ({
+  CodinGLMRespondingSpinner: ({
     nonRespondingDisplay,
   }: {
     nonRespondingDisplay?: string;

@@ -37,7 +37,7 @@ export enum StreamingState {
 }
 
 // Copied from server/src/core/turn.ts for CLI usage
-export enum GeminiEventType {
+export enum CodinGLMEventType {
   Content = 'content',
   ToolCallRequest = 'tool_call_request',
   // Add other event types if the UI hook needs to handle them
@@ -90,12 +90,12 @@ export type HistoryItemUser = HistoryItemBase & {
   text: string;
 };
 
-export type HistoryItemGemini = HistoryItemBase & {
+export type HistoryItemCodinGLM = HistoryItemBase & {
   type: 'gemini';
   text: string;
 };
 
-export type HistoryItemGeminiContent = HistoryItemBase & {
+export type HistoryItemCodinGLMContent = HistoryItemBase & {
   type: 'gemini_content';
   text: string;
 };
@@ -232,8 +232,8 @@ export type HistoryItemMcpStatus = HistoryItemBase & {
 export type HistoryItemWithoutId =
   | HistoryItemUser
   | HistoryItemUserShell
-  | HistoryItemGemini
-  | HistoryItemGeminiContent
+  | HistoryItemCodinGLM
+  | HistoryItemCodinGLMContent
   | HistoryItemInfo
   | HistoryItemError
   | HistoryItemWarning

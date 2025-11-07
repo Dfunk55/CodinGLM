@@ -84,10 +84,10 @@ function showCitations(settings: LoadedSettings): boolean {
 }
 
 /**
- * Manages the Gemini stream, including user input, command processing,
+ * Manages the CodinGLM stream, including user input, command processing,
  * API interaction, and tool call lifecycle.
  */
-export const useGeminiStream = (
+export const useCodinGLMStream = (
   geminiClient: GeminiClient,
   history: HistoryItem[],
   addItem: UseHistoryManagerReturn['addItem'],
