@@ -71,7 +71,7 @@ describe('FolderTrustDialog', () => {
       <FolderTrustDialog onSelect={vi.fn()} isRestarting={true} />,
     );
 
-    expect(lastFrame()).toContain(' Gemini CLI is restarting');
+    expect(lastFrame()).toContain(' CodinGLM is restarting');
   });
 
   it('should call relaunchApp when isRestarting is true', async () => {

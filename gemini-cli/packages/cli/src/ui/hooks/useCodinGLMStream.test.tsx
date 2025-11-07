@@ -10,7 +10,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { act } from 'react';
 import { renderHook } from '../../test-utils/render.js';
 import { waitFor } from '../../test-utils/async.js';
-import { useGeminiStream } from './useGeminiStream.js';
+import { useCodinGLMStream } from './useCodinGLMStream.js';
 import { useKeypress } from './useKeypress.js';
 import * as atCommandProcessor from './atCommandProcessor.js';
 import type {
@@ -148,8 +148,8 @@ vi.mock('./slashCommandProcessor.js', () => ({
 
 // --- END MOCKS ---
 
-// --- Tests for useGeminiStream Hook ---
-describe('useGeminiStream', () => {
+// --- Tests for useCodinGLMStream Hook ---
+describe('useCodinGLMStream', () => {
   let mockAddItem: Mock;
   let mockConfig: Config;
   let mockOnDebugMessage: Mock;
@@ -326,7 +326,7 @@ describe('useGeminiStream', () => {
           statefulCancelAllToolCalls, // Use the stateful mock
         ]);
 
-        return useGeminiStream(
+        return useCodinGLMStream(
           props.client,
           props.history,
           props.addItem,
@@ -431,7 +431,7 @@ describe('useGeminiStream', () => {
     } = options;
 
     return renderHook(() =>
-      useGeminiStream(
+      useCodinGLMStream(
         new MockedGeminiClientClass(mockConfig),
         [],
         mockAddItem,
@@ -573,7 +573,7 @@ describe('useGeminiStream', () => {
     });
 
     renderHook(() =>
-      useGeminiStream(
+      useCodinGLMStream(
         new MockedGeminiClientClass(mockConfig),
         [],
         mockAddItem,
@@ -656,7 +656,7 @@ describe('useGeminiStream', () => {
     });
 
     renderHook(() =>
-      useGeminiStream(
+      useCodinGLMStream(
         client,
         [],
         mockAddItem,
@@ -768,7 +768,7 @@ describe('useGeminiStream', () => {
     });
 
     renderHook(() =>
-      useGeminiStream(
+      useCodinGLMStream(
         client,
         [],
         mockAddItem,
@@ -882,7 +882,7 @@ describe('useGeminiStream', () => {
     });
 
     const { result, rerender } = renderHook(() =>
-      useGeminiStream(
+      useCodinGLMStream(
         new MockedGeminiClientClass(mockConfig),
         [],
         mockAddItem,
@@ -1016,7 +1016,7 @@ describe('useGeminiStream', () => {
       mockSendMessageStream.mockReturnValue(mockStream);
 
       const { result } = renderHook(() =>
-        useGeminiStream(
+        useCodinGLMStream(
           mockConfig.getGeminiClient(),
           [],
           mockAddItem,
@@ -1057,7 +1057,7 @@ describe('useGeminiStream', () => {
       mockSendMessageStream.mockReturnValue(mockStream);
 
       const { result } = renderHook(() =>
-        useGeminiStream(
+        useCodinGLMStream(
           mockConfig.getGeminiClient(),
           [],
           mockAddItem,
@@ -1392,7 +1392,7 @@ describe('useGeminiStream', () => {
 
     it('should not call handleSlashCommand is shell mode is active', async () => {
       const { result } = renderHook(() =>
-        useGeminiStream(
+        useCodinGLMStream(
           new MockedGeminiClientClass(mockConfig),
           [],
           mockAddItem,
@@ -1466,7 +1466,7 @@ describe('useGeminiStream', () => {
       });
 
       renderHook(() =>
-        useGeminiStream(
+        useCodinGLMStream(
           new MockedGeminiClientClass(mockConfig),
           [],
           mockAddItem,
@@ -1523,7 +1523,7 @@ describe('useGeminiStream', () => {
       } as unknown as Config;
 
       const { result } = renderHook(() =>
-        useGeminiStream(
+        useCodinGLMStream(
           new MockedGeminiClientClass(testConfig),
           [],
           mockAddItem,
@@ -1825,7 +1825,7 @@ describe('useGeminiStream', () => {
       );
 
       const { result } = renderHook(() =>
-        useGeminiStream(
+        useCodinGLMStream(
           new MockedGeminiClientClass(mockConfig),
           [],
           mockAddItem,
@@ -1934,7 +1934,7 @@ describe('useGeminiStream', () => {
       );
 
       const { result } = renderHook(() =>
-        useGeminiStream(
+        useCodinGLMStream(
           new MockedGeminiClientClass(mockConfig),
           [],
           mockAddItem,
@@ -2079,7 +2079,7 @@ describe('useGeminiStream', () => {
     });
 
     const { result } = renderHook(() =>
-      useGeminiStream(
+      useCodinGLMStream(
         mockConfig.getGeminiClient() as GeminiClient,
         [],
         mockAddItem,
@@ -2150,7 +2150,7 @@ describe('useGeminiStream', () => {
       );
 
       const { result } = renderHook(() =>
-        useGeminiStream(
+        useCodinGLMStream(
           new MockedGeminiClientClass(mockConfig),
           [],
           mockAddItem,
@@ -2231,7 +2231,7 @@ describe('useGeminiStream', () => {
       ]);
 
       const { result, rerender } = renderHook(() =>
-        useGeminiStream(
+        useCodinGLMStream(
           mockConfig.getGeminiClient(),
           [],
           mockAddItem,
@@ -2301,7 +2301,7 @@ describe('useGeminiStream', () => {
       );
 
       const { result } = renderHook(() =>
-        useGeminiStream(
+        useCodinGLMStream(
           new MockedGeminiClientClass(mockConfig),
           [],
           mockAddItem,
@@ -2359,7 +2359,7 @@ describe('useGeminiStream', () => {
       );
 
       const { result } = renderHook(() =>
-        useGeminiStream(
+        useCodinGLMStream(
           new MockedGeminiClientClass(mockConfig),
           [],
           mockAddItem,

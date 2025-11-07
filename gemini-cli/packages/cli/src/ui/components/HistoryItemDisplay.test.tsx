@@ -84,7 +84,7 @@ describe('<HistoryItemDisplay />', () => {
     const { lastFrame } = renderWithProviders(
       <HistoryItemDisplay {...baseItem} item={item} />,
     );
-    expect(lastFrame()).toContain('About Gemini CLI');
+    expect(lastFrame()).toContain('About CodinGLM');
   });
 
   it('renders ModelStatsDisplay for "model_stats" type', () => {
@@ -215,7 +215,7 @@ describe('<HistoryItemDisplay />', () => {
     expect(lastFrame()).toMatchSnapshot();
   });
 
-  it('should render a full gemini item when using availableTerminalHeightGemini', () => {
+  it('should render a full gemini item when using availableTerminalHeightCodinGLM', () => {
     const item: HistoryItem = {
       id: 1,
       type: 'gemini',
@@ -227,7 +227,7 @@ describe('<HistoryItemDisplay />', () => {
         isPending={false}
         terminalWidth={80}
         availableTerminalHeight={10}
-        availableTerminalHeightGemini={Number.MAX_SAFE_INTEGER}
+        availableTerminalHeightCodinGLM={Number.MAX_SAFE_INTEGER}
       />,
     );
 
@@ -252,7 +252,7 @@ describe('<HistoryItemDisplay />', () => {
     expect(lastFrame()).toMatchSnapshot();
   });
 
-  it('should render a full gemini_content item when using availableTerminalHeightGemini', () => {
+  it('should render a full gemini_content item when using availableTerminalHeightCodinGLM', () => {
     const item: HistoryItem = {
       id: 1,
       type: 'gemini_content',
@@ -264,7 +264,7 @@ describe('<HistoryItemDisplay />', () => {
         isPending={false}
         terminalWidth={80}
         availableTerminalHeight={10}
-        availableTerminalHeightGemini={Number.MAX_SAFE_INTEGER}
+        availableTerminalHeightCodinGLM={Number.MAX_SAFE_INTEGER}
       />,
     );
 

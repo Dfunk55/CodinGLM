@@ -8,11 +8,11 @@ import { Box, Newline, Text } from 'ink';
 import { theme } from '../semantic-colors.js';
 import { useKeypress } from '../hooks/useKeypress.js';
 
-interface GeminiPrivacyNoticeProps {
+interface CodinGLMPrivacyNoticeProps {
   onExit: () => void;
 }
 
-export const GeminiPrivacyNotice = ({ onExit }: GeminiPrivacyNoticeProps) => {
+export const CodinGLMPrivacyNotice = ({ onExit }: CodinGLMPrivacyNoticeProps) => {
   useKeypress(
     (key) => {
       if (key.name === 'escape') {
@@ -25,7 +25,7 @@ export const GeminiPrivacyNotice = ({ onExit }: GeminiPrivacyNoticeProps) => {
   return (
     <Box flexDirection="column" marginBottom={1}>
       <Text bold color={theme.text.accent}>
-        Gemini API Key Notice
+        CodinGLM API Key Notice
       </Text>
       <Newline />
       <Text color={theme.text.primary}>

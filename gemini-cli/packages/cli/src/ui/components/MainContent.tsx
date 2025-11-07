@@ -38,7 +38,7 @@ export const MainContent = () => {
       <HistoryItemDisplay
         terminalWidth={mainAreaWidth}
         availableTerminalHeight={staticAreaMaxItemHeight}
-        availableTerminalHeightGemini={MAX_GEMINI_MESSAGE_LINES}
+        availableTerminalHeightCodinGLM={MAX_GEMINI_MESSAGE_LINES}
         key={h.id}
         item={h}
         isPending={false}

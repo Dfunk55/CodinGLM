@@ -74,7 +74,7 @@ import { basename } from 'node:path';
 import { computeWindowTitle } from '../utils/windowTitle.js';
 import { useTextBuffer } from './components/shared/text-buffer.js';
 import { useLogger } from './hooks/useLogger.js';
-import { useGeminiStream } from './hooks/useGeminiStream.js';
+import { useCodinGLMStream } from './hooks/useCodinGLMStream.js';
 import { useVim } from './hooks/vim.js';
 import { type LoadedSettings, SettingScope } from '../config/settings.js';
 import { type InitializationResult } from '../core/initializer.js';
@@ -418,7 +418,7 @@ export const AppContainer = (props: AppContainerProps) => {
           await runExitCleanup();
           debugLogger.log(`
 ----------------------------------------------------------------
-Logging in with Google... Please restart Gemini CLI to continue.
+Logging in with Google... Please restart CodinGLM to continue.
 ----------------------------------------------------------------
           `);
           process.exit(0);
@@ -655,7 +655,7 @@ Logging in with Google... Please restart Gemini CLI to continue.
     handleApprovalModeChange,
     activePtyId,
     loopDetectionConfirmationRequest,
-  } = useGeminiStream(
+  } = useCodinGLMStream(
     config.getGeminiClient(),
     historyManager.history,
     historyManager.addItem,
@@ -1103,7 +1103,7 @@ Logging in with Google... Please restart Gemini CLI to continue.
 
   useKeypress(handleGlobalKeypress, { isActive: true });
 
-  // Update terminal title with Gemini CLI status and thoughts
+  // Update terminal title with CodinGLM status and thoughts
   useEffect(() => {
     // Respect both showStatusInTitle and hideWindowTitle settings
     if (
@@ -1130,7 +1130,7 @@ Logging in with Google... Please restart Gemini CLI to continue.
       lastTitleRef.current = paddedTitle;
       stdout.write(`\x1b]2;${paddedTitle}\x07`);
     }
-    // Note: We don't need to reset the window title on exit because Gemini CLI is already doing that elsewhere
+    // Note: We don't need to reset the window title on exit because CodinGLM is already doing that elsewhere
   }, [
     streamingState,
     thought,
