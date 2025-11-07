@@ -1,10 +1,14 @@
 {
   "apiKey": "${Z_AI_API_KEY}",
   "model": "glm-4.6",
-  "apiBase": "https://api.z.ai/api/anthropic",
+  "apiBase": "https://api.z.ai/api/coding/paas/v4",
   "apiTimeoutMs": 600000,
   "temperature": 0.7,
   "maxTokens": 8192,
+  "thinking": {
+    "mode": "dynamic",
+    "showReasoning": true
+  },
   "mcpServers": {
     "browser-automation": {
       "command": "npx",
@@ -13,19 +17,6 @@
     "shell": {
       "command": "uvx",
       "args": ["mcp-server-shell"]
-    },
-    "search-aggregator": {
-      "command": "node",
-      "args": ["mcp_servers/search-aggregator/index.js"],
-      "env": {
-        "TAVILY_API_KEY": "${TAVILY_API_KEY}",
-        "BRAVE_API_KEY": "${BRAVE_API_KEY}"
-      }
-    },
-    "testing-toolbox": {
-      "command": "node",
-      "args": ["mcp_servers/testing-toolbox/index.js"],
-      "env": {}
     }
   },
   "tools": {
@@ -42,5 +33,16 @@
     "theme": "monokai",
     "showTimestamps": false,
     "compactMode": false
+  },
+  "context": {
+    "compression": {
+      "enabled": true,
+      "maxContextTokens": 190000,
+      "targetContextTokens": 170000,
+      "preserveRecentMessages": 20,
+      "summaryMaxTokens": 2000,
+      "maxCompressionPasses": 3,
+      "verbose": false
+    }
   }
 }
