@@ -367,7 +367,7 @@ const SETTINGS_SCHEMA = {
         requiresRestart: false,
         default: false,
         description:
-          'Show Gemini CLI status and thoughts in the terminal window title',
+          'Show CodingGLM status and thoughts in the terminal window title',
         showInDialog: true,
       },
       hideTips: {
@@ -987,7 +987,7 @@ const SETTINGS_SCHEMA = {
         requiresRestart: true,
         default: false,
         description:
-          'Enable the hooks system for intercepting and customizing Gemini CLI behavior. When enabled, hooks configured in settings will execute at appropriate lifecycle events (BeforeTool, AfterTool, BeforeModel, etc.). Requires MessageBus integration.',
+          'Enable the hooks system for intercepting and customizing CodingGLM behavior. When enabled, hooks configured in settings will execute at appropriate lifecycle events (BeforeTool, AfterTool, BeforeModel, etc.). Requires MessageBus integration.',
         showInDialog: false,
       },
     },
@@ -1408,7 +1408,7 @@ export const SETTINGS_SCHEMA_DEFINITIONS: Record<
       extension: {
         type: 'object',
         description:
-          'Metadata describing the Gemini CLI extension that owns this MCP server.',
+          'Metadata describing the CodingGLM extension that owns this MCP server.',
         additionalProperties: { type: ['string', 'boolean', 'number'] },
       },
       oauth: {
@@ -1440,7 +1440,7 @@ export const SETTINGS_SCHEMA_DEFINITIONS: Record<
   },
   TelemetrySettings: {
     type: 'object',
-    description: 'Telemetry configuration for Gemini CLI.',
+    description: 'Telemetry configuration for CodingGLM.',
     additionalProperties: false,
     properties: {
       enabled: {
@@ -1504,7 +1504,7 @@ export const SETTINGS_SCHEMA_DEFINITIONS: Record<
   CustomTheme: {
     type: 'object',
     description:
-      'Custom theme definition used for styling Gemini CLI output. Colors are provided as hex strings or named ANSI colors.',
+      'Custom theme definition used for styling CodingGLM output. Colors are provided as hex strings or named ANSI colors.',
     additionalProperties: false,
     properties: {
       type: {
