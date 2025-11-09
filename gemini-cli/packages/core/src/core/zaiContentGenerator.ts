@@ -25,7 +25,7 @@ import { toContents } from '../code_assist/converter.js';
 import { partToString } from '../utils/partUtils.js';
 import type { ContentGenerator } from './contentGenerator.js';
 
-const DEFAULT_BASE_URL = 'https://api.z.ai/api/coding/paas/v4';
+const DEFAULT_BASE_URL = 'https://api.z.ai/api/paas/v4';
 const CHAT_COMPLETIONS_PATH = '/chat/completions';
 
 type ZaiMessageContentItem = {

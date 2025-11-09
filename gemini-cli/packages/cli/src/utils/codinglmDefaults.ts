@@ -6,7 +6,7 @@
 
 import { AuthType } from '@google/gemini-cli-core';
 
-const DEFAULT_Z_AI_BASE_URL = 'https://api.z.ai/api/coding/paas/v4';
+const DEFAULT_Z_AI_BASE_URL = 'https://api.z.ai/api/paas/v4';
 const DEFAULT_CODINGLM_MODEL = 'glm-4.6';
 
 export function configureCodinglmEnvironment(): void {
