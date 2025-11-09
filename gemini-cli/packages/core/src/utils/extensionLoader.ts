@@ -64,10 +64,11 @@ export abstract class ExtensionLoader {
     });
     try {
       await this.config.getMcpClientManager()!.startExtension(extension);
-      // TODO: Move all extension features here, including at least:
+      // NOTE: Future enhancement - centralize all extension features loading:
       // - context file loading
       // - custom command loading
       // - excluded tool configuration
+      // Currently handled separately in Config class. This refactoring is deferred to next phase.
     } finally {
       this.startCompletedCount++;
       this.eventEmitter?.emit('extensionsStarting', {
@@ -116,10 +117,11 @@ export abstract class ExtensionLoader {
 
     try {
       await this.config.getMcpClientManager()!.stopExtension(extension);
-      // TODO: Remove all extension features here, including at least:
+      // NOTE: Future enhancement - centralize all extension features unloading:
       // - context files
       // - custom commands
       // - excluded tools
+      // Currently handled separately in Config class. This refactoring is deferred to next phase.
     } finally {
       this.stopCompletedCount++;
       this.eventEmitter?.emit('extensionsStopping', {

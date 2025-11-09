@@ -18,8 +18,10 @@ import { GEMINI_DIR } from './paths.js';
 import type { ExtensionLoader } from './extensionLoader.js';
 import { debugLogger } from './debugLogger.js';
 
-// Simple console logger, similar to the one previously in CLI's config.ts
-// TODO: Integrate with a more robust server-side logger if available/appropriate.
+// Logger for memory discovery operations.
+// Currently uses debugLogger for debug/warn and console.error for errors.
+// NOTE: Future enhancement - if server-side logging becomes necessary, this can be
+// refactored to use a more robust logger. Current implementation is adequate for CLI use.
 const logger = {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   debug: (...args: any[]) =>

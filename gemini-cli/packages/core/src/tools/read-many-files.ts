@@ -99,7 +99,9 @@ type FileProcessingResult =
 /**
  * Creates the default exclusion patterns including dynamic patterns.
  * This combines the shared patterns with dynamic patterns like GEMINI.md.
- * TODO(adh): Consider making this configurable or extendable through a command line argument.
+ * NOTE: Custom exclusion patterns can now be configured through .codinglm.json:
+ * { "fileFiltering": { "customExcludes": [...] } }
+ * Future enhancement: Support CLI arguments for runtime override.
  */
 function getDefaultExcludes(config?: Config): string[] {
   return config?.getFileExclusions().getReadManyFilesExcludes() ?? [];

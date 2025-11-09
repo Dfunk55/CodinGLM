@@ -121,7 +121,7 @@ export function AuthDialog({
           debugLogger.log(
             `
 ----------------------------------------------------------------
-Logging in with Google... Please restart Gemini CLI to continue.
+Logging in with Google... Please restart CodingGLM to continue.
 ----------------------------------------------------------------
             `,
           );
@@ -206,7 +206,7 @@ Logging in with Google... Please restart Gemini CLI to continue.
         </Box>
         <Box marginTop={1}>
           <Text color={theme.text.primary}>
-            Terms of Services and Privacy Notice for Gemini CLI
+            Terms of Services and Privacy Notice for CodingGLM
           </Text>
         </Box>
         <Box marginTop={1}>

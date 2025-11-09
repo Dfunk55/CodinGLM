@@ -75,6 +75,23 @@ function getRealPath(path: string): string {
   }
 }
 
+function getCliVersion(): string {
+  try {
+    // Try to read version from CLI package.json
+    const packageJsonPath = path.resolve(
+      import.meta.dirname,
+      '../../cli/package.json',
+    );
+    if (fs.existsSync(packageJsonPath)) {
+      const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf-8'));
+      return packageJson.version || '0.1.0-alpha.0';
+    }
+  } catch (_e) {
+    // Silently fail and return default
+  }
+  return '0.1.0-alpha.0';
+}
+
 /**
  * Manages the connection to and interaction with the IDE server.
  */
@@ -773,8 +790,7 @@ export class IdeClient {
       logger.debug('Attempting to connect to IDE via HTTP SSE');
       this.client = new Client({
         name: 'streamable-http-client',
-        // TODO(#3487): use the CLI version here.
-        version: '1.0.0',
+        version: getCliVersion(),
       });
       transport = new StreamableHTTPClientTransport(
         new URL(`http://${getIdeServerHost()}:${port}/mcp`),
@@ -813,8 +829,7 @@ export class IdeClient {
       logger.debug('Attempting to connect to IDE via stdio');
       this.client = new Client({
         name: 'stdio-client',
-        // TODO(#3487): use the CLI version here.
-        version: '1.0.0',
+        version: getCliVersion(),
       });
 
       transport = new StdioClientTransport({

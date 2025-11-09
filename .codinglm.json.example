@@ -44,5 +44,13 @@
       "maxCompressionPasses": 3,
       "verbose": false
     }
+  },
+  "fileFiltering": {
+    "respectGitIgnore": true,
+    "respectGeminiIgnore": true,
+    "customExcludes": [
+      "**/*.tmp",
+      "**/temp/**"
+    ]
   }
 }

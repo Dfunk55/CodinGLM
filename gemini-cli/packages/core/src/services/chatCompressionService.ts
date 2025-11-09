@@ -175,13 +175,17 @@ export class ChatCompressionService {
     // Use a shared utility to construct the initial history for an accurate token count.
     const fullNewHistory = await getInitialChatHistory(config, extraHistory);
 
-    // Estimate token count 1 token ≈ 4 characters
-    const newTokenCount = Math.floor(
-      fullNewHistory.reduce(
-        (total, content) => total + JSON.stringify(content).length,
-        0,
-      ) / 4,
-    );
+    // Count tokens accurately using the content generator
+    // Import getCoreSystemPrompt to include system instructions in token count
+    const { getCoreSystemPrompt } = await import('../core/prompts.js');
+    const systemInstruction = getCoreSystemPrompt(config, '');
+
+    const tokenCountResponse = await config.getContentGenerator().countTokens({
+      model,
+      contents: fullNewHistory,
+      systemInstruction: { text: systemInstruction },
+    });
+    const newTokenCount = tokenCountResponse.totalTokens;
 
     logChatCompression(
       config,
