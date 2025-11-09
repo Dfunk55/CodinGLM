@@ -10,11 +10,11 @@ import { escapeAnsiCtrlCodes } from '../utils/textUtils.js';
 import type { HistoryItem } from '../types.js';
 import { UserMessage } from './messages/UserMessage.js';
 import { UserShellMessage } from './messages/UserShellMessage.js';
-import { GeminiMessage } from './messages/GeminiMessage.js';
+import { CodinGLMMessage } from './messages/CodinGLMMessage.js';
 import { InfoMessage } from './messages/InfoMessage.js';
 import { ErrorMessage } from './messages/ErrorMessage.js';
 import { ToolGroupMessage } from './messages/ToolGroupMessage.js';
-import { GeminiMessageContent } from './messages/GeminiMessageContent.js';
+import { CodinGLMMessageContent } from './messages/CodinGLMMessageContent.js';
 import { CompressionMessage } from './messages/CompressionMessage.js';
 import { WarningMessage } from './messages/WarningMessage.js';
 import { Box } from 'ink';
@@ -40,7 +40,7 @@ interface HistoryItemDisplayProps {
   commands?: readonly SlashCommand[];
   activeShellPtyId?: number | null;
   embeddedShellFocused?: boolean;
-  availableTerminalHeightGemini?: number;
+  availableTerminalHeightCodinGLM?: number;
 }
 
 export const HistoryItemDisplay: React.FC<HistoryItemDisplayProps> = ({
@@ -52,7 +52,7 @@ export const HistoryItemDisplay: React.FC<HistoryItemDisplayProps> = ({
   isFocused = true,
   activeShellPtyId,
   embeddedShellFocused,
-  availableTerminalHeightGemini,
+  availableTerminalHeightCodinGLM,
 }) => {
   const itemForDisplay = useMemo(() => escapeAnsiCtrlCodes(item), [item]);
 
@@ -66,21 +66,21 @@ export const HistoryItemDisplay: React.FC<HistoryItemDisplayProps> = ({
         <UserShellMessage text={itemForDisplay.text} />
       )}
       {itemForDisplay.type === 'gemini' && (
-        <GeminiMessage
+        <CodinGLMMessage
           text={itemForDisplay.text}
           isPending={isPending}
           availableTerminalHeight={
-            availableTerminalHeightGemini ?? availableTerminalHeight
+            availableTerminalHeightCodinGLM ?? availableTerminalHeight
           }
           terminalWidth={terminalWidth}
         />
       )}
       {itemForDisplay.type === 'gemini_content' && (
-        <GeminiMessageContent
+        <CodinGLMMessageContent
           text={itemForDisplay.text}
           isPending={isPending}
           availableTerminalHeight={
-            availableTerminalHeightGemini ?? availableTerminalHeight
+            availableTerminalHeightCodinGLM ?? availableTerminalHeight
           }
           terminalWidth={terminalWidth}
         />

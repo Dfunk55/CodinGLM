@@ -8,7 +8,7 @@ import { useEffect, useState } from 'react';
 import { AppEvent, appEvents } from './../../utils/events.js';
 import { Box, Text } from 'ink';
 import { type McpClient, MCPServerStatus } from '@google/gemini-cli-core';
-import { GeminiSpinner } from './GeminiRespondingSpinner.js';
+import { CodinGLMSpinner } from './CodinGLMRespondingSpinner.js';
 import { theme } from '../semantic-colors.js';
 
 export const ConfigInitDisplay = () => {
@@ -38,7 +38,7 @@ export const ConfigInitDisplay = () => {
   return (
     <Box marginTop={1}>
       <Text>
-        <GeminiSpinner /> <Text color={theme.text.primary}>{message}</Text>
+        <CodinGLMSpinner /> <Text color={theme.text.primary}>{message}</Text>
       </Text>
     </Box>
   );

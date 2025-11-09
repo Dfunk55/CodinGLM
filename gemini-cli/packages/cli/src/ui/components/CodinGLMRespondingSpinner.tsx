@@ -16,7 +16,7 @@ import {
 } from '../textConstants.js';
 import { theme } from '../semantic-colors.js';
 
-interface GeminiRespondingSpinnerProps {
+interface CodinGLMRespondingSpinnerProps {
   /**
    * Optional string to display when not in Responding state.
    * If not provided and not Responding, renders null.
@@ -25,14 +25,14 @@ interface GeminiRespondingSpinnerProps {
   spinnerType?: SpinnerName;
 }
 
-export const GeminiRespondingSpinner: React.FC<
-  GeminiRespondingSpinnerProps
+export const CodinGLMRespondingSpinner: React.FC<
+  CodinGLMRespondingSpinnerProps
 > = ({ nonRespondingDisplay, spinnerType = 'dots' }) => {
   const streamingState = useStreamingContext();
   const isScreenReaderEnabled = useIsScreenReaderEnabled();
   if (streamingState === StreamingState.Responding) {
     return (
-      <GeminiSpinner
+      <CodinGLMSpinner
         spinnerType={spinnerType}
         altText={SCREEN_READER_RESPONDING}
       />
@@ -47,12 +47,12 @@ export const GeminiRespondingSpinner: React.FC<
   return null;
 };
 
-interface GeminiSpinnerProps {
+interface CodinGLMSpinnerProps {
   spinnerType?: SpinnerName;
   altText?: string;
 }
 
-export const GeminiSpinner: React.FC<GeminiSpinnerProps> = ({
+export const CodinGLMSpinner: React.FC<CodinGLMSpinnerProps> = ({
   spinnerType = 'dots',
   altText,
 }) => {
