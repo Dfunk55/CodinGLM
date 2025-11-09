@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { GeminiMessage } from './GeminiMessage.js';
+import { CodinGLMMessage as GeminiMessage } from './CodinGLMMessage.js';
 import { StreamingState } from '../../types.js';
 import { renderWithProviders } from '../../../test-utils/render.js';
 

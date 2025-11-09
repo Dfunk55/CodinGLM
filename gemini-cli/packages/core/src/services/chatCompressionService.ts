@@ -176,14 +176,9 @@ export class ChatCompressionService {
     const fullNewHistory = await getInitialChatHistory(config, extraHistory);
 
     // Count tokens accurately using the content generator
-    // Import getCoreSystemPrompt to include system instructions in token count
-    const { getCoreSystemPrompt } = await import('../core/prompts.js');
-    const systemInstruction = getCoreSystemPrompt(config, '');
-
     const tokenCountResponse = await config.getContentGenerator().countTokens({
       model,
       contents: fullNewHistory,
-      systemInstruction: { text: systemInstruction },
     });
     const newTokenCount = tokenCountResponse.totalTokens;
 
@@ -191,16 +186,16 @@ export class ChatCompressionService {
       config,
       makeChatCompressionEvent({
         tokens_before: originalTokenCount,
-        tokens_after: newTokenCount,
+        tokens_after: newTokenCount ?? 0,
       }),
     );
 
-    if (newTokenCount > originalTokenCount) {
+    if (!newTokenCount || newTokenCount > originalTokenCount) {
       return {
         newHistory: null,
         info: {
           originalTokenCount,
-          newTokenCount,
+          newTokenCount: newTokenCount ?? originalTokenCount,
           compressionStatus:
             CompressionStatus.COMPRESSION_FAILED_INFLATED_TOKEN_COUNT,
         },
