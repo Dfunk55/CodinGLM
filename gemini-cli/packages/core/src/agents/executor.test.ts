@@ -11,10 +11,10 @@ import { ToolRegistry } from '../tools/tool-registry.js';
 import { LSTool } from '../tools/ls.js';
 import { LS_TOOL_NAME, READ_FILE_TOOL_NAME } from '../tools/tool-names.js';
 import {
-  GeminiChat,
+  ChatSession,
   StreamEventType,
   type StreamEvent,
-} from '../core/geminiChat.js';
+} from '../core/chatSession.js';
 import {
   type FunctionCall,
   type Part,
@@ -50,11 +50,11 @@ const { mockSendMessageStream, mockExecuteToolCall } = vi.hoisted(() => ({
   mockExecuteToolCall: vi.fn(),
 }));
 
-vi.mock('../core/geminiChat.js', async (importOriginal) => {
+vi.mock('../core/chatSession.js', async (importOriginal) => {
   const actual = await importOriginal<typeof import('../core/geminiChat.js')>();
   return {
     ...actual,
-    GeminiChat: vi.fn().mockImplementation(() => ({
+    ChatSession: vi.fn().mockImplementation(() => ({
       sendMessageStream: mockSendMessageStream,
     })),
   };
@@ -85,7 +85,7 @@ vi.mock('../utils/promptIdContext.js', async (importOriginal) => {
   };
 });
 
-const MockedGeminiChat = vi.mocked(GeminiChat);
+const MockedChatSession = vi.mocked(ChatSession);
 const mockedGetDirectoryContextString = vi.mocked(getDirectoryContextString);
 const mockedPromptIdContext = vi.mocked(promptIdContext);
 const mockedLogAgentStart = vi.mocked(logAgentStart);
@@ -200,11 +200,11 @@ describe('AgentExecutor', () => {
     mockedPromptIdContext.getStore.mockReset();
     mockedPromptIdContext.run.mockImplementation((_id, fn) => fn());
 
-    MockedGeminiChat.mockImplementation(
+    MockedChatSession.mockImplementation(
       () =>
         ({
           sendMessageStream: mockSendMessageStream,
-        }) as unknown as GeminiChat,
+        }) as unknown as ChatSession,
     );
 
     vi.useFakeTimers();
@@ -378,7 +378,7 @@ describe('AgentExecutor', () => {
 
       expect(mockSendMessageStream).toHaveBeenCalledTimes(2);
 
-      const chatConstructorArgs = MockedGeminiChat.mock.calls[0];
+      const chatConstructorArgs = MockedChatSession.mock.calls[0];
       const chatConfig = chatConstructorArgs[1];
       expect(chatConfig?.systemInstruction).toContain(
         `MUST call the \`${TASK_COMPLETE_TOOL_NAME}\` tool`,

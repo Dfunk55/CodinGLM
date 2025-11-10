@@ -8,7 +8,7 @@ import type { WritableStream, ReadableStream } from 'node:stream/web';
 
 import type {
   Config,
-  GeminiChat,
+  ChatSession,
   ToolResult,
   ToolCallConfirmationDetails,
   FilterFilesOptions,
@@ -228,7 +228,7 @@ class Session {
 
   constructor(
     private readonly id: string,
-    private readonly chat: GeminiChat,
+    private readonly chat: ChatSession,
     private readonly config: Config,
     private readonly client: acp.Client,
   ) {}

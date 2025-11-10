@@ -6,7 +6,7 @@
 
 import type { Content } from '../llm/types.js';
 import type { Config } from '../config/config.js';
-import type { GeminiChat } from '../core/geminiChat.js';
+import type { ChatSession } from '../core/chatSession.js';
 import { type ChatCompressionInfo, CompressionStatus } from '../core/turn.js';
 import { tokenLimit } from '../core/tokenLimits.js';
 import { getCompressionPrompt } from '../core/prompts.js';
@@ -77,7 +77,7 @@ export function findCompressSplitPoint(
 
 export class ChatCompressionService {
   async compress(
-    chat: GeminiChat,
+    chat: ChatSession,
     promptId: string,
     force: boolean,
     model: string,

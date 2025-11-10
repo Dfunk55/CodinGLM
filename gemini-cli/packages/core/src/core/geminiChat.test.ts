@@ -13,11 +13,11 @@ import type {
 import { ApiError } from '@google/genai';
 import type { ContentGenerator } from '../core/contentGenerator.js';
 import {
-  GeminiChat,
+  ChatSession,
   InvalidStreamError,
   StreamEventType,
   type StreamEvent,
-} from './geminiChat.js';
+} from './chatSession.js';
 import type { Config } from '../config/config.js';
 import { setSimulate429 } from '../utils/testUtils.js';
 import { DEFAULT_GEMINI_FLASH_MODEL } from '../config/models.js';
@@ -84,9 +84,9 @@ vi.mock('../telemetry/uiTelemetry.js', () => ({
   },
 }));
 
-describe('GeminiChat', () => {
+describe('ChatSession', () => {
   let mockContentGenerator: ContentGenerator;
-  let chat: GeminiChat;
+  let chat: ChatSession;
   let mockConfig: Config;
   const config: GenerateContentConfig = {};
 
@@ -133,7 +133,7 @@ describe('GeminiChat', () => {
     // Disable 429 simulation for tests
     setSimulate429(false);
     // Reset history for each test by creating a new instance
-    chat = new GeminiChat(mockConfig, config, []);
+    chat = new ChatSession(mockConfig, config, []);
   });
 
   afterEach(() => {
@@ -147,13 +147,13 @@ describe('GeminiChat', () => {
         { role: 'user', parts: [{ text: 'Hello' }] },
         { role: 'model', parts: [{ text: 'Hi there' }] },
       ];
-      const chatWithHistory = new GeminiChat(mockConfig, config, history);
+      const chatWithHistory = new ChatSession(mockConfig, config, history);
       const estimatedTokens = Math.ceil(JSON.stringify(history).length / 4);
       expect(chatWithHistory.getLastPromptTokenCount()).toBe(estimatedTokens);
     });
 
     it('should initialize lastPromptTokenCount for empty history', () => {
-      const chatEmpty = new GeminiChat(mockConfig, config, []);
+      const chatEmpty = new ChatSession(mockConfig, config, []);
       expect(chatEmpty.getLastPromptTokenCount()).toBe(
         Math.ceil(JSON.stringify([]).length / 4),
       );

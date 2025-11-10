@@ -22,7 +22,7 @@ import type { Config } from '../config/config.js';
 import { getCoreSystemPrompt } from './prompts.js';
 import { checkNextSpeaker } from '../utils/nextSpeakerChecker.js';
 import { reportError } from '../utils/errorReporting.js';
-import { GeminiChat } from './geminiChat.js';
+import { GeminiChat } from './chatSession.js';
 import { retryWithBackoff } from '../utils/retry.js';
 import { getErrorMessage } from '../utils/errors.js';
 import { tokenLimit } from './tokenLimits.js';
@@ -65,8 +65,8 @@ export function isThinkingDefault(model: string) {
 
 const MAX_TURNS = 100;
 
-export class GeminiClient {
-  private chat?: GeminiChat;
+export class LlmClient {
+  private chat?: ChatSession;
   private readonly generateContentConfig: GenerateContentConfig = {
     temperature: 0,
     topP: 1,
@@ -116,7 +116,7 @@ export class GeminiClient {
     this.getChat().addHistory(content);
   }
 
-  getChat(): GeminiChat {
+  getChat(): ChatSession {
     if (!this.chat) {
       throw new Error('Chat not initialized');
     }
@@ -175,7 +175,7 @@ export class GeminiClient {
     });
   }
 
-  async startChat(extraHistory?: Content[]): Promise<GeminiChat> {
+  async startChat(extraHistory?: Content[]): Promise<ChatSession> {
     this.forceFullIdeContext = true;
     this.hasFailedCompressionAttempt = false;
 
@@ -199,7 +199,7 @@ export class GeminiClient {
         };
       }
 
-      return new GeminiChat(
+      return new ChatSession(
         this.config,
         {
           systemInstruction,

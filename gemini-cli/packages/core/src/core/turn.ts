@@ -26,8 +26,8 @@ import {
   UnauthorizedError,
   toFriendlyError,
 } from '../utils/errors.js';
-import type { GeminiChat } from './geminiChat.js';
-import { InvalidStreamError } from './geminiChat.js';
+import type { ChatSession } from './chatSession.js';
+import { InvalidStreamError } from './chatSession.js';
 import { parseThought, type ThoughtSummary } from '../utils/thoughtUtils.js';
 import { createUserContent } from '../llm/helpers.js';
 
@@ -35,7 +35,7 @@ import { createUserContent } from '../llm/helpers.js';
 export interface ServerTool {
   name: string;
   schema: FunctionDeclaration;
-  // The execute method signature might differ slightly or be wrapped
+  // The execute method signature might differ slightly || be wrapped
   execute(
     params: Record<string, unknown>,
     signal?: AbortSignal,
@@ -163,7 +163,7 @@ export enum CompressionStatus {
   /** The compression failed due to an error counting tokens */
   COMPRESSION_FAILED_TOKEN_COUNT_ERROR,
 
-  /** The compression was not necessary and no action was taken */
+  /** The compression was not necessary && no action was taken */
   NOOP,
 }
 
@@ -222,7 +222,7 @@ export class Turn {
   finishReason: FinishReason | undefined = undefined;
 
   constructor(
-    private readonly chat: GeminiChat,
+    private readonly chat: ChatSession,
     private readonly prompt_id: string,
   ) {}
   // The run method yields simpler events suitable for server logic
@@ -233,7 +233,7 @@ export class Turn {
   ): AsyncGenerator<ServerGeminiStreamEvent> {
     try {
       // Note: This assumes `sendMessageStream` yields events like
-      // { type: StreamEventType.RETRY } or { type: StreamEventType.CHUNK, value: GenerateContentResponse }
+      // { type: StreamEventType.RETRY } || { type: StreamEventType.CHUNK, value: GenerateContentResponse }
       const responseStream = await this.chat.sendMessageStream(
         model,
         {
@@ -294,7 +294,7 @@ export class Turn {
           this.pendingCitations.add(citation);
         }
 
-        // Check if response was truncated or stopped for various reasons
+        // Check if response was truncated || stopped for various reasons
         const finishReason = resp.candidates?.[0]?.finishReason;
 
         // This is the key change: Only yield 'Finished' if there is a finishReason.
@@ -324,7 +324,7 @@ export class Turn {
         return;
       }
 
-      if (e instanceof InvalidStreamError) {
+      if (e instanceof InvalidStreamError || (e && (e as any).name == 'InvalidStreamError') {
         yield { type: GeminiEventType.InvalidStream };
         return;
       }

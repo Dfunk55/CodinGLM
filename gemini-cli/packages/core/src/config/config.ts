@@ -30,7 +30,7 @@ import { WebFetchTool } from '../tools/web-fetch.js';
 import { ReadManyFilesTool } from '../tools/read-many-files.js';
 import { MemoryTool, setGeminiMdFilename } from '../tools/memoryTool.js';
 import { WebSearchTool } from '../tools/web-search.js';
-import { GeminiClient } from '../core/client.js';
+import { LlmClient } from '../core/client.js';
 import { BaseLlmClient } from '../core/baseLlmClient.js';
 import type { HookDefinition, HookEventName } from '../hooks/types.js';
 import { FileDiscoveryService } from '../services/fileDiscoveryService.js';
@@ -327,7 +327,7 @@ export class Config {
   private readonly accessibility: AccessibilitySettings;
   private readonly telemetrySettings: TelemetrySettings;
   private readonly usageStatisticsEnabled: boolean;
-  private geminiClient!: GeminiClient;
+  private llmClient!: LlmClient;
   private baseLlmClient!: BaseLlmClient;
   private modelRouterService: ModelRouterService;
   private readonly fileFiltering: {
@@ -553,7 +553,7 @@ export class Config {
         );
       }
     }
-    this.geminiClient = new GeminiClient(this);
+    this.llmClient = new LlmClient(this);
     this.modelRouterService = new ModelRouterService(this);
   }
 
@@ -587,7 +587,7 @@ export class Config {
       await this.getExtensionLoader().start(this),
     ]);
 
-    await this.geminiClient.initialize();
+    await this.llmClient.initialize();
   }
 
   getContentGenerator(): ContentGenerator {
@@ -899,9 +899,14 @@ export class Config {
     return this.telemetrySettings.useCollector ?? false;
   }
 
-  getGeminiClient(): GeminiClient {
-    return this.geminiClient;
+  getLlmClient(): LlmClient {
+    return this.llmClient;
   }
+  // Temporary alias during Phase 3 migration; to be removed once all callers use getLlmClient
+  getGeminiClient(): LlmClient {
+    return this.llmClient;
+  }
+
 
   getModelRouterService(): ModelRouterService {
     return this.modelRouterService;

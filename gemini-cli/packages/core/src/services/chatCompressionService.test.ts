@@ -12,7 +12,7 @@ import {
 import type { Content, GenerateContentResponse } from '../llm/types.js';
 import { CompressionStatus } from '../core/turn.js';
 import { tokenLimit } from '../core/tokenLimits.js';
-import type { GeminiChat } from '../core/geminiChat.js';
+import type { ChatSession } from '../core/chatSession.js';
 import type { Config } from '../config/config.js';
 import { getInitialChatHistory } from '../utils/environmentContext.js';
 import type { ContentGenerator } from '../core/contentGenerator.js';
@@ -103,7 +103,7 @@ describe('findCompressSplitPoint', () => {
 
 describe('ChatCompressionService', () => {
   let service: ChatCompressionService;
-  let mockChat: GeminiChat;
+  let mockChat: ChatSession;
   let mockConfig: Config;
   const mockModel = 'gemini-pro';
   const mockPromptId = 'test-prompt-id';
@@ -113,7 +113,7 @@ describe('ChatCompressionService', () => {
     mockChat = {
       getHistory: vi.fn(),
       getLastPromptTokenCount: vi.fn().mockReturnValue(500),
-    } as unknown as GeminiChat;
+    } as unknown as ChatSession;
     mockConfig = {
       getCompressionThreshold: vi.fn(),
       getContentGenerator: vi.fn(),

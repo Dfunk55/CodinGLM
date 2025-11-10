@@ -6,7 +6,7 @@
 
 import type { Config } from '../config/config.js';
 import { reportError } from '../utils/errorReporting.js';
-import { GeminiChat, StreamEventType } from '../core/geminiChat.js';
+import { ChatSession, StreamEventType } from '../core/chatSession.js';
 import { Type } from '../llm/schema.js';
 import type {
   Content,
@@ -377,7 +377,7 @@ export class AgentExecutor<TOutput extends z.ZodTypeAny> {
       new AgentStartEvent(this.agentId, this.definition.name),
     );
 
-    let chat: GeminiChat | undefined;
+    let chat: ChatSession | undefined;
     let tools: FunctionDeclaration[] | undefined;
     try {
       chat = await this.createChatObject(inputs);
@@ -614,7 +614,7 @@ export class AgentExecutor<TOutput extends z.ZodTypeAny> {
   }
 
   /** Initializes a `GeminiChat` instance for the agent run. */
-  private async createChatObject(inputs: AgentInputs): Promise<GeminiChat> {
+  private async createChatObject(inputs: AgentInputs): Promise<ChatSession> {
     const { promptConfig, modelConfig } = this.definition;
 
     if (!promptConfig.systemPrompt && !promptConfig.initialMessages) {
@@ -647,7 +647,7 @@ export class AgentExecutor<TOutput extends z.ZodTypeAny> {
         generationConfig.systemInstruction = systemInstruction;
       }
 
-      return new GeminiChat(
+      return new ChatSession(
         this.runtimeContext,
         generationConfig,
         startHistory,

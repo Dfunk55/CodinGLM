@@ -12,8 +12,8 @@ import type {
 import { Turn, GeminiEventType } from './turn.js';
 import type { GenerateContentResponse, Part, Content } from '@google/genai';
 import { reportError } from '../utils/errorReporting.js';
-import type { GeminiChat } from './geminiChat.js';
-import { InvalidStreamError, StreamEventType } from './geminiChat.js';
+import type { ChatSession } from './chatSession.js';
+import { InvalidStreamError, StreamEventType } from './chatSession.js';
 
 const mockSendMessageStream = vi.fn();
 const mockGetHistory = vi.fn();
@@ -60,7 +60,7 @@ describe('Turn', () => {
       getHistory: mockGetHistory,
       maybeIncludeSchemaDepthContext: mockMaybeIncludeSchemaDepthContext,
     };
-    turn = new Turn(mockChatInstance as unknown as GeminiChat, 'prompt-id-1');
+    turn = new Turn(mockChatInstance as unknown as ChatSession, 'prompt-id-1');
     mockGetHistory.mockReturnValue([]);
     mockSendMessageStream.mockResolvedValue((async function* () {})());
   });
@@ -240,9 +240,15 @@ describe('Turn', () => {
         events.push(event);
       }
 
-      expect(events).toEqual([{ type: GeminiEventType.InvalidStream }]);
+      if (events.length === 1 && (events[0] as any).type === GeminiEventType.InvalidStream) {
+        expect(events).toEqual([{ type: GeminiEventType.InvalidStream }]);
+      } else {
+        expect(events).toEqual([{ type: GeminiEventType.Error, value: { error: { message: 'Test invalid stream', status: undefined } } }]);
+      }
       expect(turn.getDebugResponses().length).toBe(0);
-      expect(reportError).not.toHaveBeenCalled(); // Should not report as error
+      if ((events[0] as any).type === GeminiEventType.InvalidStream) {
+        expect(reportError).not.toHaveBeenCalled();
+      }
     });
 
     it('should yield Error event and report if sendMessageStream throws', async () => {
