@@ -9,9 +9,9 @@ import {
   type CountTokensResponse,
   type GenerateContentParameters,
   type CountTokensParameters,
-  EmbedContentResponse,
+  type EmbedContentResponse,
   type EmbedContentParameters,
-} from '@google/genai';
+} from '../llm/types.js';
 import { promises } from 'node:fs';
 import type { ContentGenerator } from './contentGenerator.js';
 import type { UserTierId } from '../code_assist/types.js';
@@ -108,9 +108,6 @@ export class FakeContentGenerator implements ContentGenerator {
   async embedContent(
     request: EmbedContentParameters,
   ): Promise<EmbedContentResponse> {
-    return Object.setPrototypeOf(
-      this.getNextResponse('embedContent', request),
-      EmbedContentResponse.prototype,
-    );
+    return this.getNextResponse('embedContent', request);
   }
 }

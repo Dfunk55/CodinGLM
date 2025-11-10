@@ -26,7 +26,7 @@ import {
   type Config,
   type UserTierId,
   type AnsiOutput,
-} from '@google/gemini-cli-core';
+} from '@codinglm/core';
 import type { RequestContext } from '@a2a-js/sdk/server';
 import { type ExecutionEventBus } from '@a2a-js/sdk/server';
 import type {
@@ -51,7 +51,7 @@ import type {
   ThoughtSummary,
   Citation,
 } from '../types.js';
-import type { PartUnion, Part as genAiPart } from '@google/genai';
+import type { PartUnion, Part as genAiPart } from '@codinglm/core/llm/types';
 
 type UnionKeys<T> = T extends T ? keyof T : never;
 

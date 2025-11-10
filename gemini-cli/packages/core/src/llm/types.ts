@@ -33,6 +33,12 @@ export interface Content {
   parts: Part[];
 }
 
+// Unions compatible with prior GenAI SDK type usage
+export type PartUnion = Part | string;
+export type PartListUnion = PartUnion[];
+export type ContentUnion = Content | PartListUnion | string;
+export type ContentListUnion = ContentUnion | ContentUnion[];
+
 export interface FunctionDeclaration {
   name?: string;
   description?: string;
@@ -44,6 +50,8 @@ export interface FunctionDeclaration {
 export interface Tool {
   functionDeclarations?: FunctionDeclaration[];
 }
+
+export type ToolListUnion = Tool[];
 
 export enum FinishReason {
   STOP = 'STOP',
@@ -75,17 +83,35 @@ export interface GenerateContentConfig {
       allowedFunctionNames?: string[];
     };
   };
+  // Additional fields used in various parts of the codebase; optional for compatibility
+  candidateCount?: number;
+  responseLogprobs?: boolean;
+  logprobs?: number;
+  presencePenalty?: number;
+  frequencyPenalty?: number;
+  seed?: number;
+  responseMimeType?: string;
+  responseJsonSchema?: unknown;
+  responseSchema?: unknown;
+  routingConfig?: unknown;
+  modelSelectionConfig?: unknown;
+  responseModalities?: string[];
+  mediaResolution?: unknown;
+  speechConfig?: unknown;
+  audioTimestamp?: boolean;
 }
 
 export interface GenerateContentParameters {
   model: string;
-  contents: Content | Content[] | Array<Content | Part | string>;
-  tools?: Tool[] | undefined;
+  contents: ContentListUnion;
+  tools?: ToolListUnion | undefined;
   toolConfig?: GenerateContentConfig['toolConfig'];
   config?: GenerateContentConfig;
 }
 
 export class GenerateContentResponse {
+  // Convenience text (not always present)
+  text?: string;
   responseId?: string;
   modelVersion?: string;
   candidates: Candidate[] = [];
@@ -98,6 +124,42 @@ export class GenerateContentResponse {
   };
 }
 
-export type PartListUnion = Part[];
-export type PartUnion = Part;
+// Named alias widely used across code
+export type GenerateContentResponseUsageMetadata = NonNullable<
+  GenerateContentResponse['usageMetadata']
+>;
 
+export interface CountTokensParameters {
+  model: string;
+  contents: ContentListUnion;
+}
+
+export interface CountTokensResponse {
+  totalTokens: number;
+}
+
+export interface EmbedContentParameters {
+  // Placeholder for compatibility; Z.AI provider doesn't implement embeddings here
+  model?: string;
+  content?: unknown;
+}
+
+export interface EmbedContentResponse {
+  // Placeholder shape
+  embeddings?: unknown;
+}
+
+export interface FunctionCall {
+  id?: string;
+  name?: string;
+  args?: Record<string, unknown>;
+}
+
+export interface ToolConfig {
+  functionCallingConfig?: FunctionCallingConfig;
+}
+
+export interface FunctionCallingConfig {
+  mode?: string;
+  allowedFunctionNames?: string[];
+}

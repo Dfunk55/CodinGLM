@@ -17,9 +17,8 @@ import {
 import type {
   GenerateContentResponse,
   Part,
-  SafetyRating,
-} from '@google/genai';
-import { FinishReason } from '@google/genai';
+} from '../llm/types.js';
+import { FinishReason } from '../llm/types.js';
 
 const mockTextPart = (text: string): Part => ({ text });
 const mockFunctionCallPart = (
@@ -32,7 +31,7 @@ const mockFunctionCallPart = (
 const mockResponse = (
   parts: Part[],
   finishReason: FinishReason = FinishReason.STOP,
-  safetyRatings: SafetyRating[] = [],
+  safetyRatings: any[] = [],
 ): GenerateContentResponse => ({
   candidates: [
     {

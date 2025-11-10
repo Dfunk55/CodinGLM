@@ -9,7 +9,7 @@ import type {
   GenerateContentParameters,
   ToolConfig as GenAIToolConfig,
   ToolListUnion,
-} from '@google/genai';
+} from '../llm/types.js';
 import type {
   LLMRequest,
   LLMResponse,

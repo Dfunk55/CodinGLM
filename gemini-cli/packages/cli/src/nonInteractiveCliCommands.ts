@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import type { PartListUnion } from '@codinglm/genai';
+import type { PartListUnion } from '@codinglm/core/llm/types';
 import { parseSlashCommand } from './utils/commands.js';
 import {
   FatalInputError,

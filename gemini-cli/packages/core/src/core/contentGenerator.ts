@@ -11,7 +11,7 @@ import type {
   CountTokensParameters,
   EmbedContentResponse,
   EmbedContentParameters,
-} from '@google/genai';
+} from '../llm/types.js';
 // Google/Vertex providers are not supported in CodinGLM.
 import type { Config } from '../config/config.js';
 

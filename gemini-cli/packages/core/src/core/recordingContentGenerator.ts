@@ -11,7 +11,7 @@ import type {
   CountTokensParameters,
   EmbedContentResponse,
   EmbedContentParameters,
-} from '@google/genai';
+} from '../llm/types.js';
 import { appendFileSync } from 'node:fs';
 import type { ContentGenerator } from './contentGenerator.js';
 import type { FakeResponse } from './fakeContentGenerator.js';
@@ -85,10 +85,7 @@ export class RecordingContentGenerator implements ContentGenerator {
     const response = await this.realGenerator.countTokens(request);
     const recordedResponse: FakeResponse = {
       method: 'countTokens',
-      response: {
-        totalTokens: response.totalTokens,
-        cachedContentTokenCount: response.cachedContentTokenCount,
-      },
+      response: { totalTokens: response.totalTokens },
     };
     appendFileSync(this.filePath, `${safeJsonStringify(recordedResponse)}\n`);
     return response;
@@ -101,10 +98,7 @@ export class RecordingContentGenerator implements ContentGenerator {
 
     const recordedResponse: FakeResponse = {
       method: 'embedContent',
-      response: {
-        embeddings: response.embeddings,
-        metadata: response.metadata,
-      },
+      response,
     };
     appendFileSync(this.filePath, `${safeJsonStringify(recordedResponse)}\n`);
     return response;

@@ -7,7 +7,8 @@
     "paths": {
       "@codinglm/core": ["../core/src/index.ts"],
       "@codinglm/core/*": ["../core/src/*"],
-      "@codinglm/genai": ["../core/src/shim/genai.ts"]
+      "@google/gemini-cli-core": ["../core/src/index.ts"],
+      "@google/gemini-cli-core/*": ["../core/src/*"]
     },
     "jsx": "react-jsx",
     "lib": ["DOM", "DOM.Iterable", "ES2023"],

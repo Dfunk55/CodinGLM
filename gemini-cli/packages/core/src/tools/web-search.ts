@@ -6,7 +6,6 @@
 
 import type { MessageBus } from '../confirmation-bus/message-bus.js';
 import { WEB_SEARCH_TOOL_NAME } from './tool-names.js';
-import type { GroundingMetadata } from '@google/genai';
 import type { ToolInvocation, ToolResult } from './tools.js';
 import { BaseDeclarativeTool, BaseToolInvocation, Kind } from './tools.js';
 import { ToolErrorType } from './tool-error.js';
@@ -53,9 +52,7 @@ export interface WebSearchToolParams {
  * Extends ToolResult to include sources for web search.
  */
 export interface WebSearchToolResult extends ToolResult {
-  sources?: GroundingMetadata extends { groundingChunks: GroundingChunkItem[] }
-    ? GroundingMetadata['groundingChunks']
-    : GroundingChunkItem[];
+  sources?: GroundingChunkItem[];
 }
 
 class WebSearchToolInvocation extends BaseToolInvocation<

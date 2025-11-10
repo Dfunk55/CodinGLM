@@ -16,8 +16,7 @@
     "baseUrl": ".",
     "paths": {
       "@codinglm/core": ["../core/src/index.ts"],
-      "@codinglm/core/*": ["../core/src/*"],
-      "@codinglm/genai": ["../core/src/shim/genai.ts"]
+      "@codinglm/core/*": ["../core/src/*"]
     },
     "strict": true /* enable all strict type-checking options */
     /* Additional Checks */

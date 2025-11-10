@@ -20,7 +20,7 @@ import { loadConfig, loadEnvironment, setTargetDir } from '../config/config.js';
 import { loadSettings } from '../config/settings.js';
 import { loadExtensions } from '../config/extension.js';
 import { commandRegistry } from '../commands/command-registry.js';
-import { SimpleExtensionLoader } from '@google/gemini-cli-core';
+import { SimpleExtensionLoader } from '@codinglm/core';
 
 const coderAgentCard: AgentCard = {
   name: 'Gemini SDLC Agent',

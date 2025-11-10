@@ -17,7 +17,7 @@ import type {
   GenerateContentResponse,
   ToolConfig,
   ContentListUnion,
-} from '@google/genai';
+} from '../llm/types.js';
 
 describe('HookTranslator', () => {
   let translator: HookTranslatorGenAIv1;

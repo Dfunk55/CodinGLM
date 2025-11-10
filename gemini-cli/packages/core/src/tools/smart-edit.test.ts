@@ -55,7 +55,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import { ApprovalMode } from '../policy/types.js';
 import { type Config } from '../config/config.js';
-import { type Content, type Part, type SchemaUnion } from '@google/genai';
+import type { Content, Part } from '../llm/types.js';
 import { createMockWorkspaceContext } from '../test-utils/mockWorkspaceContext.js';
 import { StandardFileSystemService } from '../services/fileSystemService.js';
 import type { BaseLlmClient } from '../core/baseLlmClient.js';
@@ -132,7 +132,7 @@ describe('SmartEditTool', () => {
 
     mockGenerateJson.mockReset();
     mockGenerateJson.mockImplementation(
-      async (contents: Content[], schema: SchemaUnion) => {
+      async (contents: Content[], schema: any) => {
         const userContent = contents.find((c: Content) => c.role === 'user');
         let promptText = '';
         if (userContent && userContent.parts) {

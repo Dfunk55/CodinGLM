@@ -14,7 +14,7 @@ import {
   type Mocked,
 } from 'vitest';
 
-import type { GenerateContentResponse } from '@google/genai';
+import type { GenerateContentResponse } from '../llm/types.js';
 import { BaseLlmClient, type GenerateJsonOptions } from './baseLlmClient.js';
 import type { ContentGenerator } from './contentGenerator.js';
 import type { Config } from '../config/config.js';

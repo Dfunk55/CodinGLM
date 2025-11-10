@@ -8,7 +8,7 @@
  * @fileoverview Defines the core configuration interfaces and types for the agent architecture.
  */
 
-import type { Content, FunctionDeclaration } from '@google/genai';
+import type { Content, FunctionDeclaration } from '../llm/types.js';
 import type { AnyDeclarativeTool } from '../tools/tools.js';
 import { type z } from 'zod';
 

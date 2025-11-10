@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import type { Content, PartListUnion } from '@google/genai';
+import type { Content, PartListUnion } from '../llm/types.js';
 import type { BaseLlmClient } from '../core/baseLlmClient.js';
 import type { Config } from '../config/config.js';
 

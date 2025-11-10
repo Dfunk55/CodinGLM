@@ -8,7 +8,7 @@ import { describe, expect, it, beforeEach, afterEach, vi } from 'vitest';
 import type {
   GenerateContentParameters,
   GenerateContentResponse,
-} from '@google/genai';
+} from '../llm/types.js';
 import { ZaiContentGenerator } from './zaiContentGenerator.js';
 
 function createRequest(): GenerateContentParameters {

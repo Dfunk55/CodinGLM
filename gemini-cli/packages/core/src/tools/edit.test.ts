@@ -56,7 +56,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import type { Config } from '../config/config.js';
 import { ApprovalMode } from '../policy/types.js';
-import type { Content, Part, SchemaUnion } from '@google/genai';
+import type { Content, Part } from '../llm/types.js';
 import { createMockWorkspaceContext } from '../test-utils/mockWorkspaceContext.js';
 import { StandardFileSystemService } from '../services/fileSystemService.js';
 
@@ -139,7 +139,7 @@ describe('EditTool', () => {
     // Default mock for generateJson to return the snippet unchanged
     mockGenerateJson.mockReset();
     mockGenerateJson.mockImplementation(
-      async (contents: Content[], schema: SchemaUnion) => {
+      async (contents: Content[], schema: any) => {
         // The problematic_snippet is the last part of the user's content
         const userContent = contents.find((c: Content) => c.role === 'user');
         let promptText = '';

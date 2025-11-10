@@ -88,9 +88,12 @@ const codinglmConfig = {
   plugins: createWasmPlugins(),
   alias: {
     'is-in-ci': path.resolve(__dirname, 'packages/cli/src/patches/is-in-ci.ts'),
-    '@google/gemini-cli-core': path.resolve(__dirname, 'packages/core/index.ts'),
+    '@google/gemini-cli-core': path.resolve(
+      __dirname,
+      'packages/core/index.ts',
+    ),
     '@codinglm/core': path.resolve(__dirname, 'packages/core/index.ts'),
-    '@codinglm/genai': path.resolve(__dirname, 'packages/core/src/shim/genai.ts'),
+    '@codinglm/core/llm': path.resolve(__dirname, 'packages/core/src/llm'),
   },
   metafile: true,
 };

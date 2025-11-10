@@ -11,12 +11,12 @@ import type {
   GenerateContentResponse,
   Content,
   GenerateContentConfig,
-  SendMessageParameters,
   Part,
   Tool,
-} from '@google/genai';
+} from '../llm/types.js';
+import type { PartListUnion } from '../llm/types.js';
 import { toParts } from '../code_assist/converter.js';
-import { createUserContent } from '@google/genai';
+import { createUserContent } from '../llm/helpers.js';
 import { retryWithBackoff } from '../utils/retry.js';
 import type { Config } from '../config/config.js';
 import {
@@ -50,6 +50,12 @@ export enum StreamEventType {
 export type StreamEvent =
   | { type: StreamEventType.CHUNK; value: GenerateContentResponse }
   | { type: StreamEventType.RETRY };
+
+// Local shape compatible with previous SDK usage
+type SendMessageParameters = {
+  message: PartListUnion;
+  config?: GenerateContentConfig;
+};
 
 /**
  * Options for retrying due to invalid content from the model.

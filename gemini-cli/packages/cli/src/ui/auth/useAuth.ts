@@ -11,8 +11,8 @@ import {
   type Config,
   loadApiKey,
   debugLogger,
-} from '@google/gemini-cli-core';
-import { getErrorMessage } from '@google/gemini-cli-core';
+} from '@codinglm/core';
+import { getErrorMessage } from '@codinglm/core';
 import { AuthState } from '../types.js';
 import {
   resolveAuthTypeFromEnvironment,

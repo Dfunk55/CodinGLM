@@ -11,7 +11,7 @@ import {
   type PolicyRule,
   type PolicyEngineConfig,
 } from './types.js';
-import type { FunctionCall } from '@google/genai';
+import type { FunctionCall } from '../llm/types.js';
 
 describe('PolicyEngine', () => {
   let engine: PolicyEngine;

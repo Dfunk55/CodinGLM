@@ -23,7 +23,7 @@ import {
 import { Storage } from '../config/storage.js';
 import { promises as fs, existsSync } from 'node:fs';
 import path from 'node:path';
-import type { Content } from '@google/genai';
+import type { Content } from '../llm/types.js';
 
 import crypto from 'node:crypto';
 import os from 'node:os';

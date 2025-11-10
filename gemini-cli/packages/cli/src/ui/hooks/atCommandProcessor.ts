@@ -6,7 +6,7 @@
 
 import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
-import type { PartListUnion, PartUnion } from '@google/genai';
+import type { PartListUnion, PartUnion } from '@codinglm/core/llm/types';
 import type { AnyToolInvocation, Config } from '@google/gemini-cli-core';
 import {
   debugLogger,

@@ -14,7 +14,7 @@ import { randomUUID } from 'node:crypto';
 import type {
   PartListUnion,
   GenerateContentResponseUsageMetadata,
-} from '@google/genai';
+} from '../llm/types.js';
 import { debugLogger } from '../utils/debugLogger.js';
 
 export const SESSION_FILE_PREFIX = 'session-';

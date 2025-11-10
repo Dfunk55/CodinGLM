@@ -36,7 +36,7 @@ import {
   tokenLimit,
   debugLogger,
 } from '@google/gemini-cli-core';
-import type { Part, PartListUnion } from '@google/genai';
+import type { Part, PartListUnion } from '@codinglm/core/llm/types';
 import type { UseHistoryManagerReturn } from './useHistoryManager.js';
 import type { SlashCommandProcessorResult } from '../types.js';
 import { MessageType, StreamingState } from '../types.js';

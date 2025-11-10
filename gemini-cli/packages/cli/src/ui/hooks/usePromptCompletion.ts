@@ -11,7 +11,7 @@ import {
   DEFAULT_GEMINI_FLASH_LITE_MODEL,
   getResponseText,
 } from '@google/gemini-cli-core';
-import type { Content, GenerateContentConfig } from '@google/genai';
+import type { Content, GenerateContentConfig } from '@codinglm/core/llm/types';
 import type { TextBuffer } from '../components/shared/text-buffer.js';
 import { isSlashCommand } from '../utils/commandUtils.js';
 

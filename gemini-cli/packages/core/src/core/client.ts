@@ -10,7 +10,7 @@ import type {
   Content,
   Tool,
   GenerateContentResponse,
-} from '@google/genai';
+} from '../llm/types.js';
 import {
   getDirectoryContextString,
   getInitialChatHistory,

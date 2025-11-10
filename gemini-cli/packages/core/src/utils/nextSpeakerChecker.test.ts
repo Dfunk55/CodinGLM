@@ -6,7 +6,7 @@
 
 import type { Mock } from 'vitest';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import type { Content } from '@google/genai';
+import type { Content } from '../llm/types.js';
 import { DEFAULT_GEMINI_FLASH_MODEL } from '../config/models.js';
 import { BaseLlmClient } from '../core/baseLlmClient.js';
 import type { ContentGenerator } from '../core/contentGenerator.js';

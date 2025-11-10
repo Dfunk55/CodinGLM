@@ -18,7 +18,7 @@ import {
   DEFAULT_ENCODING,
   getSpecificMimeType,
 } from '../utils/fileUtils.js';
-import type { PartListUnion } from '@google/genai';
+import type { PartListUnion } from '../llm/types.js';
 import {
   type Config,
   DEFAULT_FILE_FILTERING_OPTIONS,

@@ -15,7 +15,7 @@ import type {
   GenerateContentParameters,
   GenerateContentResponseUsageMetadata,
   GenerateContentResponse,
-} from '@google/genai';
+} from '../llm/types.js';
 import type { ServerDetails } from '../telemetry/types.js';
 import {
   ApiRequestEvent,

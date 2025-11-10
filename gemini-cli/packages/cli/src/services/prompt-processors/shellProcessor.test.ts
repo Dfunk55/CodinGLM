@@ -8,10 +8,10 @@ import { describe, it, expect, beforeEach, vi, type Mock } from 'vitest';
 import { ConfirmationRequiredError, ShellProcessor } from './shellProcessor.js';
 import { createMockCommandContext } from '../../test-utils/mockCommandContext.js';
 import type { CommandContext } from '../../ui/commands/types.js';
-import type { Config } from '@google/gemini-cli-core';
-import { ApprovalMode, getShellConfiguration } from '@google/gemini-cli-core';
+import type { Config } from '@codinglm/core';
+import { ApprovalMode, getShellConfiguration } from '@codinglm/core';
 import { quote } from 'shell-quote';
-import { createPartFromText } from '@google/genai';
+import { createPartFromText } from '@codinglm/core/llm/helpers';
 import type { PromptPipelineContent } from './types.js';
 
 // Helper function to determine the expected escaped string based on the current OS,
@@ -38,7 +38,7 @@ function createPromptPipelineContent(text: string): PromptPipelineContent {
 const mockCheckCommandPermissions = vi.hoisted(() => vi.fn());
 const mockShellExecute = vi.hoisted(() => vi.fn());
 
-vi.mock('@google/gemini-cli-core', async (importOriginal) => {
+vi.mock('@codinglm/core', async (importOriginal) => {
   const original = await importOriginal<object>();
   return {
     ...original,

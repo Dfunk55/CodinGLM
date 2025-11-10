@@ -29,7 +29,7 @@ import {
   CoreEvent,
 } from '@codinglm/core';
 
-import type { Content, Part } from '@codinglm/genai';
+import type { Content, Part } from '@codinglm/core/llm/types';
 import readline from 'node:readline';
 
 import { handleSlashCommand } from './nonInteractiveCliCommands.js';

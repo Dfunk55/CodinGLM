@@ -31,7 +31,7 @@ export function getEffectiveModel(isInFallbackMode, requestedModel) {
         return requestedModel;
     }
     // In CodinGLM fallback mode, honor faster/cheaper variants if requested.
-    if (requestedModel.includes('flash') || requestedModel.includes('air')) {
+    if (requestedModel.includes('flash') || requestedModel.includes('air') || requestedModel.includes('lite')) {
         return requestedModel;
     }
     // Default fallback for CodinGLM is GLM-4-Flash.

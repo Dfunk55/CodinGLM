@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import type { Content, GenerateContentConfig } from '@google/genai';
+import type { Content, GenerateContentConfig } from '../llm/types.js';
 import type { GeminiClient } from '../core/client.js';
 import type { BaseLlmClient } from '../core/baseLlmClient.js';
 import type { EditToolParams } from '../tools/edit.js';

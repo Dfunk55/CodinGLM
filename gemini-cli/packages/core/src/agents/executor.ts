@@ -7,15 +7,15 @@
 import type { Config } from '../config/config.js';
 import { reportError } from '../utils/errorReporting.js';
 import { GeminiChat, StreamEventType } from '../core/geminiChat.js';
-import { Type } from '@google/genai';
+import { Type } from '../llm/schema.js';
 import type {
   Content,
   Part,
   FunctionCall,
   GenerateContentConfig,
   FunctionDeclaration,
-  Schema,
-} from '@google/genai';
+} from '../llm/types.js';
+import type { Schema } from '../llm/schema.js';
 import { executeToolCall } from '../core/nonInteractiveToolExecutor.js';
 import { ToolRegistry } from '../tools/tool-registry.js';
 import type { ToolCallRequestInfo } from '../core/turn.js';

@@ -12,7 +12,7 @@ import type {
   AnyDeclarativeTool,
   AnyToolInvocation,
   UserFeedbackPayload,
-} from '@google/gemini-cli-core';
+} from '@codinglm/core';
 import {
   executeToolCall,
   ToolErrorType,
@@ -22,8 +22,8 @@ import {
   uiTelemetryService,
   FatalInputError,
   CoreEvent,
-} from '@google/gemini-cli-core';
-import type { Part } from '@google/genai';
+} from '@codinglm/core';
+import type { Part } from '@codinglm/core/llm/types';
 import { runNonInteractive } from './nonInteractiveCli.js';
 import {
   describe,
@@ -47,9 +47,9 @@ const mockCoreEvents = vi.hoisted(() => ({
   emit: vi.fn(),
 }));
 
-vi.mock('@google/gemini-cli-core', async (importOriginal) => {
+vi.mock('@codinglm/core', async (importOriginal) => {
   const original =
-    await importOriginal<typeof import('@google/gemini-cli-core')>();
+    await importOriginal<typeof import('@codinglm/core')>();
 
   class MockChatRecordingService {
     initialize = vi.fn();

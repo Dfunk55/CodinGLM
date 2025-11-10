@@ -14,13 +14,12 @@ import {
   type EmbedContentParameters,
   type EmbedContentResponse,
   FinishReason,
-  FunctionCallingConfigMode,
   type GenerateContentConfig,
   type GenerateContentParameters,
   type Part,
   type Tool,
   type ToolListUnion,
-} from '@google/genai';
+} from '../llm/types.js';
 import { toContents } from '../code_assist/converter.js';
 import { partToString } from '../utils/partUtils.js';
 import type { ContentGenerator } from './contentGenerator.js';
@@ -497,16 +496,11 @@ export class ZaiContentGenerator implements ContentGenerator {
       return undefined;
     }
 
-    if (config.mode === FunctionCallingConfigMode.NONE) {
+    if (config.mode === 'NONE') {
       return 'none';
     }
 
-    if (
-      config.mode === FunctionCallingConfigMode.ANY ||
-      config.mode === FunctionCallingConfigMode.VALIDATED ||
-      config.mode === FunctionCallingConfigMode.AUTO ||
-      config.mode === undefined
-    ) {
+    if (config.mode === 'ANY' || config.mode === 'VALIDATED' || config.mode === 'AUTO' || config.mode === undefined) {
       if (config.allowedFunctionNames && config.allowedFunctionNames.length) {
         if (config.allowedFunctionNames.length === 1) {
           return {

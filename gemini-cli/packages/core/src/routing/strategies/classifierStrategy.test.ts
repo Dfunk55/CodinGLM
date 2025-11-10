@@ -19,7 +19,7 @@ import {
   DEFAULT_GEMINI_MODEL,
 } from '../../config/models.js';
 import { promptIdContext } from '../../utils/promptIdContext.js';
-import type { Content } from '@google/genai';
+import type { Content } from '../../llm/types.js';
 
 vi.mock('../../core/baseLlmClient.js');
 vi.mock('../../utils/promptIdContext.js');

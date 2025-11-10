@@ -5,7 +5,8 @@
  */
 
 import { createHash } from 'node:crypto';
-import { type Content, Type } from '@google/genai';
+import type { Content } from '../llm/types.js';
+import { Type } from '../llm/schema.js';
 import { type BaseLlmClient } from '../core/baseLlmClient.js';
 import { LruCache } from './LruCache.js';
 import { DEFAULT_GEMINI_FLASH_MODEL } from '../config/models.js';

@@ -15,13 +15,11 @@ import {
   toOutputType,
   OTelOutputType,
 } from './semantic.js';
-import {
-  Language,
-  type Content,
-  Outcome,
-  type Candidate,
-  FinishReason,
-} from '@google/genai';
+import type { Content, Candidate } from '../llm/types.js';
+import { FinishReason } from '../llm/types.js';
+// Local enums only needed for test literals
+const Language = { PYTHON: 'PYTHON' } as const;
+const Outcome = { OUTCOME_OK: 'OUTCOME_OK' } as const;
 
 describe('toChatMessage', () => {
   it('should correctly handle text parts', () => {

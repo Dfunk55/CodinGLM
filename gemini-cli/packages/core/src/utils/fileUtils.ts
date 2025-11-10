@@ -7,7 +7,7 @@
 import fs from 'node:fs';
 import fsPromises from 'node:fs/promises';
 import path from 'node:path';
-import type { PartUnion } from '@google/genai';
+import type { PartUnion } from '../llm/types.js';
 // eslint-disable-next-line import/no-internal-modules
 import mime from 'mime/lite';
 import type { FileSystemService } from '../services/fileSystemService.js';

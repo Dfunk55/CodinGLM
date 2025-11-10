@@ -35,7 +35,7 @@ import {
 import * as acp from './acp.js';
 import { AcpFileSystemService } from './fileSystemService.js';
 import { Readable, Writable } from 'node:stream';
-import type { Content, Part, FunctionCall } from '@google/genai';
+import type { Content, Part, FunctionCall } from '@codinglm/core/llm/types';
 import type { LoadedSettings } from '../config/settings.js';
 import { SettingScope } from '../config/settings.js';
 import * as fs from 'node:fs/promises';

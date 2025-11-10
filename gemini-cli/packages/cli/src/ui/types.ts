@@ -13,7 +13,7 @@ import type {
   ToolConfirmationOutcome,
   ToolResultDisplay,
 } from '@google/gemini-cli-core';
-import type { PartListUnion } from '@google/genai';
+import type { PartListUnion } from '@codinglm/core/llm/types';
 import { type ReactNode } from 'react';
 
 export type { ThoughtSummary };

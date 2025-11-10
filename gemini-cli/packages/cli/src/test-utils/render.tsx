@@ -19,7 +19,7 @@ import { calculateMainAreaWidth } from '../ui/utils/ui-sizing.js';
 import { VimModeProvider } from '../ui/contexts/VimModeContext.js';
 import { MouseProvider } from '../ui/contexts/MouseContext.js';
 
-import { type Config } from '@google/gemini-cli-core';
+import { type Config } from '@codinglm/core';
 
 // Wrapper around ink-testing-library's render that ensures act() is called
 export const render = (

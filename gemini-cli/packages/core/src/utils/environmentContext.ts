@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import type { Part, Content } from '@google/genai';
+import type { Part, Content } from '../llm/types.js';
 import type { Config } from '../config/config.js';
 import { getFolderStructure } from './getFolderStructure.js';
 

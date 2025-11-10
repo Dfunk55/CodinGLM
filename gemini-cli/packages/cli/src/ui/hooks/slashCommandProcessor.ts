@@ -5,7 +5,7 @@
  */
 
 import { useCallback, useMemo, useEffect, useState } from 'react';
-import { type PartListUnion } from '@google/genai';
+import { type PartListUnion } from '@codinglm/core/llm/types';
 import process from 'node:process';
 import type { UseHistoryManagerReturn } from './useHistoryManager.js';
 import type { Config } from '@google/gemini-cli-core';

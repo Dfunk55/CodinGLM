@@ -50,7 +50,7 @@ import { ExtensionManager } from './extension-manager.js';
 import type {
   ExtensionEvents,
   ExtensionLoader,
-} from '@google/gemini-cli-core/src/utils/extensionLoader.js';
+} from '@codinglm/core/src/utils/extensionLoader.js';
 import { requestConsentNonInteractive } from './extensions/consent.js';
 import { promptForSetting } from './extensions/extensionSettings.js';
 import type { EventEmitter } from 'node:stream';

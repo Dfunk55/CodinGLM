@@ -10,7 +10,7 @@ import type {
   ToolConfig,
   FinishReason,
   FunctionCallingConfig,
-} from '@google/genai';
+} from '../llm/types.js';
 import { DEFAULT_GEMINI_FLASH_MODEL } from '../config/models.js';
 
 /**

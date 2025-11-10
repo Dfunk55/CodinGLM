@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import type { Content } from '@google/genai';
+import type { Content } from '../llm/types.js';
 import { createHash } from 'node:crypto';
 import type { ServerGeminiStreamEvent } from '../core/turn.js';
 import { GeminiEventType } from '../core/turn.js';

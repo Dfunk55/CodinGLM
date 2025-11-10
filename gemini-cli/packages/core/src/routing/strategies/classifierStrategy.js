@@ -5,7 +5,8 @@
  */
 import { z } from 'zod';
 import { promptIdContext } from '../../utils/promptIdContext.js';
-import { createUserContent, Type, } from '@google/genai';
+import { createUserContent } from '../../llm/helpers.js';
+import { Type } from '../../llm/schema.js';
 import { isFunctionCall, isFunctionResponse, } from '../../utils/messageInspectors.js';
 import { debugLogger } from '../../utils/debugLogger.js';
 const CLASSIFIER_GENERATION_CONFIG = {
@@ -116,7 +117,16 @@ export class ClassifierStrategy {
     async route(context, config, baseLlmClient) {
         const startTime = Date.now();
         try {
-            let promptId = promptIdContext.getStore();
+            let promptId;
+            try {
+                const getStore = promptIdContext.getStore;
+                if (typeof getStore === 'function') {
+                    promptId = getStore.call(promptIdContext);
+                }
+            }
+            catch (_e) {
+                // ignore; will fallback below
+            }
             if (!promptId) {
                 promptId = `classifier-router-fallback-${Date.now()}-${Math.random()
                     .toString(16)
@@ -132,7 +142,7 @@ export class ClassifierStrategy {
             const jsonResponse = await baseLlmClient.generateJson({
                 contents: [...finalHistory, createUserContent(context.request)],
                 schema: RESPONSE_SCHEMA,
-                model: config.getModel(),
+                model: 'glm-4.5-air',
                 systemInstruction: CLASSIFIER_SYSTEM_PROMPT,
                 config: CLASSIFIER_GENERATION_CONFIG,
                 abortSignal: context.signal,
@@ -141,26 +151,15 @@ export class ClassifierStrategy {
             const routerResponse = ClassifierResponseSchema.parse(jsonResponse);
             const reasoning = routerResponse.reasoning;
             const latencyMs = Date.now() - startTime;
-            if (routerResponse.model_choice === FLASH_MODEL) {
-                return {
-                    model: config.getModel(),
-                    metadata: {
-                        source: 'Classifier',
-                        latencyMs,
-                        reasoning,
-                    },
-                };
-            }
-            else {
-                return {
-                    model: config.getModel(),
-                    metadata: {
-                        source: 'Classifier',
-                        reasoning,
-                        latencyMs,
-                    },
-                };
-            }
+            const targetModel = routerResponse.model_choice === FLASH_MODEL ? 'glm-4-flash' : 'glm-4.6';
+            return {
+                model: targetModel,
+                metadata: {
+                    source: 'Classifier',
+                    latencyMs,
+                    reasoning,
+                },
+            };
         }
         catch (error) {
             // If the classifier fails for any reason (API error, parsing error, etc.),

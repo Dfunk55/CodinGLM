@@ -11,7 +11,7 @@ import * as schema from './schema.js';
 export * from './schema.js';
 
 import type { WritableStream, ReadableStream } from 'node:stream/web';
-import { coreEvents } from '@google/gemini-cli-core';
+import { coreEvents } from '@codinglm/core';
 
 export class AgentSideConnection implements Client {
   #connection: Connection;
