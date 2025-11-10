@@ -73,7 +73,7 @@ const baseConfig = {
   write: true,
 };
 
-// Removed Gemini CLI bundle; CodinGLM bundles only codinglm.
+// Removed Google/Gemini bundle; CodinGLM bundles only codinglm.
 
 const codinglmConfig = {
   ...baseConfig,

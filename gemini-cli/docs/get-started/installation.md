@@ -1,12 +1,12 @@
-# Gemini CLI Installation, Execution, and Deployment
+# CodinGLM Installation, Execution, and Deployment
 
-Install and run Gemini CLI. This document provides an overview of Gemini CLI's
+Install and run CodinGLM. This document provides an overview of CodinGLM's
 installation methods and deployment architecture.
 
-## How to install and/or run Gemini CLI
+## How to install and/or run CodinGLM
 
-There are several ways to run Gemini CLI. The recommended option depends on how
-you intend to use Gemini CLI.
+There are several ways to run CodinGLM. The recommended option depends on how
+you intend to use CodinGLM.
 
 - As a standard installation. This is the most straightforward method of using
   Gemini CLI.

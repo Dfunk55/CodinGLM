@@ -324,7 +324,7 @@ export class Turn {
         return;
       }
 
-      if (e instanceof InvalidStreamError || (e && (e as any).name == 'InvalidStreamError') {
+      if (e instanceof InvalidStreamError || (e && (e as Error).name === 'InvalidStreamError') || (e && (e as any).type === 'NO_FINISH_REASON') || (e && (e as any).type === 'NO_RESPONSE_TEXT') ) {
         yield { type: GeminiEventType.InvalidStream };
         return;
       }
