@@ -22,7 +22,7 @@ import {
   AuthType,
   createContentGeneratorConfig,
 } from '../core/contentGenerator.js';
-import { GeminiClient } from '../core/client.js';
+import { LlmClient } from '../core/client.js';
 import { GitService } from '../services/gitService.js';
 import { ShellTool } from '../tools/shell.js';
 import { ReadFileTool } from '../tools/read-file.js';
@@ -84,7 +84,7 @@ vi.mock('../tools/memoryTool', () => ({
 vi.mock('../core/contentGenerator.js');
 
 vi.mock('../core/client.js', () => ({
-  GeminiClient: vi.fn().mockImplementation(() => ({
+  LlmClient: vi.fn().mockImplementation(() => ({
     initialize: vi.fn().mockResolvedValue(undefined),
     stripThoughtsFromHistory: vi.fn(),
   })),
@@ -256,7 +256,7 @@ describe('Server Config (config.ts)', () => {
       );
       // Verify that contentGeneratorConfig is updated
       expect(config.getContentGeneratorConfig()).toEqual(mockContentConfig);
-      expect(GeminiClient).toHaveBeenCalledWith(config);
+      expect(LlmClient).toHaveBeenCalledWith(config);
       // Verify that fallback mode is reset
       expect(config.isInFallbackMode()).toBe(false);
     });

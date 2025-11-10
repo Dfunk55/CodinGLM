@@ -287,9 +287,9 @@ ${textContent}
         urlContextMeta.urlMetadata.length > 0
       ) {
         const allStatuses = urlContextMeta.urlMetadata.map(
-          (m) => m.urlRetrievalStatus,
+          (m: any) => m.urlRetrievalStatus,
         );
-        if (allStatuses.every((s) => s !== 'URL_RETRIEVAL_STATUS_SUCCESS')) {
+        if (allStatuses.every((s: any) => s !== 'URL_RETRIEVAL_STATUS_SUCCESS')) {
           processingError = true;
         }
       } else if (!responseText.trim() && !sources?.length) {

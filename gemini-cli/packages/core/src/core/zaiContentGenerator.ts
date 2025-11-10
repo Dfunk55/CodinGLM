@@ -739,7 +739,7 @@ function mapRole(role?: string): 'user' | 'assistant' {
   return 'user';
 }
 
-function convertContentUnionToText(content: ContentUnion): string {
+function convertContentUnionToText(content: ContentUnion | Part): string {
   if (typeof content === 'string') {
     return content;
   }

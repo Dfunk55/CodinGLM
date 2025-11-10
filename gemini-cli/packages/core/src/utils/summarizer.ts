@@ -10,7 +10,7 @@ import type {
   GenerateContentConfig,
   GenerateContentResponse,
 } from '../llm/types.js';
-import type { GeminiClient } from '../core/client.js';
+import type { LlmClient } from '../core/client.js';
 import { DEFAULT_GEMINI_FLASH_LITE_MODEL } from '../config/models.js';
 import { getResponseText, partToString } from './partUtils.js';
 import { debugLogger } from './debugLogger.js';
@@ -23,7 +23,7 @@ import { debugLogger } from './debugLogger.js';
  */
 export type Summarizer = (
   result: ToolResult,
-  geminiClient: GeminiClient,
+  geminiClient: LlmClient,
   abortSignal: AbortSignal,
 ) => Promise<string>;
 
@@ -37,7 +37,7 @@ export type Summarizer = (
  */
 export const defaultSummarizer: Summarizer = (
   result: ToolResult,
-  _geminiClient: GeminiClient,
+  _geminiClient: LlmClient,
   _abortSignal: AbortSignal,
 ) => Promise.resolve(JSON.stringify(result.llmContent));
 
@@ -64,7 +64,7 @@ export const llmSummarizer: Summarizer = (result, geminiClient, abortSignal) =>
 
 export async function summarizeToolOutput(
   textToSummarize: string,
-  geminiClient: GeminiClient,
+  geminiClient: LlmClient,
   abortSignal: AbortSignal,
   maxOutputTokens: number = 2000,
 ): Promise<string> {

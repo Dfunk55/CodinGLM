@@ -5,7 +5,7 @@
  */
 
 import type { Content, GenerateContentConfig } from '../llm/types.js';
-import type { GeminiClient } from '../core/client.js';
+import type { LlmClient } from '../core/client.js';
 import type { BaseLlmClient } from '../core/baseLlmClient.js';
 import type { EditToolParams } from '../tools/edit.js';
 import {
@@ -91,12 +91,12 @@ function getTimestampFromFunctionId(fcnId: string): number {
  * Will look through the gemini client history and determine when the most recent
  * edit to a target file occurred. If no edit happened, it will return -1
  * @param filePath the path to the file
- * @param client the geminiClient, so that we can get the history
+ * @param client the llm client, so that we can get the history
  * @returns a DateTime (as a number) of when the last edit occurred, or -1 if no edit was found.
  */
 async function findLastEditTimestamp(
   filePath: string,
-  client: GeminiClient,
+  client: LlmClient,
 ): Promise<number> {
   const history = (await client.getHistory()) ?? [];
 
@@ -175,7 +175,7 @@ export async function ensureCorrectEdit(
   filePath: string,
   currentContent: string,
   originalParams: EditToolParams, // This is the EditToolParams from edit.ts, without \'corrected\'
-  geminiClient: GeminiClient,
+  geminiClient: LlmClient,
   baseLlmClient: BaseLlmClient,
   abortSignal: AbortSignal,
 ): Promise<CorrectedEditResult> {

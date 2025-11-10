@@ -175,7 +175,7 @@ export class AgentExecutor<TOutput extends z.ZodTypeAny> {
    * or stop the agent loop.
    */
   private async executeTurn(
-    chat: GeminiChat,
+    chat: ChatSession,
     currentMessage: Content,
     tools: FunctionDeclaration[],
     turnCounter: number,
@@ -264,7 +264,7 @@ export class AgentExecutor<TOutput extends z.ZodTypeAny> {
    * @returns The final result string if recovery was successful, or `null` if it failed.
    */
   private async executeFinalWarningTurn(
-    chat: GeminiChat,
+    chat: ChatSession,
     tools: FunctionDeclaration[],
     turnCounter: number,
     reason:
@@ -554,7 +554,7 @@ export class AgentExecutor<TOutput extends z.ZodTypeAny> {
    * @returns The model's response, including any tool calls or text.
    */
   private async callModel(
-    chat: GeminiChat,
+    chat: ChatSession,
     message: Content,
     tools: FunctionDeclaration[],
     signal: AbortSignal,
@@ -586,7 +586,7 @@ export class AgentExecutor<TOutput extends z.ZodTypeAny> {
 
         // Extract and emit any subject "thought" content from the model.
         const { subject } = parseThought(
-          parts?.find((p) => p.thought)?.text || '',
+          (parts?.find((p: Part) => p.thought)?.text as string) || '',
         );
         if (subject) {
           this.emitActivity('THOUGHT_CHUNK', { text: subject });
@@ -600,8 +600,8 @@ export class AgentExecutor<TOutput extends z.ZodTypeAny> {
         // Handle text response (non-thought text)
         const text =
           parts
-            ?.filter((p) => !p.thought && p.text)
-            .map((p) => p.text)
+            ?.filter((p: Part) => !p.thought && !!p.text)
+            .map((p: Part) => String(p.text))
             .join('') || '';
 
         if (text) {
@@ -613,7 +613,7 @@ export class AgentExecutor<TOutput extends z.ZodTypeAny> {
     return { functionCalls, textResponse };
   }
 
-  /** Initializes a `GeminiChat` instance for the agent run. */
+  /** Initializes a chat session instance for the agent run. */
   private async createChatObject(inputs: AgentInputs): Promise<ChatSession> {
     const { promptConfig, modelConfig } = this.definition;
 

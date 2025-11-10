@@ -16,7 +16,7 @@ import type {
  * If verbose is true, includes summary representations of non-text parts.
  */
 export function partToString(
-  value: PartListUnion,
+  value: PartListUnion | PartUnion,
   options?: { verbose?: boolean },
 ): string {
   if (!value) {
@@ -61,7 +61,7 @@ export function partToString(
     if (part.functionResponse !== undefined) {
       return `[Function Response: ${part.functionResponse.name}]`;
     }
-    if (part.inlineData !== undefined) {
+    if (part.inlineData != null) {
       return `<${part.inlineData.mimeType}>`;
     }
   }

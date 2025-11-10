@@ -11,7 +11,7 @@ import { makeRelative, shortenPath } from '../utils/paths.js';
 import type { ToolInvocation, ToolLocation, ToolResult } from './tools.js';
 import { BaseDeclarativeTool, BaseToolInvocation, Kind } from './tools.js';
 
-import type { PartUnion } from '../llm/types.js';
+import type { PartListUnion } from '../llm/types.js';
 import {
   processSingleFileContent,
   getSpecificMimeType,
@@ -80,7 +80,10 @@ class ReadFileToolInvocation extends BaseToolInvocation<
 
     if (result.error) {
       return {
-        llmContent: result.llmContent,
+        llmContent:
+          typeof result.llmContent === 'string'
+            ? result.llmContent
+            : [result.llmContent],
         returnDisplay: result.returnDisplay || 'Error reading file',
         error: {
           message: result.error,
@@ -89,7 +92,7 @@ class ReadFileToolInvocation extends BaseToolInvocation<
       };
     }
 
-    let llmContent: PartUnion;
+    let llmContent: PartListUnion;
     if (result.isTruncated) {
       const [start, end] = result.linesShown!;
       const total = result.originalLineCount!;
@@ -104,7 +107,10 @@ Action: To read more of the file, you can use the 'offset' and 'limit' parameter
 --- FILE CONTENT (truncated) ---
 ${result.llmContent}`;
     } else {
-      llmContent = result.llmContent || '';
+      llmContent =
+        typeof result.llmContent === 'string'
+          ? result.llmContent
+          : [result.llmContent];
     }
 
     const lines =

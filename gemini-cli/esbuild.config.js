@@ -94,6 +94,10 @@ const codinglmConfig = {
     ),
     '@codinglm/core': path.resolve(__dirname, 'packages/core/index.ts'),
     '@codinglm/core/llm': path.resolve(__dirname, 'packages/core/src/llm'),
+    '@google/genai': path.resolve(
+      __dirname,
+      'packages/core/src/shim/genai.ts',
+    ),
   },
   metafile: true,
 };
@@ -109,6 +113,13 @@ const a2aServerConfig = {
     'process.env.CLI_VERSION': JSON.stringify(pkg.version),
   },
   plugins: createWasmPlugins(),
+  alias: {
+    '@google/genai': path.resolve(
+      __dirname,
+      'packages/core/src/shim/genai.ts',
+    ),
+    '@codinglm/core': path.resolve(__dirname, 'packages/core/index.ts'),
+  },
 };
 
 Promise.allSettled([

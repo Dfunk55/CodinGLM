@@ -29,9 +29,6 @@ export Z_AI_API_KEY="your-secret-key"
 ### Quick install
 
 ```bash
-# Run once without installing
-npx https://github.com/dustinpainter/CodinGLM
-
 # Install globally
 npm install -g @codinglm/cli
 ```
@@ -46,35 +43,7 @@ codinglm
 
 See [Releases](./docs/releases.md) for more details.
 
-### Preview
-
-New preview releases will be published each week at UTC 2359 on Tuesdays. These
-releases will not have been fully vetted and may contain regressions or other
-outstanding issues. Please help us test and install with `preview` tag.
-
-```bash
-npm install -g @google/gemini-cli@preview
-```
-
-### Stable
-
-- New stable releases will be published each week at UTC 2000 on Tuesdays, this
-  will be the full promotion of last week's `preview` release + any bug fixes
-  and validations. Use `latest` tag.
-
-```bash
-npm install -g @google/gemini-cli@latest
-```
-
-### Nightly
-
-- New releases will be published each week at UTC 0000 each day, This will be
-  all changes from the main branch as represented at time of release. It should
-  be assumed there are pending validations and issues. Use `nightly` tag.
-
-```bash
-npm install -g @google/gemini-cli@nightly
-```
+We publish tagged builds for CodinGLM. Use `npm info @codinglm/cli` to view available versions.
 
 ## 📋 Key Features
 
@@ -94,16 +63,13 @@ npm install -g @google/gemini-cli@nightly
 
 ### Advanced Capabilities
 
-- Ground your queries with built-in
-  [Google Search](https://ai.google.dev/gemini-api/docs/grounding) for real-time
-  information
+- Optional web search grounding via MCP integrations
 - Conversation checkpointing to save and resume complex sessions
 - Custom context files (GEMINI.md) to tailor behavior for your projects
 
 ### GitHub Integration
 
-Integrate Gemini CLI directly into your GitHub workflows with
-[**Gemini CLI GitHub Action**](https://github.com/google-github-actions/run-gemini-cli):
+Integrate CodinGLM into CI/CD workflows or Actions for automated reviews and summaries.
 
 - **Pull Request Reviews**: Automated code review with contextual feedback and
   suggestions
@@ -114,73 +80,13 @@ Integrate Gemini CLI directly into your GitHub workflows with
 - **Custom Workflows**: Build automated, scheduled and on-demand workflows
   tailored to your team's needs
 
-## 🔐 Authentication Options
+## 🔐 Authentication
 
-Choose the authentication method that best fits your needs:
-
-### Option 1: Login with Google (OAuth login using your Google Account)
-
-**✨ Best for:** Individual developers as well as anyone who has a Gemini Code
-Assist License. (see
-[quota limits and terms of service](https://cloud.google.com/gemini/docs/quotas)
-for details)
-
-**Benefits:**
-
-- **Free tier**: 60 requests/min and 1,000 requests/day
-- **Gemini 2.5 Pro** with 1M token context window
-- **No API key management** - just sign in with your Google account
-- **Automatic updates** to latest models
-
-#### Start Gemini CLI, then choose _Login with Google_ and follow the browser authentication flow when prompted
+CodinGLM uses Zhipu AI’s GLM APIs. Set your API key:
 
 ```bash
-gemini
+export Z_AI_API_KEY="your-secret-key"
 ```
-
-#### If you are using a paid Code Assist License from your organization, remember to set the Google Cloud Project
-
-```bash
-# Set your Google Cloud Project
-export GOOGLE_CLOUD_PROJECT="YOUR_PROJECT_ID"
-gemini
-```
-
-### Option 2: Gemini API Key
-
-**✨ Best for:** Developers who need specific model control or paid tier access
-
-**Benefits:**
-
-- **Free tier**: 100 requests/day with Gemini 2.5 Pro
-- **Model selection**: Choose specific Gemini models
-- **Usage-based billing**: Upgrade for higher limits when needed
-
-```bash
-# Get your key from https://aistudio.google.com/apikey
-export GEMINI_API_KEY="YOUR_API_KEY"
-gemini
-```
-
-### Option 3: Vertex AI
-
-**✨ Best for:** Enterprise teams and production workloads
-
-**Benefits:**
-
-- **Enterprise features**: Advanced security and compliance
-- **Scalable**: Higher rate limits with billing account
-- **Integration**: Works with existing Google Cloud infrastructure
-
-```bash
-# Get your key from Google Cloud Console
-export GOOGLE_API_KEY="YOUR_API_KEY"
-export GOOGLE_GENAI_USE_VERTEXAI=true
-gemini
-```
-
-For Google Workspace accounts and other authentication methods, see the
-[authentication guide](./docs/get-started/authentication.md).
 
 ## 🚀 Getting Started
 
@@ -189,19 +95,19 @@ For Google Workspace accounts and other authentication methods, see the
 #### Start in current directory
 
 ```bash
-gemini
+codinglm
 ```
 
 #### Include multiple directories
 
 ```bash
-gemini --include-directories ../lib,../docs
+codinglm --include-directories ../lib,../docs
 ```
 
 #### Use specific model
 
 ```bash
-gemini -m gemini-2.5-flash
+codinglm -m glm-4.6
 ```
 
 #### Non-interactive mode for scripts
@@ -209,14 +115,14 @@ gemini -m gemini-2.5-flash
 Get a simple text response:
 
 ```bash
-gemini -p "Explain the architecture of this codebase"
+codinglm -p "Explain the architecture of this codebase"
 ```
 
 For more advanced scripting, including how to parse JSON and handle errors, use
 the `--output-format json` flag to get structured output:
 
 ```bash
-gemini -p "Explain the architecture of this codebase" --output-format json
+codinglm -p "Explain the architecture of this codebase" --output-format json
 ```
 
 For real-time event streaming (useful for monitoring long-running operations),

@@ -610,7 +610,7 @@ export class Config {
       authMethod === AuthType.LOGIN_WITH_GOOGLE
     ) {
       // Restore the conversation history to the new client
-      this.geminiClient.stripThoughtsFromHistory();
+      this.llmClient.stripThoughtsFromHistory();
     }
 
     const newContentGeneratorConfig = await createContentGeneratorConfig(
@@ -899,10 +899,6 @@ export class Config {
     return this.telemetrySettings.useCollector ?? false;
   }
 
-  getLlmClient(): LlmClient {
-    return this.llmClient;
-  }
-  // Temporary alias during Phase 3 migration; to be removed once all callers use getLlmClient
   getLlmClient(): LlmClient {
     return this.llmClient;
   }

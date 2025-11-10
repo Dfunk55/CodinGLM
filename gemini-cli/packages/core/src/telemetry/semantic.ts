@@ -48,11 +48,13 @@ function toContent(content: ContentUnion): Content | undefined {
   if (typeof content === 'string') {
     // 1. It's a string
     return {
+      role: 'user',
       parts: [toPart(content)],
     };
   } else if (Array.isArray(content)) {
     // 2. It's an array of parts (PartUnion[])
     return {
+      role: 'user',
       parts: content.map(toPart),
     };
   } else if ('parts' in content) {
@@ -61,6 +63,7 @@ function toContent(content: ContentUnion): Content | undefined {
   } else if (isPart(content)) {
     // 4. It's a single Part object (asserted with type guard)
     return {
+      role: 'user',
       parts: [content],
     };
   } else {
@@ -70,11 +73,16 @@ function toContent(content: ContentUnion): Content | undefined {
 }
 
 export function toSystemInstruction(
-  systemInstruction?: ContentUnion,
+  systemInstruction?: ContentUnion | Part,
 ): SystemInstruction | undefined {
   const parts: AnyPart[] = [];
   if (systemInstruction) {
-    const content = toContent(systemInstruction);
+    let content: Content | undefined;
+    if (isPart(systemInstruction)) {
+      content = { role: 'system', parts: [systemInstruction] } as Content;
+    } else {
+      content = toContent(systemInstruction as ContentUnion);
+    }
     if (content && content.parts) {
       for (const part of content.parts) {
         parts.push(toOTelPart(part));

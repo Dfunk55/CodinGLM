@@ -17,6 +17,7 @@ import type {
   PartUnion,
   ToolListUnion,
   ToolConfig,
+  SafetySetting,
 } from '../llm/types.js';
 import { GenerateContentResponse } from '../llm/types.js';
 
@@ -143,7 +144,10 @@ function toVertexGenerateContentRequest(
   return {
     contents: toContents(req.contents),
     systemInstruction: maybeToContent(req.config?.systemInstruction),
-    cachedContent: req.config?.cachedContent,
+    cachedContent:
+      typeof req.config?.cachedContent === 'string'
+        ? (req.config?.cachedContent as string)
+        : undefined,
     tools: req.config?.tools,
     toolConfig: req.config?.toolConfig,
     labels: req.config?.labels,
@@ -156,20 +160,22 @@ function toVertexGenerateContentRequest(
 export function toContents(contents: ContentListUnion): Content[] {
   if (Array.isArray(contents)) {
     // it's a Content[] or a PartsUnion[]
-    return contents.map(toContent);
+    return (contents as (ContentUnion | Part)[]).map((c) => toContent(c));
   }
   // it's a Content or a PartsUnion
-  return [toContent(contents)];
+  return [toContent(contents as ContentUnion)];
 }
 
-function maybeToContent(content?: ContentUnion): Content | undefined {
+function maybeToContent(
+  content?: ContentUnion | Part,
+): Content | undefined {
   if (!content) {
     return undefined;
   }
   return toContent(content);
 }
 
-function toContent(content: ContentUnion): Content {
+function toContent(content: ContentUnion | Part): Content {
   if (Array.isArray(content)) {
     // it's a PartsUnion[]
     return {
@@ -184,12 +190,12 @@ function toContent(content: ContentUnion): Content {
       parts: [{ text: content }],
     };
   }
-  if ('parts' in content) {
+  if ('parts' in (content as Content)) {
     // it's a Content - process parts to handle thought filtering
     return {
-      ...content,
-      parts: content.parts
-        ? toParts(content.parts.filter((p) => p != null))
+      ...(content as Content),
+      parts: (content as Content).parts
+        ? toParts((content as Content).parts.filter((p) => p != null))
         : [],
     };
   }
