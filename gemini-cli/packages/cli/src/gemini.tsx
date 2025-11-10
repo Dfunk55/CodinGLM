@@ -32,7 +32,7 @@ import {
   runExitCleanup,
 } from './utils/cleanup.js';
 import { getCliVersion } from './utils/version.js';
-import { type Config } from '@google/gemini-cli-core';
+import { type Config } from '@codinglm/core';
 import {
   sessionId,
   logUserPrompt,
@@ -41,7 +41,7 @@ import {
   UserPromptEvent,
   debugLogger,
   recordSlowRender,
-} from '@google/gemini-cli-core';
+} from '@codinglm/core';
 import {
   initializeApp,
   type InitializationResult,
@@ -476,7 +476,7 @@ export async function main() {
     }
     if (!input) {
       debugLogger.error(
-        `No input provided via stdin. Input can be provided by piping data into gemini or using the --prompt option.`,
+        `No input provided via stdin. Provide input by piping into codinglm or by using the --prompt option.`,
       );
       process.exit(1);
     }

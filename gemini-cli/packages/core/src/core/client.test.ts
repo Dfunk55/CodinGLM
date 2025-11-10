@@ -14,7 +14,7 @@ import {
   type Mock,
 } from 'vitest';
 
-import type { Content, GenerateContentResponse, Part } from '@google/genai';
+import type { Content, GenerateContentResponse, Part } from '../llm/types.js';
 import {
   isThinkingDefault,
   isThinkingSupported,

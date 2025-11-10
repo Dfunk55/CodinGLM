@@ -12,7 +12,7 @@ import type {
   FunctionDeclaration,
   FinishReason,
   GenerateContentResponseUsageMetadata,
-} from '@google/genai';
+} from '../llm/types.js';
 import type {
   ToolCallConfirmationDetails,
   ToolResult,
@@ -29,7 +29,7 @@ import {
 import type { GeminiChat } from './geminiChat.js';
 import { InvalidStreamError } from './geminiChat.js';
 import { parseThought, type ThoughtSummary } from '../utils/thoughtUtils.js';
-import { createUserContent } from '@google/genai';
+import { createUserContent } from '../llm/helpers.js';
 
 // Define a structure for tools passed to the server
 export interface ServerTool {

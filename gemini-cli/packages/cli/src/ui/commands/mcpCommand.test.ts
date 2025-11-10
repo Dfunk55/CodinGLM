@@ -15,8 +15,8 @@ import {
   DiscoveredMCPTool,
 } from '@google/gemini-cli-core';
 
-import type { CallableTool } from '@google/genai';
-import { Type } from '@google/genai';
+import type { CallableTool } from '@codinglm/core';
+import { Type } from '@codinglm/core/llm/schema';
 import { MessageType } from '../types.js';
 
 vi.mock('@google/gemini-cli-core', async (importOriginal) => {

@@ -15,7 +15,7 @@ import {
   type Mock,
 } from 'vitest';
 import { AuthDialog } from './AuthDialog.js';
-import { AuthType, type Config } from '@google/gemini-cli-core';
+import { AuthType, type Config } from '@codinglm/core';
 import type { LoadedSettings } from '../../config/settings.js';
 import { SettingScope } from '../../config/settings.js';
 import { AuthState } from '../types.js';
@@ -23,11 +23,11 @@ import { RadioButtonSelect } from '../components/shared/RadioButtonSelect.js';
 import { useKeypress } from '../hooks/useKeypress.js';
 import { validateAuthMethodWithSettings } from './useAuth.js';
 import { runExitCleanup } from '../../utils/cleanup.js';
-import { clearCachedCredentialFile } from '@google/gemini-cli-core';
+import { clearCachedCredentialFile } from '@codinglm/core';
 import { Text } from 'ink';
 
 // Mocks
-vi.mock('@google/gemini-cli-core', async (importOriginal) => {
+vi.mock('@codinglm/core', async (importOriginal) => {
   const actual =
     await importOriginal<typeof import('@google/gemini-cli-core')>();
   return {
@@ -210,7 +210,7 @@ describe('AuthDialog', () => {
 
       expect(mockedRunExitCleanup).toHaveBeenCalled();
       expect(logSpy).toHaveBeenCalledWith(
-        expect.stringContaining('Please restart CodinGLM'),
+        expect.stringContaining('Please restart CodingGLM'),
       );
       expect(exitSpy).toHaveBeenCalledWith(0);
 

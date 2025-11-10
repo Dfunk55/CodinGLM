@@ -28,7 +28,7 @@ import {
   runInDevTraceSpan,
 } from '../index.js';
 import { READ_FILE_TOOL_NAME, SHELL_TOOL_NAME } from '../tools/tool-names.js';
-import type { Part, PartListUnion } from '@google/genai';
+import type { Part, PartListUnion } from '../llm/types.js';
 import { getResponseTextFromParts } from '../utils/generateContentResponseUtilities.js';
 import type { ModifyContext } from '../tools/modifiable-tool.js';
 import {

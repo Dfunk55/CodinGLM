@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import type { FunctionDeclaration, PartListUnion } from '@google/genai';
+import type { FunctionDeclaration, PartListUnion } from '../llm/types.js';
 import { ToolErrorType } from './tool-error.js';
 import type { DiffUpdateResult } from '../ide/ide-client.js';
 import type { ShellExecutionConfig } from '../services/shellExecutionService.js';

@@ -73,27 +73,29 @@ const baseConfig = {
   write: true,
 };
 
-const cliConfig = {
+// Removed Gemini CLI bundle; CodinGLM bundles only codinglm.
+
+const codinglmConfig = {
   ...baseConfig,
   banner: {
     js: `import { createRequire } from 'module'; const require = createRequire(import.meta.url); globalThis.__filename = require('url').fileURLToPath(import.meta.url); globalThis.__dirname = require('path').dirname(globalThis.__filename);`,
   },
-  entryPoints: ['packages/cli/index.ts'],
-  outfile: 'bundle/gemini.js',
+  entryPoints: ['packages/cli/index-codinglm.ts'],
+  outfile: 'bundle/codinglm.js',
   define: {
     'process.env.CLI_VERSION': JSON.stringify(pkg.version),
   },
   plugins: createWasmPlugins(),
   alias: {
     'is-in-ci': path.resolve(__dirname, 'packages/cli/src/patches/is-in-ci.ts'),
+    '@google/gemini-cli-core': path.resolve(
+      __dirname,
+      'packages/core/index.ts',
+    ),
+    '@codinglm/core': path.resolve(__dirname, 'packages/core/index.ts'),
+    '@codinglm/core/llm': path.resolve(__dirname, 'packages/core/src/llm'),
   },
   metafile: true,
-};
-
-const codinglmConfig = {
-  ...cliConfig,
-  entryPoints: ['packages/cli/index-codinglm.ts'],
-  outfile: 'bundle/codinglm.js',
 };
 
 const a2aServerConfig = {
@@ -110,11 +112,6 @@ const a2aServerConfig = {
 };
 
 Promise.allSettled([
-  esbuild.build(cliConfig).then(({ metafile }) => {
-    if (process.env.DEV === 'true') {
-      writeFileSync('./bundle/esbuild.json', JSON.stringify(metafile, null, 2));
-    }
-  }),
   esbuild.build(codinglmConfig).then(({ metafile }) => {
     if (process.env.DEV === 'true') {
       writeFileSync(
@@ -125,11 +122,7 @@ Promise.allSettled([
   }),
   esbuild.build(a2aServerConfig),
 ]).then((results) => {
-  const [cliResult, codinglmResult, a2aResult] = results;
-  if (cliResult.status === 'rejected') {
-    console.error('gemini.js build failed:', cliResult.reason);
-    process.exit(1);
-  }
+  const [codinglmResult, a2aResult] = results;
   if (codinglmResult.status === 'rejected') {
     console.error('codinglm.js build failed:', codinglmResult.reason);
     process.exit(1);

@@ -4,8 +4,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import type { AuthType, Config } from '@google/gemini-cli-core';
-import { debugLogger, OutputFormat } from '@google/gemini-cli-core';
+import type { AuthType, Config } from '@codinglm/core';
+import { debugLogger, OutputFormat } from '@codinglm/core';
 import { USER_SETTINGS_PATH } from './config/settings.js';
 import {
   validateAuthMethod,
@@ -13,6 +13,8 @@ import {
 } from './config/auth.js';
 import { type LoadedSettings } from './config/settings.js';
 import { handleError } from './utils/errors.js';
+
+const isCodinGLM = () => process.env['CODINGLM'] === '1';
 
 export async function validateNonInteractiveAuth(
   configuredAuthType: AuthType | undefined,
@@ -33,7 +35,9 @@ export async function validateNonInteractiveAuth(
     }
 
     if (!effectiveAuthType) {
-      const message = `Please set an auth method in your ${USER_SETTINGS_PATH} or specify one of the following environment variables before running: Z_AI_API_KEY, GEMINI_API_KEY, GOOGLE_GENAI_USE_VERTEXAI, GOOGLE_GENAI_USE_GCA`;
+      const message = isCodinGLM()
+        ? `Please set an auth method in your ${USER_SETTINGS_PATH} or specify Z_AI_API_KEY before running.`
+        : `Please set an auth method in your ${USER_SETTINGS_PATH} or specify one of the following environment variables before running: Z_AI_API_KEY, GEMINI_API_KEY, GOOGLE_GENAI_USE_VERTEXAI, GOOGLE_GENAI_USE_GCA`;
       throw new Error(message);
     }
 

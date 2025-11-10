@@ -10,6 +10,8 @@ import { CodinGLMPrivacyNotice } from './CodinGLMPrivacyNotice.js';
 import { CloudPaidPrivacyNotice } from './CloudPaidPrivacyNotice.js';
 import { CloudFreePrivacyNotice } from './CloudFreePrivacyNotice.js';
 
+const isCodinGLM = () => process.env['CODINGLM'] === '1';
+
 interface PrivacyNoticeProps {
   onExit: () => void;
   config: Config;
@@ -23,6 +25,10 @@ const PrivacyNoticeText = ({
   onExit: () => void;
 }) => {
   const authType = config.getContentGeneratorConfig()?.authType;
+
+  if (isCodinGLM() || authType === AuthType.USE_Z_AI) {
+    return <CodinGLMPrivacyNotice onExit={onExit} />;
+  }
 
   switch (authType) {
     case AuthType.USE_GEMINI:

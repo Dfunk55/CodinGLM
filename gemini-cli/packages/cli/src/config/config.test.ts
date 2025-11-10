@@ -16,10 +16,10 @@ import {
   WRITE_FILE_TOOL_NAME,
   EDIT_TOOL_NAME,
   type ExtensionLoader,
-} from '@google/gemini-cli-core';
+} from '@codinglm/core';
 import { loadCliConfig, parseArguments, type CliArgs } from './config.js';
 import type { Settings } from './settings.js';
-import * as ServerConfig from '@google/gemini-cli-core';
+import * as ServerConfig from '@codinglm/core';
 import { isWorkspaceTrusted } from './trustedFolders.js';
 import { ExtensionManager } from './extension-manager.js';
 
@@ -83,9 +83,9 @@ vi.mock('read-package-up', () => ({
   ),
 }));
 
-vi.mock('@google/gemini-cli-core', async () => {
+vi.mock('@codinglm/core', async () => {
   const actualServer = await vi.importActual<typeof ServerConfig>(
-    '@google/gemini-cli-core',
+    '@codinglm/core',
   );
   return {
     ...actualServer,

@@ -15,7 +15,9 @@ describe('DefaultStrategy', () => {
   it('should always route to the default Gemini model', async () => {
     const strategy = new DefaultStrategy();
     const mockContext = {} as RoutingContext;
-    const mockConfig = {} as Config;
+    const mockConfig = {
+      getModel: () => DEFAULT_GEMINI_MODEL,
+    } as unknown as Config;
     const mockClient = {} as BaseLlmClient;
 
     const decision = await strategy.route(mockContext, mockConfig, mockClient);
@@ -25,7 +27,7 @@ describe('DefaultStrategy', () => {
       metadata: {
         source: 'default',
         latencyMs: 0,
-        reasoning: `Routing to default model: ${DEFAULT_GEMINI_MODEL}`,
+        reasoning: `Routing to configured model: ${DEFAULT_GEMINI_MODEL}`,
       },
     });
   });

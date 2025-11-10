@@ -5,7 +5,7 @@
  */
 
 import type { CommandContext } from '../../ui/commands/types.js';
-import type { PartUnion } from '@google/genai';
+import type { PartUnion } from '@codinglm/core/llm/types';
 
 /**
  * Defines the input/output type for prompt processors.

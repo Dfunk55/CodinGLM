@@ -8,7 +8,7 @@ import { describe, expect, it, beforeEach, afterEach, vi } from 'vitest';
 import type {
   GenerateContentParameters,
   GenerateContentResponse,
-} from '@google/genai';
+} from '../llm/types.js';
 import { ZaiContentGenerator } from './zaiContentGenerator.js';
 
 function createRequest(): GenerateContentParameters {
@@ -85,7 +85,7 @@ describe('ZaiContentGenerator', () => {
     const response = await generator.generateContent(request, promptId);
 
     expect(fetchMock).toHaveBeenCalledWith(
-      'https://api.z.ai/api/paas/v4/chat/completions',
+      'https://api.z.ai/api/coding/paas/v4/chat/completions',
       expect.objectContaining({
         method: 'POST',
       }),

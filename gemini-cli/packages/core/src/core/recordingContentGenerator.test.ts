@@ -11,8 +11,7 @@ import type {
   GenerateContentParameters,
   CountTokensParameters,
   EmbedContentParameters,
-  ContentEmbedding,
-} from '@google/genai';
+} from '../llm/types.js';
 import { appendFileSync } from 'node:fs';
 import { describe, it, expect, vi, beforeEach, type Mock } from 'vitest';
 import { safeJsonStringify } from '../utils/safeJsonStringify.js';

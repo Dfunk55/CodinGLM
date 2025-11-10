@@ -17,7 +17,12 @@ import {
   Kind,
   ToolConfirmationOutcome,
 } from './tools.js';
-import type { CallableTool, FunctionCall, Part } from '@google/genai';
+import type { FunctionCall, Part } from '../llm/types.js';
+// Minimal CallableTool shape used by DiscoveredMCPTool
+export interface CallableTool {
+  tool(): Promise<{ functionDeclarations?: Array<{ name?: string; description?: string; parametersJsonSchema?: unknown }> }>;
+  callTool(functionCalls: FunctionCall[]): Promise<Part[]>;
+}
 import { ToolErrorType } from './tool-error.js';
 import type { Config } from '../config/config.js';
 import type { MessageBus } from '../confirmation-bus/message-bus.js';

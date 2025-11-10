@@ -9,7 +9,7 @@ import type {
   Content,
   GenerateContentConfig,
   GenerateContentResponseUsageMetadata,
-} from '@google/genai';
+} from '../llm/types.js';
 import type { Config } from '../config/config.js';
 import type { ApprovalMode } from '../policy/types.js';
 

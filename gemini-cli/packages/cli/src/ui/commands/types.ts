@@ -5,7 +5,7 @@
  */
 
 import type { ReactNode } from 'react';
-import type { Content, PartListUnion } from '@google/genai';
+import type { Content, PartListUnion } from '@codinglm/core/llm/types';
 import type {
   HistoryItemWithoutId,
   HistoryItem,

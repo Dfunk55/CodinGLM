@@ -11,7 +11,7 @@ import { makeRelative, shortenPath } from '../utils/paths.js';
 import type { ToolInvocation, ToolLocation, ToolResult } from './tools.js';
 import { BaseDeclarativeTool, BaseToolInvocation, Kind } from './tools.js';
 
-import type { PartUnion } from '@google/genai';
+import type { PartUnion } from '../llm/types.js';
 import {
   processSingleFileContent,
   getSpecificMimeType,

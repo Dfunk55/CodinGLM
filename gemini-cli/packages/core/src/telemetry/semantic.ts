@@ -11,14 +11,14 @@
  * @see https://github.com/open-telemetry/semantic-conventions/blob/8b4f210f43136e57c1f6f47292eb6d38e3bf30bb/docs/gen-ai/gen-ai-events.md
  */
 
-import { FinishReason } from '@google/genai';
+import { FinishReason } from '../llm/types.js';
 import type {
   Candidate,
   Content,
   ContentUnion,
   Part,
   PartUnion,
-} from '@google/genai';
+} from '../llm/types.js';
 
 export function toInputMessages(contents: Content[]): InputMessages {
   const messages: ChatMessage[] = [];

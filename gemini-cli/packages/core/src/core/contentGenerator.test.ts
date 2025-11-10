@@ -11,19 +11,11 @@ import {
   AuthType,
   createContentGeneratorConfig,
 } from './contentGenerator.js';
-import { createCodeAssistContentGenerator } from '../code_assist/codeAssist.js';
-import { GoogleGenAI } from '@google/genai';
 import type { Config } from '../config/config.js';
 import { LoggingContentGenerator } from './loggingContentGenerator.js';
-import { loadApiKey } from './apiKeyCredentialStorage.js';
 import { FakeContentGenerator } from './fakeContentGenerator.js';
 import { RecordingContentGenerator } from './recordingContentGenerator.js';
-
-vi.mock('../code_assist/codeAssist.js');
-vi.mock('@google/genai');
-vi.mock('./apiKeyCredentialStorage.js', () => ({
-  loadApiKey: vi.fn(),
-}));
+import { ZaiContentGenerator } from './zaiContentGenerator.js';
 
 vi.mock('./fakeContentGenerator.js');
 
@@ -41,7 +33,7 @@ describe('createContentGenerator', () => {
     } as unknown as Config;
     const generator = await createContentGenerator(
       {
-        authType: AuthType.USE_GEMINI,
+        authType: AuthType.USE_Z_AI,
       },
       mockConfigWithFake,
     );
@@ -60,107 +52,66 @@ describe('createContentGenerator', () => {
     } as unknown as Config;
     const generator = await createContentGenerator(
       {
-        authType: AuthType.USE_GEMINI,
+        authType: AuthType.USE_Z_AI,
       },
       mockConfigWithRecordResponses,
     );
     expect(generator).toBeInstanceOf(RecordingContentGenerator);
   });
 
-  it('should create a CodeAssistContentGenerator', async () => {
-    const mockGenerator = {} as unknown as ContentGenerator;
-    vi.mocked(createCodeAssistContentGenerator).mockResolvedValue(
-      mockGenerator as never,
-    );
-    const generator = await createContentGenerator(
-      {
-        authType: AuthType.LOGIN_WITH_GOOGLE,
-      },
-      mockConfig,
-    );
-    expect(createCodeAssistContentGenerator).toHaveBeenCalled();
-    expect(generator).toEqual(
-      new LoggingContentGenerator(mockGenerator, mockConfig),
-    );
-  });
-
-  it('should create a GoogleGenAI content generator', async () => {
+  it('should create a ZaiContentGenerator wrapped in LoggingContentGenerator', async () => {
     const mockConfig = {
       getUsageStatisticsEnabled: () => true,
     } as unknown as Config;
-
-    const mockGenerator = {
-      models: {},
-    } as unknown as GoogleGenAI;
-    vi.mocked(GoogleGenAI).mockImplementation(() => mockGenerator as never);
     const generator = await createContentGenerator(
       {
         apiKey: 'test-api-key',
-        authType: AuthType.USE_GEMINI,
+        authType: AuthType.USE_Z_AI,
       },
       mockConfig,
     );
-    expect(GoogleGenAI).toHaveBeenCalledWith({
-      apiKey: 'test-api-key',
-      vertexai: undefined,
-      httpOptions: {
-        headers: {
-          'User-Agent': expect.any(String),
-          'x-gemini-api-privileged-user-id': expect.any(String),
+    expect(generator).toBeInstanceOf(LoggingContentGenerator);
+    expect((generator as LoggingContentGenerator).getWrapped()).toBeInstanceOf(
+      ZaiContentGenerator,
+    );
+  });
+});
+
+describe('CodinGLM enforcement', () => {
+  afterEach(() => {
+    vi.unstubAllEnvs();
+  });
+
+  it('throws in createContentGenerator when non Z.AI auth is used while CODINGLM is set', async () => {
+    vi.stubEnv('CODINGLM', '1');
+    await expect(
+      createContentGenerator(
+        {
+          authType: AuthType.USE_GEMINI,
         },
-      },
-    });
-    expect(generator).toEqual(
-      new LoggingContentGenerator(
-        (mockGenerator as GoogleGenAI).models,
         mockConfig,
       ),
+    ).rejects.toThrow(
+      'CodinGLM CLI only supports the Z.AI GLM API key authentication method.',
     );
   });
 
-  it('should create a GoogleGenAI content generator with client install id logging disabled', async () => {
-    const mockConfig = {
-      getUsageStatisticsEnabled: () => false,
-    } as unknown as Config;
-    const mockGenerator = {
-      models: {},
-    } as unknown as GoogleGenAI;
-    vi.mocked(GoogleGenAI).mockImplementation(() => mockGenerator as never);
-    const generator = await createContentGenerator(
-      {
-        apiKey: 'test-api-key',
-        authType: AuthType.USE_GEMINI,
-      },
-      mockConfig,
-    );
-    expect(GoogleGenAI).toHaveBeenCalledWith({
-      apiKey: 'test-api-key',
-      vertexai: undefined,
-      httpOptions: {
-        headers: {
-          'User-Agent': expect.any(String),
-        },
-      },
-    });
-    expect(generator).toEqual(
-      new LoggingContentGenerator(
-        (mockGenerator as GoogleGenAI).models,
-        mockConfig,
-      ),
+  it('throws in createContentGeneratorConfig when non Z.AI auth is requested while CODINGLM is set', async () => {
+    vi.stubEnv('CODINGLM', '1');
+    await expect(
+      createContentGeneratorConfig(mockConfig as Config, AuthType.USE_GEMINI),
+    ).rejects.toThrow(
+      'CodinGLM CLI only supports the Z.AI GLM API key authentication method.',
     );
   });
 });
 
 describe('createContentGeneratorConfig', () => {
   const mockConfig = {
-    getModel: vi.fn().mockReturnValue('gemini-pro'),
-    setModel: vi.fn(),
-    flashFallbackHandler: vi.fn(),
     getProxy: vi.fn(),
   } as unknown as Config;
 
   beforeEach(() => {
-    // Reset modules to re-evaluate imports and environment variables
     vi.resetModules();
     vi.clearAllMocks();
   });
@@ -169,68 +120,32 @@ describe('createContentGeneratorConfig', () => {
     vi.unstubAllEnvs();
   });
 
-  it('should configure for Gemini using GEMINI_API_KEY when set', async () => {
-    vi.stubEnv('GEMINI_API_KEY', 'env-gemini-key');
+  it('should configure for Z.AI using Z_AI_API_KEY when set', async () => {
+    vi.stubEnv('Z_AI_API_KEY', 'env-zai-key');
     const config = await createContentGeneratorConfig(
       mockConfig,
-      AuthType.USE_GEMINI,
+      AuthType.USE_Z_AI,
     );
-    expect(config.apiKey).toBe('env-gemini-key');
+    expect(config.apiKey).toBe('env-zai-key');
     expect(config.vertexai).toBe(false);
   });
 
-  it('should not configure for Gemini if GEMINI_API_KEY is empty', async () => {
-    vi.stubEnv('GEMINI_API_KEY', '');
+  it('should include baseUrl and organization when provided', async () => {
+    vi.stubEnv('Z_AI_API_KEY', 'env-zai-key');
+    vi.stubEnv('Z_AI_BASE_URL', 'https://api.z.ai/api/coding/paas/v4');
+    vi.stubEnv('Z_AI_ORGANIZATION', 'org-123');
     const config = await createContentGeneratorConfig(
       mockConfig,
-      AuthType.USE_GEMINI,
+      AuthType.USE_Z_AI,
     );
-    expect(config.apiKey).toBeUndefined();
-    expect(config.vertexai).toBeUndefined();
+    expect(config.baseUrl).toBe('https://api.z.ai/api/coding/paas/v4');
+    expect(config.organization).toBe('org-123');
   });
 
-  it('should not configure for Gemini if GEMINI_API_KEY is not set and storage is empty', async () => {
-    vi.stubEnv('GEMINI_API_KEY', '');
-    vi.mocked(loadApiKey).mockResolvedValue(null);
-    const config = await createContentGeneratorConfig(
-      mockConfig,
-      AuthType.USE_GEMINI,
-    );
-    expect(config.apiKey).toBeUndefined();
-    expect(config.vertexai).toBeUndefined();
-  });
-
-  it('should configure for Vertex AI using GOOGLE_API_KEY when set', async () => {
-    vi.stubEnv('GOOGLE_API_KEY', 'env-google-key');
-    const config = await createContentGeneratorConfig(
-      mockConfig,
-      AuthType.USE_VERTEX_AI,
-    );
-    expect(config.apiKey).toBe('env-google-key');
-    expect(config.vertexai).toBe(true);
-  });
-
-  it('should configure for Vertex AI using GCP project and location when set', async () => {
-    vi.stubEnv('GOOGLE_API_KEY', undefined);
-    vi.stubEnv('GOOGLE_CLOUD_PROJECT', 'env-gcp-project');
-    vi.stubEnv('GOOGLE_CLOUD_LOCATION', 'env-gcp-location');
-    const config = await createContentGeneratorConfig(
-      mockConfig,
-      AuthType.USE_VERTEX_AI,
-    );
-    expect(config.vertexai).toBe(true);
-    expect(config.apiKey).toBeUndefined();
-  });
-
-  it('should not configure for Vertex AI if required env vars are empty', async () => {
-    vi.stubEnv('GOOGLE_API_KEY', '');
-    vi.stubEnv('GOOGLE_CLOUD_PROJECT', '');
-    vi.stubEnv('GOOGLE_CLOUD_LOCATION', '');
-    const config = await createContentGeneratorConfig(
-      mockConfig,
-      AuthType.USE_VERTEX_AI,
-    );
-    expect(config.apiKey).toBeUndefined();
-    expect(config.vertexai).toBeUndefined();
+  it('should throw if Z_AI_API_KEY is not set for Z.AI', async () => {
+    vi.stubEnv('Z_AI_API_KEY', '');
+    await expect(
+      createContentGeneratorConfig(mockConfig, AuthType.USE_Z_AI),
+    ).rejects.toThrow();
   });
 });

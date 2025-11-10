@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import type { Content } from '@google/genai';
+import type { Content } from '../llm/types.js';
 import { DEFAULT_GEMINI_FLASH_MODEL } from '../config/models.js';
 import type { BaseLlmClient } from '../core/baseLlmClient.js';
 import type { GeminiChat } from '../core/geminiChat.js';

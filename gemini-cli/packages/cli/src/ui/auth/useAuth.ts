@@ -11,13 +11,15 @@ import {
   type Config,
   loadApiKey,
   debugLogger,
-} from '@google/gemini-cli-core';
-import { getErrorMessage } from '@google/gemini-cli-core';
+} from '@codinglm/core';
+import { getErrorMessage } from '@codinglm/core';
 import { AuthState } from '../types.js';
 import {
   resolveAuthTypeFromEnvironment,
   validateAuthMethod,
 } from '../../config/auth.js';
+
+const isCodinGLM = () => process.env['CODINGLM'] === '1';
 
 export function validateAuthMethodWithSettings(
   authType: AuthType,
@@ -29,6 +31,12 @@ export function validateAuthMethodWithSettings(
   }
   if (settings.merged.security?.auth?.useExternal) {
     return null;
+  }
+  if (isCodinGLM()) {
+    if (authType === AuthType.USE_Z_AI) {
+      return null;
+    }
+    return 'CodinGLM CLI only supports the Z.AI GLM API key authentication method.';
   }
   // If using Gemini API key, we don't validate it here as we might need to prompt for it.
   if (authType === AuthType.USE_GEMINI || authType === AuthType.USE_Z_AI) {
@@ -59,7 +67,9 @@ export const useAuthCommand = (settings: LoadedSettings, config: Config) => {
 
   const reloadApiKey = useCallback(async () => {
     const storedKey = (await loadApiKey()) ?? '';
-    const envKey = process.env['GEMINI_API_KEY'] ?? '';
+    const envKey = isCodinGLM()
+      ? process.env['Z_AI_API_KEY'] ?? process.env['ZAI_API_KEY'] ?? ''
+      : process.env['GEMINI_API_KEY'] ?? '';
     const key = storedKey || envKey;
     setApiKeyDefaultValue(key);
     return key; // Return the key for immediate use
@@ -77,10 +87,14 @@ export const useAuthCommand = (settings: LoadedSettings, config: Config) => {
       const effectiveAuthType = configuredType ?? envAuthType;
 
       if (!effectiveAuthType) {
-        if (process.env['Z_AI_API_KEY'] || process.env['ZAI_API_KEY']) {
-          onAuthError(
-            'Existing API key detected (Z_AI_API_KEY). Select "Z.AI API Key" option to use it.',
-          );
+        if (isCodinGLM()) {
+          if (process.env['Z_AI_API_KEY'] || process.env['ZAI_API_KEY']) {
+            onAuthError(
+              'Existing API key detected (Z_AI_API_KEY). Select "Z.AI API Key" option to use it.',
+            );
+          } else {
+            onAuthError('No authentication method selected.');
+          }
         } else if (process.env['GEMINI_API_KEY']) {
           onAuthError(
             'Existing API key detected (GEMINI_API_KEY). Select "Gemini API Key" option to use it.',
@@ -91,7 +105,7 @@ export const useAuthCommand = (settings: LoadedSettings, config: Config) => {
         return;
       }
 
-      if (effectiveAuthType === AuthType.USE_GEMINI) {
+      if (!isCodinGLM() && effectiveAuthType === AuthType.USE_GEMINI) {
         const key = await reloadApiKey(); // Use the unified function
         if (!key) {
           setAuthState(AuthState.AwaitingApiKeyInput);

@@ -11,7 +11,8 @@ import { safeJsonStringify } from '../utils/safeJsonStringify.js';
 import { DiscoveredMCPTool, generateValidName } from './mcp-tool.js'; // Added getStringifiedResultForDisplay
 import type { ToolResult } from './tools.js';
 import { ToolConfirmationOutcome } from './tools.js'; // Added ToolConfirmationOutcome
-import type { CallableTool, Part } from '@google/genai';
+import type { Part } from '../llm/types.js';
+import type { CallableTool } from './mcp-tool.js';
 import { ToolErrorType } from './tool-error.js';
 
 // Mock @google/genai mcpToTool and CallableTool

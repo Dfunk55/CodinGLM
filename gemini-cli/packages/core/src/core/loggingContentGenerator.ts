@@ -15,7 +15,7 @@ import type {
   GenerateContentParameters,
   GenerateContentResponseUsageMetadata,
   GenerateContentResponse,
-} from '@google/genai';
+} from '../llm/types.js';
 import type { ServerDetails } from '../telemetry/types.js';
 import {
   ApiRequestEvent,
@@ -84,7 +84,7 @@ export class LoggingContentGenerator implements ContentGenerator {
 
     if (genConfig?.authType === AuthType.USE_Z_AI) {
       const baseUrl =
-        genConfig.baseUrl ?? 'https://api.z.ai/api/paas/v4';
+        genConfig.baseUrl ?? 'https://api.z.ai/api/coding/paas/v4';
       try {
         const parsed = new URL(baseUrl);
         const port = parsed.port

@@ -26,7 +26,7 @@ import type {
   EmbedContentResponse,
   GenerateContentParameters,
   GenerateContentResponse,
-} from '@google/genai';
+} from '../llm/types.js';
 import * as readline from 'node:readline';
 import type { ContentGenerator } from '../core/contentGenerator.js';
 import { UserTierId } from './types.js';

@@ -13,7 +13,7 @@ import {
   useReactToolScheduler,
   mapToDisplay,
 } from './useReactToolScheduler.js';
-import type { PartUnion, FunctionResponse } from '@google/genai';
+import type { PartUnion } from '@codinglm/core/llm/types';
 import type {
   Config,
   ToolCallRequestInfo,
@@ -838,7 +838,7 @@ describe('mapToDisplay', () => {
           name: 'testTool',
           id: 'testCallId',
           response: { output: 'Test output' },
-        } as FunctionResponse,
+        } as any,
       } as PartUnion,
     ],
     resultDisplay: 'Test display output',

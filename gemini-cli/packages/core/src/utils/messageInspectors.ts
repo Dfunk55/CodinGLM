@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import type { Content } from '@google/genai';
+import type { Content } from '../llm/types.js';
 
 export function isFunctionResponse(content: Content): boolean {
   return (

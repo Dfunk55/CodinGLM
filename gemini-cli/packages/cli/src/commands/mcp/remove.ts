@@ -4,10 +4,10 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-// File for 'gemini mcp remove' command
+// File for 'codinglm mcp remove' command
 import type { CommandModule } from 'yargs';
 import { loadSettings, SettingScope } from '../../config/settings.js';
-import { debugLogger } from '@google/gemini-cli-core';
+import { debugLogger } from '@codinglm/core';
 
 async function removeMcpServer(
   name: string,
@@ -40,7 +40,7 @@ export const removeCommand: CommandModule = {
   describe: 'Remove a server',
   builder: (yargs) =>
     yargs
-      .usage('Usage: gemini mcp remove [options] <name>')
+      .usage('Usage: codinglm mcp remove [options] <name>')
       .positional('name', {
         describe: 'Name of the server',
         type: 'string',

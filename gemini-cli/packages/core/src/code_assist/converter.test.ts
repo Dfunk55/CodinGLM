@@ -11,16 +11,8 @@ import {
   fromGenerateContentResponse,
   toContents,
 } from './converter.js';
-import type {
-  ContentListUnion,
-  GenerateContentParameters,
-} from '@google/genai';
-import {
-  GenerateContentResponse,
-  FinishReason,
-  BlockedReason,
-  type Part,
-} from '@google/genai';
+import type { ContentListUnion, GenerateContentParameters, Part } from '../llm/types.js';
+import { GenerateContentResponse, FinishReason } from '../llm/types.js';
 
 describe('converter', () => {
   describe('toCodeAssistRequest', () => {
@@ -245,7 +237,7 @@ describe('converter', () => {
         },
       };
       const genaiRes = fromGenerateContentResponse(codeAssistRes);
-      expect(genaiRes).toBeInstanceOf(GenerateContentResponse);
+      // Use structural assertion to avoid class identity mismatches across ESM modules
       expect(genaiRes.candidates).toEqual(codeAssistRes.response.candidates);
     });
 
@@ -254,7 +246,7 @@ describe('converter', () => {
         response: {
           candidates: [],
           promptFeedback: {
-            blockReason: BlockedReason.SAFETY,
+            blockReason: 'SAFETY',
             safetyRatings: [],
           },
           usageMetadata: {

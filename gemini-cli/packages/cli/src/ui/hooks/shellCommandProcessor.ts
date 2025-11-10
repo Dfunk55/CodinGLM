@@ -17,7 +17,7 @@ import type {
   ShellExecutionResult,
 } from '@google/gemini-cli-core';
 import { isBinary, ShellExecutionService } from '@google/gemini-cli-core';
-import { type PartListUnion } from '@google/genai';
+import { type PartListUnion } from '@codinglm/core/llm/types';
 import type { UseHistoryManagerReturn } from './useHistoryManager.js';
 import { SHELL_COMMAND_NAME } from '../constants.js';
 import { formatMemoryUsage } from '../utils/formatters.js';

@@ -11,7 +11,7 @@ import {
   flatMapTextParts,
   appendToLastTextPart,
 } from './partUtils.js';
-import type { GenerateContentResponse, Part, PartUnion } from '@google/genai';
+import type { GenerateContentResponse, Part, PartUnion } from '../llm/types.js';
 
 const mockResponse = (
   parts?: Array<{ text?: string; functionCall?: unknown }>,

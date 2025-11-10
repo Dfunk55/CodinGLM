@@ -6,7 +6,7 @@
 
 import path from 'node:path';
 import { promises as fs } from 'node:fs';
-import type { Content } from '@google/genai';
+import type { Content } from '../llm/types.js';
 import type { Storage } from '../config/storage.js';
 import { debugLogger } from '../utils/debugLogger.js';
 import { coreEvents } from '../utils/events.js';

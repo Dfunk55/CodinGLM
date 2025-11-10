@@ -9,7 +9,7 @@ import {
   ChatCompressionService,
   findCompressSplitPoint,
 } from './chatCompressionService.js';
-import type { Content, GenerateContentResponse } from '@google/genai';
+import type { Content, GenerateContentResponse } from '../llm/types.js';
 import { CompressionStatus } from '../core/turn.js';
 import { tokenLimit } from '../core/tokenLimits.js';
 import type { GeminiChat } from '../core/geminiChat.js';
@@ -200,6 +200,9 @@ describe('ChatCompressionService', () => {
     } as unknown as GenerateContentResponse);
     vi.mocked(mockConfig.getContentGenerator).mockReturnValue({
       generateContent: mockGenerateContent,
+      countTokens: vi
+        .fn()
+        .mockResolvedValue({ totalTokens: 400 }),
     } as unknown as ContentGenerator);
 
     const result = await service.compress(
@@ -239,6 +242,9 @@ describe('ChatCompressionService', () => {
     } as unknown as GenerateContentResponse);
     vi.mocked(mockConfig.getContentGenerator).mockReturnValue({
       generateContent: mockGenerateContent,
+      countTokens: vi
+        .fn()
+        .mockResolvedValue({ totalTokens: 50 }),
     } as unknown as ContentGenerator);
 
     const result = await service.compress(
@@ -275,6 +281,9 @@ describe('ChatCompressionService', () => {
     } as unknown as GenerateContentResponse);
     vi.mocked(mockConfig.getContentGenerator).mockReturnValue({
       generateContent: mockGenerateContent,
+      countTokens: vi
+        .fn()
+        .mockResolvedValue({ totalTokens: 1000 }),
     } as unknown as ContentGenerator);
 
     const result = await service.compress(

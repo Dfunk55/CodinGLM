@@ -12,11 +12,18 @@
      * type checking error in ../../node_modules/@types/request/index.d.ts.
      */
     "skipLibCheck": true,
-    "rootDir": "src",
+    "rootDir": ".",
+    "baseUrl": ".",
+    "paths": {
+      "@codinglm/core": ["../core/src/index.ts"],
+      "@codinglm/core/*": ["../core/src/*"]
+    },
     "strict": true /* enable all strict type-checking options */
     /* Additional Checks */
     // "noImplicitReturns": true, /* Report error when not all code paths in function return a value. */
     // "noFallthroughCasesInSwitch": true, /* Report errors for fallthrough cases in switch statement. */
     // "noUnusedParameters": true,  /* Report errors on unused parameters. */
   }
+  ,
+  "references": [{ "path": "../core" }]
 }

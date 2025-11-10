@@ -4,12 +4,12 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import type { Config } from '@google/gemini-cli-core';
+import type { Config } from '@codinglm/core';
 import {
   GeminiEventType,
   ApprovalMode,
   type ToolCallConfirmationDetails,
-} from '@google/gemini-cli-core';
+} from '@codinglm/core';
 import type {
   TaskStatusUpdateEvent,
   SendStreamingMessageSuccessResponse,
@@ -34,7 +34,7 @@ import {
   createStreamMessageRequest,
   createMockConfig,
 } from '../utils/testing_utils.js';
-import { MockTool } from '@google/gemini-cli-core';
+import { MockTool } from '@codinglm/core';
 
 const mockToolConfirmationFn = async () =>
   ({}) as unknown as ToolCallConfirmationDetails;
@@ -86,8 +86,8 @@ vi.mock('../config/config.js', async () => {
 
 // Mock the GeminiClient to avoid actual API calls
 const sendMessageStreamSpy = vi.fn();
-vi.mock('@google/gemini-cli-core', async () => {
-  const actual = await vi.importActual('@google/gemini-cli-core');
+vi.mock('@codinglm/core', async () => {
+  const actual = await vi.importActual('@codinglm/core');
   return {
     ...actual,
     GeminiClient: vi.fn().mockImplementation(() => ({

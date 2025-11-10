@@ -5,7 +5,7 @@
  */
 
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import type { Content } from '@google/genai';
+import type { Content } from '../llm/types.js';
 import type { Config } from '../config/config.js';
 import type { GeminiClient } from '../core/client.js';
 import type { BaseLlmClient } from '../core/baseLlmClient.js';

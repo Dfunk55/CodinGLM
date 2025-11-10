@@ -10,7 +10,7 @@ import type {
   Part,
   EmbedContentParameters,
   GenerateContentResponse,
-} from '@google/genai';
+} from '../llm/types.js';
 import type { Config } from '../config/config.js';
 import type { ContentGenerator } from './contentGenerator.js';
 import { getResponseText } from '../utils/partUtils.js';

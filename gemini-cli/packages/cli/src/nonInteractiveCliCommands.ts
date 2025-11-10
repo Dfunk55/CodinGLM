@@ -4,14 +4,14 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import type { PartListUnion } from '@google/genai';
+import type { PartListUnion } from '@codinglm/core/llm/types';
 import { parseSlashCommand } from './utils/commands.js';
 import {
   FatalInputError,
   Logger,
   uiTelemetryService,
   type Config,
-} from '@google/gemini-cli-core';
+} from '@codinglm/core';
 import { CommandService } from './services/CommandService.js';
 import { FileCommandLoader } from './services/FileCommandLoader.js';
 import { McpPromptLoader } from './services/McpPromptLoader.js';

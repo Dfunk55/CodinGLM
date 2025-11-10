@@ -23,7 +23,7 @@ import type {
   ChatDetail,
 } from '../types.js';
 import { MessageType } from '../types.js';
-import type { Content } from '@google/genai';
+import type { Content } from '@codinglm/core/llm/types';
 
 const getSavedChatTags = async (
   context: CommandContext,

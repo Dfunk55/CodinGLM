@@ -12,21 +12,13 @@ import type {
   GenerateContentParameters,
   CountTokensParameters,
   CountTokensResponse,
-  GenerationConfigRoutingConfig,
-  MediaResolution,
   Candidate,
-  ModelSelectionConfig,
-  GenerateContentResponsePromptFeedback,
-  GenerateContentResponseUsageMetadata,
   Part,
-  SafetySetting,
   PartUnion,
-  SpeechConfigUnion,
-  ThinkingConfig,
   ToolListUnion,
   ToolConfig,
-} from '@google/genai';
-import { GenerateContentResponse } from '@google/genai';
+} from '../llm/types.js';
+import { GenerateContentResponse } from '../llm/types.js';
 
 export interface CAGenerateContentRequest {
   model: string;
@@ -62,13 +54,13 @@ interface VertexGenerationConfig {
   responseMimeType?: string;
   responseJsonSchema?: unknown;
   responseSchema?: unknown;
-  routingConfig?: GenerationConfigRoutingConfig;
-  modelSelectionConfig?: ModelSelectionConfig;
+  routingConfig?: unknown;
+  modelSelectionConfig?: unknown;
   responseModalities?: string[];
-  mediaResolution?: MediaResolution;
-  speechConfig?: SpeechConfigUnion;
+  mediaResolution?: unknown;
+  speechConfig?: unknown;
   audioTimestamp?: boolean;
-  thinkingConfig?: ThinkingConfig;
+  thinkingConfig?: unknown;
 }
 
 export interface CaGenerateContentResponse {
@@ -79,8 +71,8 @@ export interface CaGenerateContentResponse {
 interface VertexGenerateContentResponse {
   candidates: Candidate[];
   automaticFunctionCallingHistory?: Content[];
-  promptFeedback?: GenerateContentResponsePromptFeedback;
-  usageMetadata?: GenerateContentResponseUsageMetadata;
+  promptFeedback?: unknown;
+  usageMetadata?: GenerateContentResponse['usageMetadata'];
   modelVersion?: string;
 }
 

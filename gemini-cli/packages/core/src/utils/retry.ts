@@ -4,8 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import type { GenerateContentResponse } from '@google/genai';
-import { ApiError } from '@google/genai';
+import type { GenerateContentResponse } from '../llm/types.js';
 import { AuthType } from '../core/contentGenerator.js';
 import {
   classifyGoogleError,
@@ -61,13 +60,6 @@ function defaultShouldRetry(
     error.message.includes(FETCH_FAILED_MESSAGE)
   ) {
     return true;
-  }
-
-  // Priority check for ApiError
-  if (error instanceof ApiError) {
-    // Explicitly do not retry 400 (Bad Request)
-    if (error.status === 400) return false;
-    return error.status === 429 || (error.status >= 500 && error.status < 600);
   }
 
   // Check for status using helper (handles other error shapes)
