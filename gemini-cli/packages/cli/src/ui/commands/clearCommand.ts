@@ -13,7 +13,7 @@ export const clearCommand: SlashCommand = {
   description: 'Clear the screen and conversation history',
   kind: CommandKind.BUILT_IN,
   action: async (context, _args) => {
-    const geminiClient = context.services.config?.getGeminiClient();
+    const geminiClient = context.services.config?.getLlmClient();
 
     if (geminiClient) {
       context.ui.setDebugMessage('Clearing terminal and resetting chat.');

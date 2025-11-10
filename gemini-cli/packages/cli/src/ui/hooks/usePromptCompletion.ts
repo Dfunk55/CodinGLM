@@ -70,7 +70,7 @@ export function usePromptCompletion({
 
   const generatePromptSuggestions = useCallback(async () => {
     const trimmedText = buffer.text.trim();
-    const geminiClient = config?.getGeminiClient();
+    const geminiClient = config?.getLlmClient();
 
     if (trimmedText === lastRequestedTextRef.current) {
       return;

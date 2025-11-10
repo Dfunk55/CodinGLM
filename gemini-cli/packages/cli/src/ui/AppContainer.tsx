@@ -656,7 +656,7 @@ Logging in with Google... Please restart CodinGLM to continue.
     activePtyId,
     loopDetectionConfirmationRequest,
   } = useCodinGLMStream(
-    config.getGeminiClient(),
+    config.getLlmClient(),
     historyManager.history,
     historyManager.addItem,
     config,
@@ -801,7 +801,7 @@ Logging in with Google... Please restart CodinGLM to continue.
   // Initial prompt handling
   const initialPrompt = useMemo(() => config.getQuestion(), [config]);
   const initialPromptSubmitted = useRef(false);
-  const geminiClient = config.getGeminiClient();
+  const geminiClient = config.getLlmClient();
 
   useEffect(() => {
     if (activePtyId) {

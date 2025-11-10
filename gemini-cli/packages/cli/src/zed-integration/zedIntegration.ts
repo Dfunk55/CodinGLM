@@ -173,7 +173,7 @@ class GeminiAgent {
       config.setFileSystemService(acpFileSystemService);
     }
 
-    const geminiClient = config.getGeminiClient();
+    const geminiClient = config.getLlmClient();
     const chat = await geminiClient.startChat();
     const session = new Session(sessionId, chat, config, this.client);
     this.sessions.set(sessionId, session);

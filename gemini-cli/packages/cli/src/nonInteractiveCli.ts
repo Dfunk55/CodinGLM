@@ -183,7 +183,7 @@ export async function runNonInteractive({
         }
       });
 
-      const geminiClient = config.getGeminiClient();
+      const geminiClient = config.getLlmClient();
 
       // Emit init event for streaming JSON
       if (streamFormatter) {

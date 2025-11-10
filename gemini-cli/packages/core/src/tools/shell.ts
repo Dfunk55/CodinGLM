@@ -305,7 +305,7 @@ export class ShellToolInvocation extends BaseToolInvocation<
       if (summarizeConfig && summarizeConfig[SHELL_TOOL_NAME]) {
         const summary = await summarizeToolOutput(
           llmContent,
-          this.config.getGeminiClient(),
+          this.config.getLlmClient(),
           signal,
           summarizeConfig[SHELL_TOOL_NAME].tokenBudget,
         );

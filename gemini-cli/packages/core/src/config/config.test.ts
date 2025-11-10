@@ -274,7 +274,7 @@ describe('Server Config (config.ts)', () => {
       await config.refreshAuth(AuthType.LOGIN_WITH_GOOGLE);
 
       expect(
-        config.getGeminiClient().stripThoughtsFromHistory,
+        config.getLlmClient().stripThoughtsFromHistory,
       ).toHaveBeenCalledWith();
     });
 
@@ -291,7 +291,7 @@ describe('Server Config (config.ts)', () => {
       await config.refreshAuth(AuthType.USE_GEMINI);
 
       expect(
-        config.getGeminiClient().stripThoughtsFromHistory,
+        config.getLlmClient().stripThoughtsFromHistory,
       ).not.toHaveBeenCalledWith();
     });
   });

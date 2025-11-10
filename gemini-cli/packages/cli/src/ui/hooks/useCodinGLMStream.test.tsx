@@ -261,7 +261,7 @@ describe('useCodinGLMStream', () => {
     initialToolCalls: TrackedToolCall[] = [],
     geminiClient?: any,
   ) => {
-    const client = geminiClient || mockConfig.getGeminiClient();
+    const client = geminiClient || mockConfig.getLlmClient();
 
     const initialProps = {
       client,
@@ -1017,7 +1017,7 @@ describe('useCodinGLMStream', () => {
 
       const { result } = renderHook(() =>
         useCodinGLMStream(
-          mockConfig.getGeminiClient(),
+          mockConfig.getLlmClient(),
           [],
           mockAddItem,
           mockConfig,
@@ -1058,7 +1058,7 @@ describe('useCodinGLMStream', () => {
 
       const { result } = renderHook(() =>
         useCodinGLMStream(
-          mockConfig.getGeminiClient(),
+          mockConfig.getLlmClient(),
           [],
           mockAddItem,
           mockConfig,
@@ -2080,7 +2080,7 @@ describe('useCodinGLMStream', () => {
 
     const { result } = renderHook(() =>
       useCodinGLMStream(
-        mockConfig.getGeminiClient() as GeminiClient,
+        mockConfig.getLlmClient() as GeminiClient,
         [],
         mockAddItem,
         mockConfig,
@@ -2232,7 +2232,7 @@ describe('useCodinGLMStream', () => {
 
       const { result, rerender } = renderHook(() =>
         useCodinGLMStream(
-          mockConfig.getGeminiClient(),
+          mockConfig.getLlmClient(),
           [],
           mockAddItem,
           mockConfig,

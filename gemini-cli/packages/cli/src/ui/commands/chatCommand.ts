@@ -117,7 +117,7 @@ const saveCommand: SlashCommand = {
       }
     }
 
-    const chat = await config?.getGeminiClient()?.getChat();
+    const chat = await config?.getLlmClient()?.getChat();
     if (!chat) {
       return {
         type: 'message',
@@ -308,7 +308,7 @@ const shareCommand: SlashCommand = {
       };
     }
 
-    const chat = await context.services.config?.getGeminiClient()?.getChat();
+    const chat = await context.services.config?.getLlmClient()?.getChat();
     if (!chat) {
       return {
         type: 'message',

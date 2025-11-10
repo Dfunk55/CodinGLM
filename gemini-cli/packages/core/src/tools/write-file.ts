@@ -123,7 +123,7 @@ export async function getCorrectedFileContent(
         new_string: proposedContent,
         file_path: filePath,
       },
-      config.getGeminiClient(),
+      config.getLlmClient(),
       config.getBaseLlmClient(),
       abortSignal,
     );

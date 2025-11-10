@@ -903,7 +903,7 @@ export class Config {
     return this.llmClient;
   }
   // Temporary alias during Phase 3 migration; to be removed once all callers use getLlmClient
-  getGeminiClient(): LlmClient {
+  getLlmClient(): LlmClient {
     return this.llmClient;
   }
 

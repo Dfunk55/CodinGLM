@@ -153,10 +153,10 @@ export const useCodinGLMStream = (
         // Record tool calls with full metadata before sending responses.
         try {
           const currentModel =
-            config.getGeminiClient().getCurrentSequenceModel() ??
+            config.getLlmClient().getCurrentSequenceModel() ??
             config.getModel();
           config
-            .getGeminiClient()
+            .getLlmClient()
             .getChat()
             .recordCompletedToolCalls(
               currentModel,
@@ -904,7 +904,7 @@ export const useCodinGLMStream = (
 
                     if (result.userSelection === 'disable') {
                       config
-                        .getGeminiClient()
+                        .getLlmClient()
                         .getLoopDetectionService()
                         .disableForSession();
                       addItem(

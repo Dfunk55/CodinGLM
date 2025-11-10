@@ -330,7 +330,7 @@ describe('ShellTool', () => {
 
       expect(summarizer.summarizeToolOutput).toHaveBeenCalledWith(
         expect.any(String),
-        mockConfig.getGeminiClient(),
+        mockConfig.getLlmClient(),
         mockAbortSignal,
         1000,
       );

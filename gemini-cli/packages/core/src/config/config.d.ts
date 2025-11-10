@@ -376,7 +376,7 @@ export declare class Config {
     getTelemetryTarget(): TelemetryTarget;
     getTelemetryOutfile(): string | undefined;
     getTelemetryUseCollector(): boolean;
-    getGeminiClient(): GeminiClient;
+    getLlmClient(): GeminiClient;
     getModelRouterService(): ModelRouterService;
     getEnableRecursiveFileSearch(): boolean;
     getFileFilteringDisableFuzzySearch(): boolean;

@@ -180,7 +180,7 @@ class EditToolInvocation
         params.file_path,
         currentContent,
         params,
-        this.config.getGeminiClient(),
+        this.config.getLlmClient(),
         this.config.getBaseLlmClient(),
         abortSignal,
       );
