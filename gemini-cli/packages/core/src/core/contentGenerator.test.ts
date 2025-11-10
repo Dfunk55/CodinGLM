@@ -151,6 +151,35 @@ describe('createContentGenerator', () => {
   });
 });
 
+describe('CodinGLM enforcement', () => {
+  afterEach(() => {
+    vi.unstubAllEnvs();
+  });
+
+  it('throws in createContentGenerator when non Z.AI auth is used while CODINGLM is set', async () => {
+    vi.stubEnv('CODINGLM', '1');
+    await expect(
+      createContentGenerator(
+        {
+          authType: AuthType.USE_GEMINI,
+        },
+        mockConfig,
+      ),
+    ).rejects.toThrow(
+      'CodinGLM CLI only supports the Z.AI GLM API key authentication method.',
+    );
+  });
+
+  it('throws in createContentGeneratorConfig when non Z.AI auth is requested while CODINGLM is set', async () => {
+    vi.stubEnv('CODINGLM', '1');
+    await expect(
+      createContentGeneratorConfig(mockConfig as Config, AuthType.USE_GEMINI),
+    ).rejects.toThrow(
+      'CodinGLM CLI only supports the Z.AI GLM API key authentication method.',
+    );
+  });
+});
+
 describe('createContentGeneratorConfig', () => {
   const mockConfig = {
     getModel: vi.fn().mockReturnValue('gemini-pro'),

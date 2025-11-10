@@ -9,7 +9,7 @@ import type {
   ToolCallRequestInfo,
   CompletedToolCall,
   UserFeedbackPayload,
-} from '@google/gemini-cli-core';
+} from '@codinglm/core';
 import { isSlashCommand } from './ui/utils/commandUtils.js';
 import type { LoadedSettings } from './config/settings.js';
 import {
@@ -27,9 +27,9 @@ import {
   debugLogger,
   coreEvents,
   CoreEvent,
-} from '@google/gemini-cli-core';
+} from '@codinglm/core';
 
-import type { Content, Part } from '@google/genai';
+import type { Content, Part } from '@codinglm/genai';
 import readline from 'node:readline';
 
 import { handleSlashCommand } from './nonInteractiveCliCommands.js';
@@ -246,7 +246,7 @@ export async function runNonInteractive({
 
       let turnCount = 0;
       const deprecateText =
-        'The --prompt (-p) flag has been deprecated and will be removed in a future version. Please use a positional argument for your prompt. See gemini --help for more information.\n';
+        'The --prompt (-p) flag has been deprecated and will be removed in a future version. Please use a positional argument for your prompt. See codinglm --help for more information.\n';
       if (hasDeprecatedPromptArg) {
         if (streamFormatter) {
           streamFormatter.emitEvent({

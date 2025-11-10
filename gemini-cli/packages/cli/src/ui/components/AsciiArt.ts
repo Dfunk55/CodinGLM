@@ -4,26 +4,17 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-export const shortAsciiLogo = `
-  ███████ ██████  ██████   ██  ██ ███████  ██████  ██      ███   ███
- ██      ██    ██ ██    ██ ██  ██ ██      ██       ██       ████ ████
- ██      ██    ██ ██    ██ ██  ██ ██  ███  ██  ███ ██       ██ ███ ██
- ██      ██    ██ ██    ██  ██ ██ ██     ██ ██    ██ ██       ██     ██
-  ███████  ██████  ██████   ████   ███████  ██████  ███████ ██     ██
-`;
+// Clean, readable ASCII art spelling CODINGGLM.
+// Three sizes are provided; the header will choose based on terminal width.
 
 export const longAsciiLogo = `
-  ███████ ██████  ██████   ██  ██ ███████  ██████  ██      ███   ███
- ██      ██    ██ ██    ██ ██  ██ ██      ██       ██       ████ ████
- ██      ██    ██ ██    ██ ██  ██ ██  ███  ██  ███ ██       ██ ███ ██
- ██      ██    ██ ██    ██  ██ ██ ██     ██ ██    ██ ██       ██     ██
-  ███████  ██████  ██████   ████   ███████  ██████  ███████ ██     ██
+CODINGGLM
+`;
+
+export const shortAsciiLogo = `
+ CODINGGLM
 `;
 
 export const tinyAsciiLogo = `
- ███████ ██████  ██████  ██  ██ ███████  ██████  ██
- ██      ██    ██ ██    ██ ██  ██ ██      ██      ██
- ██      ██    ██ ██    ██ ██  ██ ██  ███  ██ ███ ██
- ██      ██    ██ ██    ██  ██ ██ ██     ██ ██    ██
- ███████  ██████  ██████  ████   ███████  ██████  ██
+ CODINGGLM
 `;

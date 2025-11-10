@@ -1,10 +1,10 @@
 {
-  "name": "@google/gemini-cli-core",
-  "version": "0.13.0-nightly.20251031.c89bc30d",
-  "description": "Gemini CLI Core",
+  "name": "@codinglm/core",
+  "version": "0.1.0",
+  "description": "CodinGLM Core",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/google-gemini/gemini-cli.git"
+    "url": "git+https://github.com/Dfunk55/CodinGLM.git"
   },
   "type": "module",
   "main": "dist/index.js",

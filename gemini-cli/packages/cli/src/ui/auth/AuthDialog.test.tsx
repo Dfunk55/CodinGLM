@@ -210,7 +210,7 @@ describe('AuthDialog', () => {
 
       expect(mockedRunExitCleanup).toHaveBeenCalled();
       expect(logSpy).toHaveBeenCalledWith(
-        expect.stringContaining('Please restart CodinGLM'),
+        expect.stringContaining('Please restart CodingGLM'),
       );
       expect(exitSpy).toHaveBeenCalledWith(0);
 

@@ -4,11 +4,18 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { AuthType } from '@google/gemini-cli-core';
+import { AuthType } from '@codinglm/core';
 import { loadEnvironment, loadSettings } from './settings.js';
+
+const isCodinGLM = () => process.env['CODINGLM'] === '1';
 
 export function validateAuthMethod(authMethod: string): string | null {
   loadEnvironment(loadSettings().merged);
+  if (isCodinGLM()) {
+    if (authMethod !== AuthType.USE_Z_AI) {
+      return 'CodinGLM CLI only supports the Z.AI GLM API key authentication method.';
+    }
+  }
   if (
     authMethod === AuthType.LOGIN_WITH_GOOGLE ||
     authMethod === AuthType.CLOUD_SHELL
@@ -48,6 +55,13 @@ export function validateAuthMethod(authMethod: string): string | null {
 
 export function resolveAuthTypeFromEnvironment(): AuthType | undefined {
   loadEnvironment(loadSettings().merged);
+
+  if (isCodinGLM()) {
+    if (process.env['Z_AI_API_KEY'] || process.env['ZAI_API_KEY']) {
+      return AuthType.USE_Z_AI;
+    }
+    return undefined;
+  }
 
   if (process.env['Z_AI_API_KEY'] || process.env['ZAI_API_KEY']) {
     return AuthType.USE_Z_AI;

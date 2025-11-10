@@ -7,6 +7,10 @@
 import { vi, beforeEach, afterEach } from 'vitest';
 import { format } from 'node:util';
 
+if (process.env.NODE_ENV !== 'test') {
+  process.env.NODE_ENV = 'test';
+}
+
 global.IS_REACT_ACT_ENVIRONMENT = true;
 
 // Unset NO_COLOR environment variable to ensure consistent theme behavior between local and CI test runs

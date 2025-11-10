@@ -8,7 +8,7 @@ import {
   type AuthType,
   type Config,
   getErrorMessage,
-} from '@google/gemini-cli-core';
+} from '@codinglm/core';
 import { resolveAuthTypeFromEnvironment } from '../config/auth.js';
 
 /**

@@ -14,7 +14,7 @@ import { mcpCommand } from '../commands/mcp.js';
 import type {
   FileFilteringOptions,
   OutputFormat,
-} from '@google/gemini-cli-core';
+} from '@codinglm/core';
 import { extensionsCommand } from '../commands/extensions.js';
 import {
   Config,
@@ -36,7 +36,7 @@ import {
   getPty,
   EDIT_TOOL_NAME,
   debugLogger,
-} from '@google/gemini-cli-core';
+} from '@codinglm/core';
 import type { Settings } from './settings.js';
 
 import { getCliVersion } from '../utils/version.js';
@@ -83,9 +83,9 @@ export async function parseArguments(settings: Settings): Promise<CliArgs> {
   const rawArgv = hideBin(process.argv);
   const yargsInstance = yargs(rawArgv)
     .locale('en')
-    .scriptName('gemini')
+    .scriptName('codinglm')
     .usage(
-      'Usage: gemini [options] [command]\n\nCodingGLM - Launch an interactive CLI, use -p/--prompt for non-interactive mode',
+      'Usage: codinglm [options] [command]\n\nCodinGLM - Launch an interactive CLI, use -p/--prompt for non-interactive mode',
     )
 
     .option('debug', {

@@ -2,6 +2,13 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "outDir": "dist",
+    "rootDir": ".",
+    "baseUrl": ".",
+    "paths": {
+      "@codinglm/core": ["../core/src/index.ts"],
+      "@codinglm/core/*": ["../core/src/*"],
+      "@codinglm/genai": ["../core/src/shim/genai.ts"]
+    },
     "jsx": "react-jsx",
     "lib": ["DOM", "DOM.Iterable", "ES2023"],
     "types": ["node", "vitest/globals"]

@@ -16,12 +16,12 @@ import type {
   AuthType,
   HookDefinition,
   HookEventName,
-} from '@google/gemini-cli-core';
+} from '@codinglm/core';
 import {
   DEFAULT_TRUNCATE_TOOL_OUTPUT_LINES,
   DEFAULT_TRUNCATE_TOOL_OUTPUT_THRESHOLD,
   DEFAULT_GEMINI_MODEL,
-} from '@google/gemini-cli-core';
+} from '@codinglm/core';
 import type { CustomTheme } from '../ui/themes/theme.js';
 import type { SessionRetentionSettings } from './settings.js';
 import { DEFAULT_MIN_RETENTION } from '../utils/sessionCleanup.js';
@@ -395,7 +395,7 @@ const SETTINGS_SCHEMA = {
         requiresRestart: false,
         default: false,
         description:
-          'Hide the context summary (GEMINI.md, MCP servers) above the input.',
+          'Hide the context summary (AGENT.md, MCP servers) above the input.',
         showInDialog: true,
       },
       footer: {

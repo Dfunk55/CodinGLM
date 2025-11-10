@@ -8,9 +8,6 @@ import type React from 'react';
 import { useCallback, useContext, useMemo } from 'react';
 import { Box, Text } from 'ink';
 import {
-  DEFAULT_GEMINI_FLASH_LITE_MODEL,
-  DEFAULT_GEMINI_FLASH_MODEL,
-  DEFAULT_GEMINI_MODEL,
   DEFAULT_GEMINI_MODEL_AUTO,
   ModelSlashCommandEvent,
   logModelSlashCommand,
@@ -24,30 +21,38 @@ interface ModelDialogProps {
   onClose: () => void;
 }
 
+// Z.AI GLM model options shown in the selector.
+// Model IDs follow Z.AI API naming (lowercase, dashed).
+const GLM_46 = 'glm-4.6';
+const GLM_45_AIR = 'glm-4.5-air';
+const GLM_4_FLASH = 'glm-4-flash';
+
 const MODEL_OPTIONS = [
   {
-    value: DEFAULT_GEMINI_MODEL_AUTO,
+    value: DEFAULT_GEMINI_MODEL_AUTO, // 'auto'
     title: 'Auto (recommended)',
-    description: 'Let the system choose the best model for your task',
+    description:
+      'Let CodinGLM choose between GLM‑4.6, 4.5‑Air, and 4‑Flash',
     key: DEFAULT_GEMINI_MODEL_AUTO,
   },
   {
-    value: DEFAULT_GEMINI_MODEL,
-    title: 'Pro',
-    description: 'For complex tasks that require deep reasoning and creativity',
-    key: DEFAULT_GEMINI_MODEL,
+    value: GLM_46,
+    title: 'GLM‑4.6',
+    description:
+      'Best for complex reasoning, debugging, and multi‑file refactors',
+    key: GLM_46,
   },
   {
-    value: DEFAULT_GEMINI_FLASH_MODEL,
-    title: 'Flash',
-    description: 'For tasks that need a balance of speed and reasoning',
-    key: DEFAULT_GEMINI_FLASH_MODEL,
+    value: GLM_45_AIR,
+    title: 'GLM‑4.5‑Air',
+    description: 'Fast and balanced; great for everyday coding tasks',
+    key: GLM_45_AIR,
   },
   {
-    value: DEFAULT_GEMINI_FLASH_LITE_MODEL,
-    title: 'Flash-Lite',
-    description: 'For simple tasks that need to be done quickly',
-    key: DEFAULT_GEMINI_FLASH_LITE_MODEL,
+    value: GLM_4_FLASH,
+    title: 'GLM‑4‑Flash',
+    description: 'Lowest latency for simple edits and quick queries',
+    key: GLM_4_FLASH,
   },
 ];
 
@@ -93,7 +98,7 @@ export function ModelDialog({ onClose }: ModelDialogProps): React.JSX.Element {
       padding={1}
       width="100%"
     >
-      <Text bold>Select Model</Text>
+      <Text bold>Select GLM Model</Text>
       <Box marginTop={1}>
         <DescriptiveRadioButtonSelect
           items={MODEL_OPTIONS}
@@ -104,7 +109,9 @@ export function ModelDialog({ onClose }: ModelDialogProps): React.JSX.Element {
       </Box>
       <Box flexDirection="column">
         <Text color={theme.text.secondary}>
-          {'> To use a specific Gemini model on startup, use the --model flag.'}
+          {
+            '> To use a specific GLM model on startup, use the --model flag.'
+          }
         </Text>
       </Box>
       <Box marginTop={1} flexDirection="column">

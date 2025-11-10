@@ -4,13 +4,15 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-export const DEFAULT_GEMINI_MODEL = 'gemini-2.5-pro';
-export const DEFAULT_GEMINI_FLASH_MODEL = 'gemini-2.5-flash';
-export const DEFAULT_GEMINI_FLASH_LITE_MODEL = 'gemini-2.5-flash-lite';
+// In CodinGLM, all defaults point to Z.AI GLM models.
+export const DEFAULT_GEMINI_MODEL = 'glm-4.6';
+export const DEFAULT_GEMINI_FLASH_MODEL = 'glm-4-flash';
+export const DEFAULT_GEMINI_FLASH_LITE_MODEL = 'glm-4.5-air';
 
 export const DEFAULT_GEMINI_MODEL_AUTO = 'auto';
 
-export const DEFAULT_GEMINI_EMBEDDING_MODEL = 'gemini-embedding-001';
+// Placeholder; embeddings not supported via ZaiContentGenerator.
+export const DEFAULT_GEMINI_EMBEDDING_MODEL = 'glm-embedding-001';
 
 // Cap the thinking at 8192 to prevent run-away thinking loops.
 export const DEFAULT_THINKING_MODE = 8192;
@@ -37,12 +39,11 @@ export function getEffectiveModel(
     return requestedModel;
   }
 
-  // If a "lite" model is requested, honor it. This allows for variations of
-  // lite models without needing to list them all as constants.
-  if (requestedModel.includes('lite')) {
+  // In CodinGLM fallback mode, honor faster/cheaper variants if requested.
+  if (requestedModel.includes('flash') || requestedModel.includes('air')) {
     return requestedModel;
   }
 
-  // Default fallback for Gemini CLI.
+  // Default fallback for CodinGLM is GLM-4-Flash.
   return DEFAULT_GEMINI_FLASH_MODEL;
 }

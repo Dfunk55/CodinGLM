@@ -37,42 +37,60 @@ export function AuthDialog({
   authError,
   onAuthError,
 }: AuthDialogProps): React.JSX.Element {
-  let items = [
-    {
-      label: 'Login with Google',
-      value: AuthType.LOGIN_WITH_GOOGLE,
-      key: AuthType.LOGIN_WITH_GOOGLE,
-    },
-    ...(process.env['CLOUD_SHELL'] === 'true'
-      ? [
-          {
-            label: 'Use Cloud Shell user credentials',
-            value: AuthType.CLOUD_SHELL,
-            key: AuthType.CLOUD_SHELL,
-          },
-        ]
-      : []),
-    {
-      label: 'Use Gemini API Key',
-      value: AuthType.USE_GEMINI,
-      key: AuthType.USE_GEMINI,
-    },
-    {
-      label: 'Use Z.AI GLM API Key',
-      value: AuthType.USE_Z_AI,
-      key: AuthType.USE_Z_AI,
-    },
-    {
-      label: 'Vertex AI',
-      value: AuthType.USE_VERTEX_AI,
-      key: AuthType.USE_VERTEX_AI,
-    },
-  ];
+  const isCodinGLM = process.env['CODINGLM'] === '1';
+  let items = isCodinGLM
+    ? [
+        {
+          label: 'Use Z.AI GLM API Key',
+          value: AuthType.USE_Z_AI,
+          key: AuthType.USE_Z_AI,
+        },
+      ]
+    : [
+        {
+          label: 'Login with Google',
+          value: AuthType.LOGIN_WITH_GOOGLE,
+          key: AuthType.LOGIN_WITH_GOOGLE,
+        },
+        ...(process.env['CLOUD_SHELL'] === 'true'
+          ? [
+              {
+                label: 'Use Cloud Shell user credentials',
+                value: AuthType.CLOUD_SHELL,
+                key: AuthType.CLOUD_SHELL,
+              },
+            ]
+          : []),
+        {
+          label: 'Use Gemini API Key',
+          value: AuthType.USE_GEMINI,
+          key: AuthType.USE_GEMINI,
+        },
+        {
+          label: 'Use Z.AI GLM API Key',
+          value: AuthType.USE_Z_AI,
+          key: AuthType.USE_Z_AI,
+        },
+        {
+          label: 'Vertex AI',
+          value: AuthType.USE_VERTEX_AI,
+          key: AuthType.USE_VERTEX_AI,
+        },
+      ];
 
   if (settings.merged.security?.auth?.enforcedType) {
     items = items.filter(
       (item) => item.value === settings.merged.security?.auth?.enforcedType,
     );
+  }
+  if (items.length === 0 && isCodinGLM) {
+    items = [
+      {
+        label: 'Use Z.AI GLM API Key',
+        value: AuthType.USE_Z_AI,
+        key: AuthType.USE_Z_AI,
+      },
+    ];
   }
 
   let defaultAuthType = null;
@@ -97,11 +115,12 @@ export function AuthDialog({
       return item.value === AuthType.USE_Z_AI;
     }
 
-    if (process.env['GEMINI_API_KEY']) {
+    if (!isCodinGLM && process.env['GEMINI_API_KEY']) {
       return item.value === AuthType.USE_GEMINI;
     }
 
-    return item.value === AuthType.LOGIN_WITH_GOOGLE;
+    return item.value ===
+      (isCodinGLM ? AuthType.USE_Z_AI : AuthType.LOGIN_WITH_GOOGLE);
   });
   if (settings.merged.security?.auth?.enforcedType) {
     initialAuthIndex = 0;
@@ -167,6 +186,10 @@ Logging in with Google... Please restart CodingGLM to continue.
     { isActive: true },
   );
 
+  const termsLink = isCodinGLM
+    ? 'https://github.com/dustinpainter/CodinGLM/blob/main/docs/tos-privacy.md'
+    : 'https://github.com/google-gemini/gemini-cli/blob/main/docs/tos-privacy.md';
+
   return (
     <Box
       borderStyle="round"
@@ -206,15 +229,11 @@ Logging in with Google... Please restart CodingGLM to continue.
         </Box>
         <Box marginTop={1}>
           <Text color={theme.text.primary}>
-            Terms of Services and Privacy Notice for CodingGLM
+            Terms of Service and Privacy Notice for CodinGLM
           </Text>
         </Box>
         <Box marginTop={1}>
-          <Text color={theme.text.link}>
-            {
-              'https://github.com/google-gemini/gemini-cli/blob/main/docs/tos-privacy.md'
-            }
-          </Text>
+          <Text color={theme.text.link}>{termsLink}</Text>
         </Box>
       </Box>
     </Box>

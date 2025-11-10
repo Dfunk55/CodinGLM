@@ -12,7 +12,7 @@ import {
   type Config,
   StartSessionEvent,
   logCliConfiguration,
-} from '@google/gemini-cli-core';
+} from '@codinglm/core';
 import { type LoadedSettings } from '../config/settings.js';
 import { performInitialAuth } from './auth.js';
 import { resolveAuthTypeFromEnvironment } from '../config/auth.js';

@@ -26,6 +26,12 @@
     "moduleResolution": "nodenext",
     "target": "es2022",
     "types": ["node", "vitest/globals"],
-    "jsx": "react-jsx"
+    "jsx": "react-jsx",
+    "baseUrl": ".",
+    "paths": {
+      "@codinglm/core": ["packages/core/src/index.ts"],
+      "@codinglm/core/*": ["packages/core/src/*"],
+      "@codinglm/genai": ["packages/core/src/shim/genai.ts"]
+    }
   }
 }

@@ -15,7 +15,6 @@ interface AboutBoxProps {
   sandboxEnv: string;
   modelVersion: string;
   selectedAuthType: string;
-  gcpProject: string;
   ideClient: string;
 }
 
@@ -25,7 +24,6 @@ export const AboutBox: React.FC<AboutBoxProps> = ({
   sandboxEnv,
   modelVersion,
   selectedAuthType,
-  gcpProject,
   ideClient,
 }) => (
   <Box
@@ -105,18 +103,6 @@ export const AboutBox: React.FC<AboutBoxProps> = ({
         </Text>
       </Box>
     </Box>
-    {gcpProject && (
-      <Box flexDirection="row">
-        <Box width="35%">
-          <Text bold color={theme.text.link}>
-            GCP Project
-          </Text>
-        </Box>
-        <Box>
-          <Text color={theme.text.primary}>{gcpProject}</Text>
-        </Box>
-      </Box>
-    )}
     {ideClient && (
       <Box flexDirection="row">
         <Box width="35%">

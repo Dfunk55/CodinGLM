@@ -6,7 +6,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { debugLogger, FatalError } from '@google/gemini-cli-core';
+import { debugLogger, FatalError } from '@codinglm/core';
 import { configureCodinglmEnvironment } from './src/utils/codinglmDefaults.js';
 
 configureCodinglmEnvironment();

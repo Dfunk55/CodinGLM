@@ -23,6 +23,8 @@ import {
 import { ConsolePatcher } from '../ui/utils/ConsolePatcher.js';
 import { randomBytes } from 'node:crypto';
 
+const isCodinGLM = process.env['CODINGLM'] === '1';
+
 const execAsync = promisify(exec);
 
 function getContainerPath(hostPath: string): string {
@@ -587,7 +589,7 @@ export async function start_sandbox(
     }
 
     // copy GEMINI_API_KEY(s)
-    if (process.env['GEMINI_API_KEY']) {
+    if (!isCodinGLM && process.env['GEMINI_API_KEY']) {
       args.push('--env', `GEMINI_API_KEY=${process.env['GEMINI_API_KEY']}`);
     }
     if (process.env['Z_AI_API_KEY']) {
@@ -596,12 +598,12 @@ export async function start_sandbox(
     if (process.env['ZAI_API_KEY']) {
       args.push('--env', `ZAI_API_KEY=${process.env['ZAI_API_KEY']}`);
     }
-    if (process.env['GOOGLE_API_KEY']) {
+    if (!isCodinGLM && process.env['GOOGLE_API_KEY']) {
       args.push('--env', `GOOGLE_API_KEY=${process.env['GOOGLE_API_KEY']}`);
     }
 
     // copy GOOGLE_GENAI_USE_VERTEXAI
-    if (process.env['GOOGLE_GENAI_USE_VERTEXAI']) {
+    if (!isCodinGLM && process.env['GOOGLE_GENAI_USE_VERTEXAI']) {
       args.push(
         '--env',
         `GOOGLE_GENAI_USE_VERTEXAI=${process.env['GOOGLE_GENAI_USE_VERTEXAI']}`,
@@ -609,7 +611,7 @@ export async function start_sandbox(
     }
 
     // copy GOOGLE_GENAI_USE_GCA
-    if (process.env['GOOGLE_GENAI_USE_GCA']) {
+    if (!isCodinGLM && process.env['GOOGLE_GENAI_USE_GCA']) {
       args.push(
         '--env',
         `GOOGLE_GENAI_USE_GCA=${process.env['GOOGLE_GENAI_USE_GCA']}`,
@@ -624,7 +626,7 @@ export async function start_sandbox(
     }
 
     // copy GOOGLE_CLOUD_PROJECT
-    if (process.env['GOOGLE_CLOUD_PROJECT']) {
+    if (!isCodinGLM && process.env['GOOGLE_CLOUD_PROJECT']) {
       args.push(
         '--env',
         `GOOGLE_CLOUD_PROJECT=${process.env['GOOGLE_CLOUD_PROJECT']}`,
@@ -632,7 +634,7 @@ export async function start_sandbox(
     }
 
     // copy GOOGLE_CLOUD_LOCATION
-    if (process.env['GOOGLE_CLOUD_LOCATION']) {
+    if (!isCodinGLM && process.env['GOOGLE_CLOUD_LOCATION']) {
       args.push(
         '--env',
         `GOOGLE_CLOUD_LOCATION=${process.env['GOOGLE_CLOUD_LOCATION']}`,
