@@ -6,7 +6,7 @@
 
 import {
   CoreToolScheduler,
-  type GeminiClient,
+  type LlmClient,
   GeminiEventType,
   ToolConfirmationOutcome,
   ApprovalMode,
@@ -60,7 +60,7 @@ export class Task {
   contextId: string;
   scheduler: CoreToolScheduler;
   config: Config;
-  geminiClient: GeminiClient;
+  geminiClient: LlmClient;
   pendingToolConfirmationDetails: Map<string, ToolCallConfirmationDetails>;
   taskState: TaskState;
   eventBus?: ExecutionEventBus;
@@ -85,7 +85,7 @@ export class Task {
     this.contextId = contextId;
     this.config = config;
     this.scheduler = this.createScheduler();
-    this.geminiClient = this.config.getGeminiClient();
+    this.geminiClient = this.config.getLlmClient();
     this.pendingToolConfirmationDetails = new Map();
     this.taskState = 'submitted';
     this.eventBus = eventBus;

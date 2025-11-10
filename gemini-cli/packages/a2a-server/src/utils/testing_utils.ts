@@ -13,7 +13,7 @@ import {
   ApprovalMode,
   DEFAULT_TRUNCATE_TOOL_OUTPUT_LINES,
   DEFAULT_TRUNCATE_TOOL_OUTPUT_THRESHOLD,
-  GeminiClient,
+  LlmClient,
 } from '@codinglm/core';
 import type { Config, Storage } from '@codinglm/core';
 import { expect, vi } from 'vitest';
@@ -57,9 +57,9 @@ export function createMockConfig(
     ...overrides,
   } as unknown as Config;
 
-  mockConfig.getGeminiClient = vi
+  mockConfig.getLlmClient = vi
     .fn()
-    .mockReturnValue(new GeminiClient(mockConfig));
+    .mockReturnValue(new LlmClient(mockConfig));
   return mockConfig;
 }
 

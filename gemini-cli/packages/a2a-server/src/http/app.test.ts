@@ -84,13 +84,13 @@ vi.mock('../config/config.js', async () => {
   };
 });
 
-// Mock the GeminiClient to avoid actual API calls
+// Mock the LlmClient to avoid actual API calls
 const sendMessageStreamSpy = vi.fn();
 vi.mock('@codinglm/core', async () => {
   const actual = await vi.importActual('@codinglm/core');
   return {
     ...actual,
-    GeminiClient: vi.fn().mockImplementation(() => ({
+    LlmClient: vi.fn().mockImplementation(() => ({
       sendMessageStream: sendMessageStreamSpy,
       getUserTier: vi.fn().mockReturnValue('free'),
       initialize: vi.fn(),
