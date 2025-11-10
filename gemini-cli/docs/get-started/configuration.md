@@ -1,4 +1,4 @@
-# Gemini CLI Configuration
+# CodinGLM CLI Configuration
 
 > **Note on Configuration Format, 9/17/25:** The format of the `settings.json`
 > file has been updated to a new, more organized structure.
@@ -11,9 +11,15 @@
 > For details on the previous format, please see the
 > [v1 Configuration documentation](./configuration-v1.md).
 
-Gemini CLI offers several ways to configure its behavior, including environment
+CodinGLM CLI offers several ways to configure its behavior, including environment
 variables, command-line arguments, and settings files. This document outlines
 the different configuration methods and available settings.
+
+> **Compatibility note:** CodinGLM CLI keeps the upstream `.gemini` directories,
+> schema names, and environment-variable prefixes (for example `GEMINI_*`) so it
+> can run on the same runtime as the Google-branded CLI. The values described
+> here are still the knobs you configure, even though the product name has
+> changed.
 
 ## Configuration layers
 
@@ -33,7 +39,7 @@ overridden by higher numbers):
 
 ## Settings files
 
-Gemini CLI uses JSON settings files for persistent configuration. There are four
+CodinGLM CLI uses JSON settings files for persistent configuration. There are four
 locations for these files:
 
 > **Tip:** JSON-aware editors can use autocomplete and validation by pointing to
@@ -52,11 +58,11 @@ locations for these files:
     user, project, or system override settings.
 - **User settings file:**
   - **Location:** `~/.gemini/settings.json` (where `~` is your home directory).
-  - **Scope:** Applies to all Gemini CLI sessions for the current user. User
+  - **Scope:** Applies to all CodinGLM CLI sessions for the current user. User
     settings override system defaults.
 - **Project settings file:**
   - **Location:** `.gemini/settings.json` within your project's root directory.
-  - **Scope:** Applies only when running Gemini CLI from that specific project.
+  - **Scope:** Applies only when running CodinGLM CLI from that specific project.
     Project settings override user settings and system defaults.
 - **System settings file:**
   - **Location:** `/etc/gemini-cli/settings.json` (Linux),
@@ -64,10 +70,10 @@ locations for these files:
     `/Library/Application Support/GeminiCli/settings.json` (macOS). The path can
     be overridden using the `GEMINI_CLI_SYSTEM_SETTINGS_PATH` environment
     variable.
-  - **Scope:** Applies to all Gemini CLI sessions on the system, for all users.
+  - **Scope:** Applies to all CodinGLM CLI sessions on the system, for all users.
     System settings act as overrides, taking precedence over all other settings
     files. May be useful for system administrators at enterprises to have
-    controls over users' Gemini CLI setups.
+    controls over users' CodinGLM CLI setups.
 
 **Note on environment variables in settings:** String values within your
 `settings.json` and `gemini-extension.json` files can reference environment
@@ -77,14 +83,14 @@ an environment variable `MY_API_TOKEN`, you could use it in `settings.json` like
 this: `"apiKey": "$MY_API_TOKEN"`. Additionally, each extension can have its own
 `.env` file in its directory, which will be loaded automatically.
 
-> **Note for Enterprise Users:** For guidance on deploying and managing Gemini
+> **Note for Enterprise Users:** For guidance on deploying and managing CodinGLM
 > CLI in a corporate environment, please see the
 > [Enterprise Configuration](../cli/enterprise.md) documentation.
 
 ### The `.gemini` directory in your project
 
 In addition to a project settings file, a project's `.gemini` directory can
-contain other project-specific files related to Gemini CLI's operation, such as:
+contain other project-specific files related to CodinGLM CLI's operation, such as:
 
 - [Custom sandbox profiles](#sandboxing) (e.g.,
   `.gemini/sandbox-macos-custom.sb`, `.gemini/sandbox.Dockerfile`).
@@ -176,7 +182,7 @@ their corresponding top-level category object in your `settings.json` file.
   - **Requires restart:** Yes
 
 - **`ui.showStatusInTitle`** (boolean):
-  - **Description:** Show Gemini CLI status and thoughts in the terminal window
+  - **Description:** Show CodinGLM CLI status and thoughts in the terminal window
     title
   - **Default:** `false`
 
@@ -272,7 +278,7 @@ their corresponding top-level category object in your `settings.json` file.
 #### `model`
 
 - **`model.name`** (string):
-  - **Description:** The Gemini model to use for conversations.
+  - **Description:** The GLM model to use for conversations.
   - **Default:** `undefined`
 
 - **`model.maxSessionTurns`** (number):
@@ -434,7 +440,7 @@ their corresponding top-level category object in your `settings.json` file.
 
 - **`tools.enableHooks`** (boolean):
   - **Description:** Enable the hooks system for intercepting and customizing
-    Gemini CLI behavior. When enabled, hooks configured in settings will execute
+    CodinGLM CLI behavior. When enabled, hooks configured in settings will execute
     at appropriate lifecycle events (BeforeTool, AfterTool, BeforeModel, etc.).
     Requires MessageBus integration.
   - **Default:** `false`
@@ -573,7 +579,7 @@ their corresponding top-level category object in your `settings.json` file.
 #### `mcpServers`
 
 Configures connections to one or more Model-Context Protocol (MCP) servers for
-discovering and using custom tools. Gemini CLI attempts to connect to each
+discovering and using custom tools. CodinGLM CLI attempts to connect to each
 configured MCP server to discover available tools. If multiple MCP servers
 expose a tool with the same name, the tool names will be prefixed with the
 server alias you defined in the configuration (e.g.,
@@ -615,7 +621,7 @@ specified, the order of precedence is `httpUrl`, then `url`, then `command`.
 
 #### `telemetry`
 
-Configures logging and metrics collection for Gemini CLI. For more information,
+Configures logging and metrics collection for CodinGLM CLI. For more information,
 see [Telemetry](../cli/telemetry.md).
 
 - **Properties:**
@@ -732,38 +738,29 @@ files to prevent interference with gemini-cli behavior. Variables from
 `.gemini/.env` files are never excluded. You can customize this behavior using
 the `advanced.excludedEnvVars` setting in your `settings.json` file.
 
-- **`GEMINI_API_KEY`**:
-  - Your API key for the Gemini API.
-  - One of several available [authentication methods](./authentication.md).
-  - Set this in your shell profile (e.g., `~/.bashrc`, `~/.zshrc`) or an `.env`
-    file.
+### Core CodinGLM variables
+
+- **`Z_AI_API_KEY`**:
+  - Primary authentication token for the CodinGLM (Zhipu AI) provider.
+  - Required for both interactive and headless sessions. See the
+    [Authentication guide](./authentication.md) for how to create and store the
+    key.
+  - Export the variable or place it inside an `.env` file before running the
+    CLI: `export Z_AI_API_KEY="your-secret-key"`.
+- **`ZAI_API_KEY`**:
+  - Compatibility alias that maps to the same value as `Z_AI_API_KEY`.
+  - Useful when you share scripts with other tools that still expect the older
+    spelling.
 - **`GEMINI_MODEL`**:
-  - Specifies the default Gemini model to use.
-  - Overrides the hardcoded default
-  - Example: `export GEMINI_MODEL="gemini-2.5-flash"`
-- **`GOOGLE_API_KEY`**:
-  - Your Google Cloud API key.
-  - Required for using Vertex AI in express mode.
-  - Ensure you have the necessary permissions.
-  - Example: `export GOOGLE_API_KEY="YOUR_GOOGLE_API_KEY"`.
-- **`GOOGLE_CLOUD_PROJECT`**:
-  - Your Google Cloud Project ID.
-  - Required for using Code Assist or Vertex AI.
-  - If using Vertex AI, ensure you have the necessary permissions in this
-    project.
-  - **Cloud Shell Note:** When running in a Cloud Shell environment, this
-    variable defaults to a special project allocated for Cloud Shell users. If
-    you have `GOOGLE_CLOUD_PROJECT` set in your global environment in Cloud
-    Shell, it will be overridden by this default. To use a different project in
-    Cloud Shell, you must define `GOOGLE_CLOUD_PROJECT` in a `.env` file.
-  - Example: `export GOOGLE_CLOUD_PROJECT="YOUR_PROJECT_ID"`.
-- **`GOOGLE_APPLICATION_CREDENTIALS`** (string):
-  - **Description:** The path to your Google Application Credentials JSON file.
-  - **Example:**
-    `export GOOGLE_APPLICATION_CREDENTIALS="/path/to/your/credentials.json"`
-- **`OTLP_GOOGLE_CLOUD_PROJECT`**:
-  - Your Google Cloud Project ID for Telemetry in Google Cloud
-  - Example: `export OTLP_GOOGLE_CLOUD_PROJECT="YOUR_PROJECT_ID"`.
+  - Sets the default GLM model. The CodinGLM build ships with
+    `glm-4.6` pre-configured, but you can override it (for example,
+    `export GEMINI_MODEL="glm-4.6-ultra"`).
+  - The name retains the historical `GEMINI_` prefix because it is wired deep
+    into the runtime.
+- **`CODINGLM`**:
+  - When set to `1`, locks the runtime to Z.AI-only authentication paths.
+  - The packaged CodinGLM CLI exports this for you—set it yourself only if
+    you're embedding the runtime elsewhere.
 - **`GEMINI_TELEMETRY_ENABLED`**:
   - Set to `true` or `1` to enable telemetry. Any other value is treated as
     disabling it.
@@ -788,10 +785,6 @@ the `advanced.excludedEnvVars` setting in your `settings.json` file.
   - Set to `true` or `1` to enable or disable using an external OTLP collector.
     Any other value is treated as disabling it.
   - Overrides the `telemetry.useCollector` setting.
-- **`GOOGLE_CLOUD_LOCATION`**:
-  - Your Google Cloud Project Location (e.g., us-central1).
-  - Required for using Vertex AI in non-express mode.
-  - Example: `export GOOGLE_CLOUD_LOCATION="YOUR_PROJECT_LOCATION"`.
 - **`GEMINI_SANDBOX`**:
   - Alternative to the `sandbox` setting in `settings.json`.
   - Accepts `true`, `false`, `docker`, `podman`, or a custom command string.
@@ -810,8 +803,8 @@ the `advanced.excludedEnvVars` setting in your `settings.json` file.
   - Set to `true` or `1` to enable verbose debug logging, which can be helpful
     for troubleshooting.
   - **Note:** These variables are automatically excluded from project `.env`
-    files by default to prevent interference with gemini-cli behavior. Use
-    `.gemini/.env` files if you need to set these for gemini-cli specifically.
+    files by default to prevent interference with CodinGLM CLI behavior. Use
+    `.gemini/.env` files if you need to set these for CodinGLM CLI specifically.
 - **`NO_COLOR`**:
   - Set to any value to disable all color output in the CLI.
 - **`CLI_TITLE`**:
@@ -820,16 +813,26 @@ the `advanced.excludedEnvVars` setting in your `settings.json` file.
   - Specifies the endpoint for the code assist server.
   - This is useful for development and testing.
 
+### Legacy Google / Vertex variables
+
+Variables such as `GEMINI_API_KEY`, `GOOGLE_API_KEY`,
+`GOOGLE_CLOUD_PROJECT`, `GOOGLE_CLOUD_LOCATION`, and
+`GOOGLE_APPLICATION_CREDENTIALS` belong to the upstream Google Gemini CLI +
+Vertex AI workflows. CodinGLM CLI ignores them unless you intentionally run the
+Google provider. If you still need to use those flows, follow the dedicated
+[Gemini authentication instructions](https://github.com/google-gemini/gemini-cli)
+or keep a separate installation of the upstream CLI.
+
 ## Command-Line Arguments
 
 Arguments passed directly when running the CLI can override other configurations
 for that specific session.
 
 - **`--model <model_name>`** (**`-m <model_name>`**):
-  - Specifies the Gemini model to use for this session.
-  - Example: `npm start -- --model gemini-1.5-pro-latest`
+  - Specifies the GLM model to use for this session.
+  - Example: `codinglm --model glm-4.6`
 - **`--prompt <your_prompt>`** (**`-p <your_prompt>`**):
-  - Used to pass a prompt directly to the command. This invokes Gemini CLI in a
+  - Used to pass a prompt directly to the command. This invokes CodinGLM CLI in a
     non-interactive mode.
   - For scripting examples, use the `--output-format json` flag to get
     structured output.
@@ -837,7 +840,7 @@ for that specific session.
   - Starts an interactive session with the provided prompt as the initial input.
   - The prompt is processed within the interactive session, not before it.
   - Cannot be used when piping input from stdin.
-  - Example: `gemini -i "explain this code"`
+  - Example: `codinglm -i "explain this code"`
 - **`--output-format <format>`**:
   - **Description:** Specifies the format of the CLI output for non-interactive
     mode.
@@ -864,16 +867,16 @@ for that specific session.
     - `yolo`: Automatically approve all tool calls (equivalent to `--yolo`)
   - Cannot be used together with `--yolo`. Use `--approval-mode=yolo` instead of
     `--yolo` for the new unified approach.
-  - Example: `gemini --approval-mode auto_edit`
+  - Example: `codinglm --approval-mode auto_edit`
 - **`--allowed-tools <tool1,tool2,...>`**:
   - A comma-separated list of tool names that will bypass the confirmation
     dialog.
-  - Example: `gemini --allowed-tools "ShellTool(git status)"`
+  - Example: `codinglm --allowed-tools "ShellTool(git status)"`
 - **`--extensions <extension_name ...>`** (**`-e <extension_name ...>`**):
   - Specifies a list of extensions to use for the session. If not provided, all
     available extensions are used.
-  - Use the special term `gemini -e none` to disable all extensions.
-  - Example: `gemini -e my-extension -e my-other-extension`
+  - Use the special term `codinglm -e none` to disable all extensions.
+  - Example: `codinglm -e my-extension -e my-other-extension`
 - **`--list-extensions`** (**`-l`**):
   - Lists all available extensions and exits.
 - **`--include-directories <dir1,dir2,...>`**:
@@ -902,7 +905,7 @@ for that specific session.
 While not strictly configuration for the CLI's _behavior_, context files
 (defaulting to `GEMINI.md` but configurable via the `context.fileName` setting)
 are crucial for configuring the _instructional context_ (also referred to as
-"memory") provided to the Gemini model. This powerful feature allows you to give
+"memory") provided to the GLM model. This powerful feature allows you to give
 project-specific instructions, coding style guides, or any relevant background
 information to the AI, making its responses more tailored and accurate to your
 needs. The CLI includes UI elements, such as an indicator in the footer showing
@@ -910,7 +913,7 @@ the number of loaded context files, to keep you informed about the active
 context.
 
 - **Purpose:** These Markdown files contain instructions, guidelines, or context
-  that you want the Gemini model to be aware of during your interactions. The
+  that you want the GLM model to be aware of during your interactions. The
   system is designed to manage this instructional context hierarchically.
 
 ### Example Context File Content (e.g., `GEMINI.md`)
@@ -981,7 +984,7 @@ conventions and context.
         component, module, or subsection of your project.
 - **Concatenation & UI Indication:** The contents of all found context files are
   concatenated (with separators indicating their origin and path) and provided
-  as part of the system prompt to the Gemini model. The CLI footer displays the
+  as part of the system prompt to the GLM model. The CLI footer displays the
   count of loaded context files, giving you a quick visual cue about the active
   instructional context.
 - **Importing Content:** You can modularize your context files by importing
@@ -998,11 +1001,11 @@ conventions and context.
 
 By understanding and utilizing these configuration layers and the hierarchical
 nature of context files, you can effectively manage the AI's memory and tailor
-the Gemini CLI's responses to your specific needs and projects.
+the CodinGLM CLI's responses to your specific needs and projects.
 
 ## Sandboxing
 
-The Gemini CLI can execute potentially unsafe operations (like shell commands
+The CodinGLM CLI can execute potentially unsafe operations (like shell commands
 and file modifications) within a sandboxed environment to protect your system.
 
 Sandboxing is disabled by default, but you can enable it in a few ways:
@@ -1027,7 +1030,7 @@ FROM gemini-cli-sandbox
 ```
 
 When `.gemini/sandbox.Dockerfile` exists, you can use `BUILD_SANDBOX`
-environment variable when running Gemini CLI to automatically build the custom
+environment variable when running CodinGLM CLI to automatically build the custom
 sandbox image:
 
 ```bash
@@ -1036,7 +1039,7 @@ BUILD_SANDBOX=1 gemini -s
 
 ## Usage Statistics
 
-To help us improve the Gemini CLI, we collect anonymized usage statistics. This
+To help us improve the CodinGLM CLI, we collect anonymized usage statistics. This
 data helps us understand how the CLI is used, identify common issues, and
 prioritize new features.
 
@@ -1045,7 +1048,7 @@ prioritize new features.
 - **Tool Calls:** We log the names of the tools that are called, whether they
   succeed or fail, and how long they take to execute. We do not collect the
   arguments passed to the tools or any data returned by them.
-- **API Requests:** We log the Gemini model used for each request, the duration
+- **API Requests:** We log the GLM model used for each request, the duration
   of the request, and whether it was successful. We do not collect the content
   of the prompts or responses.
 - **Session Information:** We collect information about the configuration of the
@@ -1056,7 +1059,7 @@ prioritize new features.
 - **Personally Identifiable Information (PII):** We do not collect any personal
   information, such as your name, email address, or API keys.
 - **Prompt and Response Content:** We do not log the content of your prompts or
-  the responses from the Gemini model.
+  the responses from the GLM model.
 - **File Content:** We do not log the content of any files that are read or
   written by the CLI.
 

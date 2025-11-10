@@ -1,273 +1,131 @@
-# Gemini CLI Authentication Setup
+# CodinGLM CLI Authentication Setup
 
-Gemini CLI requires authentication using Google's services. Before using Gemini
-CLI, configure **one** of the following authentication methods:
+CodinGLM CLI authenticates against the Zhipu AI CodinGLM platform. To run the
+agent you only need to supply an API key via the `Z_AI_API_KEY` environment
+variable (or the compatibility alias `ZAI_API_KEY`). Unlike the upstream Gemini
+CLI, the CodinGLM build does **not** expose Google account login or Vertex AI
+workflows—the GLM-4.6 API key path is the single, secure authentication method.
 
-- Interactive mode:
-  - Recommended: Login with Google
-  - Use Gemini API key
-  - Use Vertex AI
-- Headless (non-interactive) mode
-- Google Cloud Shell
+## Supported authentication modes
 
-## Quick Check: Running in Google Cloud Shell?
+| Mode | When to use it | How it works |
+| ---- | -------------- | ------------ |
+| Z.AI API key (interactive) | Daily workflows on your laptop or workstation | The CLI reads `Z_AI_API_KEY` from your shell or `.env` file before launching the REPL. |
+| Z.AI API key (headless / CI) | Scripts, cron jobs, GitHub Actions, or remote servers | Provide the same environment variable via secret management and run `codinglm -p ...`. |
 
-If you are running the Gemini CLI within a Google Cloud Shell environment,
-authentication is typically automatic using your Cloud Shell credentials.
+> Legacy Gemini account login, Gemini API keys, and Vertex AI credentials remain
+> available only when you run the upstream Google-branded CLI. If you need those
+> flows, install `@google/gemini-cli` separately.
 
-## Authenticate in Interactive mode
+## Step 1: Generate a CodinGLM API key
 
-When you run Gemini CLI through the command-line, Gemini CLI will provide the
-following options:
+1. Sign in to your CodinGLM / Zhipu AI account in the customer console.
+2. Create (or copy) an API key scoped to the GLM-4.6 model.
+3. Store the key in a secret manager or password vault—you will treat it like a
+   production credential.
 
-```bash
-> 1. Login with Google
-> 2. Use Gemini API key
-> 3. Vertex AI
-```
+Each account can create multiple keys; rotate them regularly and delete unused
+keys in the console if they are compromised.
 
-The following sections provide instructions for each of these authentication
-options.
+## Step 2: Provide the key to the CLI
 
-### Recommended: Login with Google
+CodinGLM CLI looks for `Z_AI_API_KEY` first and falls back to `ZAI_API_KEY` for
+compatibility with older scripts. Set either variable before running the CLI.
 
-If you are running Gemini CLI on your local machine, the simplest method is
-logging in with your Google account.
-
-> **Important:** Use this method if you are a **Google AI Pro** or **Google AI
-> Ultra** subscriber.
-
-1. Select **Login with Google**. Gemini CLI will open a login prompt using your
-   web browser.
-
-   If you are a **Google AI Pro** or **Google AI Ultra** subscriber, login with
-   the Google account associated with your subscription.
-
-2. Follow the on-screen instructions. Your credentials will be cached locally
-   for future sessions.
-
-   > **Note:** This method requires a web browser on a machine that can
-   > communicate with the terminal running the CLI (e.g., your local machine).
-   > The browser will be redirected to a `localhost` URL that the CLI listens on
-   > during setup.
-
-#### (Optional) Set your Google Cloud Project
-
-When you log in using a Google account, you may be prompted to select a
-`GOOGLE_CLOUD_PROJECT`.
-
-This can be necessary if you are:
-
-- Using a Google Workspace account.
-- Using a Gemini Code Assist license from the Google Developer Program.
-- Using a license from a Gemini Code Assist subscription.
-- Using the product outside the
-  [supported regions](https://developers.google.com/gemini-code-assist/resources/available-locations)
-  for free individual usage.
-- A Google account holder under the age of 18.
-
-If you fall into one of these categories, you must:
-
-1.  Have a Google Cloud Project ID.
-2.  [Enable the Gemini for Cloud API](https://cloud.google.com/gemini/docs/discover/set-up-gemini#enable-api).
-3.  [Configure necessary IAM access permissions](https://cloud.google.com/gemini/docs/discover/set-up-gemini#grant-iam).
-
-To set the project ID, you can export either the `GOOGLE_CLOUD_PROJECT` or
-`GOOGLE_CLOUD_PROJECT_ID` environment variable. The CLI checks for
-`GOOGLE_CLOUD_PROJECT` first, then falls back to `GOOGLE_CLOUD_PROJECT_ID` :
+### Temporary export for the current shell
 
 ```bash
-# Replace YOUR_PROJECT_ID with your actual Google Cloud Project ID
-# Using the standard variable:
-export GOOGLE_CLOUD_PROJECT="YOUR_PROJECT_ID"
-
-# Or, using the fallback variable:
-export GOOGLE_CLOUD_PROJECT_ID="YOUR_PROJECT_ID"
+export Z_AI_API_KEY="your-secret-key"
+# optional alias if you use legacy scripts
+export ZAI_API_KEY="$Z_AI_API_KEY"
+codinglm
 ```
 
-To make this setting persistent, see
-[Persisting Environment Variables](#persisting-environment-variables).
+The export lasts until you close the shell session.
 
-### Use Gemini API Key
+### Persistent export in your shell profile
 
-If you don't want to authenticate using your Google account, you can use an API
-key from Google AI Studio.
-
-1.  Obtain your API key from
-    [Google AI Studio](https://aistudio.google.com/app/apikey).
-2.  Set the `GEMINI_API_KEY` environment variable:
-
-    ```bash
-    # Replace YOUR_GEMINI_API_KEY with the key from AI Studio
-    export GEMINI_API_KEY="YOUR_GEMINI_API_KEY"
-    ```
-
-To make this setting persistent, see
-[Persisting Environment Variables](#persisting-environment-variables).
-
-> **Warning:** Treat API keys, especially for services like Gemini, as sensitive
-> credentials. Protect them to prevent unauthorized access and potential misuse
-> of the service under your account.
-
-### Use Vertex AI
-
-If you intend to use Google Cloud's Vertex AI platform, you have several
-authentication options:
-
-- Application Default Credentials (ADC) and `gcloud`.
-- A Service Account JSON key.
-- A Google Cloud API key.
-
-#### First: Set required environment variables
-
-Regardless of your method of authentication, you'll typically need to set the
-following variables: `GOOGLE_CLOUD_PROJECT` (or `GOOGLE_CLOUD_PROJECT_ID`) and
-`GOOGLE_CLOUD_LOCATION`.
-
-To set these variables:
+Add the export to `~/.zshrc`, `~/.bashrc`, or the profile your shell loads:
 
 ```bash
-# Replace with your project ID and desired location (e.g., us-central1)
-# You can use GOOGLE_CLOUD_PROJECT_ID as a fallback for GOOGLE_CLOUD_PROJECT
-export GOOGLE_CLOUD_PROJECT="YOUR_PROJECT_ID"
-export GOOGLE_CLOUD_LOCATION="YOUR_PROJECT_LOCATION"
+echo 'export Z_AI_API_KEY="your-secret-key"' >> ~/.zshrc
+source ~/.zshrc
 ```
 
-#### A. Vertex AI - Application Default Credentials (ADC) using `gcloud`
+This ensures new terminals inherit the variable automatically.
 
-Consider this method of authentication if you have Google Cloud CLI installed.
+### Using `.env` files
 
-> **Note:** If you have previously set `GOOGLE_API_KEY` or `GEMINI_API_KEY`, you
-> must unset them to use ADC:
+CodinGLM CLI automatically loads environment variables in the following order:
+
+1. `.env` in the current working directory.
+2. The nearest `.env` file up the directory tree until the repo root (identified
+   by `.git`) or your home directory.
+3. `~/.env`.
+4. Project-specific `.gemini/.env` when present. (The CLI still uses the
+   upstream `.gemini` directory structure for compatibility.)
+
+A minimal `.env` entry looks like:
+
+```
+Z_AI_API_KEY=your-secret-key
+```
+
+Place secret `.env` files under `.gitignore` or use the `.gemini/.env` helper so
+keys never leave your machine.
+
+## Headless and CI/CD usage
+
+For scripts or automation, make sure the environment variable is available to
+that process before invoking the CLI:
 
 ```bash
-unset GOOGLE_API_KEY GEMINI_API_KEY
+Z_AI_API_KEY="$CI_ZAI_KEY" codinglm -p "Summarize PR #123"
 ```
 
-1.  Ensure you have a Google Cloud project and Vertex AI API is enabled.
-2.  Log in to Google Cloud:
+Recommended practices:
 
-    ```bash
-    gcloud auth application-default login
-    ```
+- Store the key in your CI secret manager (GitHub Actions secrets, Cloud Build
+  substitutions, etc.).
+- Pass it to the workflow as an environment variable rather than committing it
+  to files.
+- Combine `--output-format json` or `--output-format stream-json` with prompts
+  for structured automation results.
 
-    See
-    [Set up Application Default Credentials](https://cloud.google.com/docs/authentication/provide-credentials-adc)
-    for details.
+## Verifying authentication
 
-3.  Ensure `GOOGLE_CLOUD_PROJECT` (or `GOOGLE_CLOUD_PROJECT_ID`) and
-    `GOOGLE_CLOUD_LOCATION` are set.
+Run `codinglm --auth-check` (or start the CLI normally). If the CLI cannot find
+`Z_AI_API_KEY`, it emits an error similar to:
 
-#### B. Vertex AI - Service Account JSON key
+```
+Error: Z_AI_API_KEY is required when using the Z.AI provider.
+```
 
-Consider this method of authentication in non-interactive environments, CI/CD,
-or if your organization restricts user-based ADC or API key creation.
+Double-check that the `Z_AI_API_KEY` export is in scope, and confirm there are no
+extra quotes or spaces. You can also run `env | grep Z_AI` to ensure the value is
+visible to the current shell.
 
-> **Note:** If you have previously set `GOOGLE_API_KEY` or `GEMINI_API_KEY`, you
-> must unset them:
+## Troubleshooting
+
+- **"Z_AI_API_KEY is required"** – The variable is unset. Export it or create a
+  project `.env` file.
+- **Multiple keys in the same session** – The CLI uses the first non-empty
+  variable it finds. Clear duplicates with `unset Z_AI_API_KEY ZAI_API_KEY` and
+  re-export the one you intend to use.
+- **Running both CodinGLM and Gemini CLI** – Keep keys in separate `.env`
+  files. For example, use `.gemini/.env` for CodinGLM and `.env` for Gemini to
+  avoid mixing credentials.
+
+## Legacy authentication flows
+
+If you still need to sign in with a Google account, a Gemini API key, or Vertex
+AI credentials, install the upstream package:
 
 ```bash
-unset GOOGLE_API_KEY GEMINI_API_KEY
+npm install -g @google/gemini-cli
 ```
 
-1.  [Create a service account and key](https://cloud.google.com/iam/docs/keys-create-delete)
-    and download the provided JSON file. Assign the "Vertex AI User" role to the
-    service account.
-2.  Set the `GOOGLE_APPLICATION_CREDENTIALS` environment variable to the JSON
-    file's absolute path:
-
-    ```bash
-    # Replace /path/to/your/keyfile.json with the actual path
-    export GOOGLE_APPLICATION_CREDENTIALS="/path/to/your/keyfile.json"
-    ```
-
-3.  Ensure `GOOGLE_CLOUD_PROJECT` (or `GOOGLE_CLOUD_PROJECT_ID`) and
-    `GOOGLE_CLOUD_LOCATION` are set.
-
-> **Warning:** Protect your service account key file as it provides access to
-> your resources.
-
-#### C. Vertex AI - Google Cloud API key
-
-1.  Obtain a Google Cloud API key:
-    [Get an API Key](https://cloud.google.com/vertex-ai/generative-ai/docs/start/api-keys?usertype=newuser).
-2.  Set the `GOOGLE_API_KEY` environment variable:
-
-    ```bash
-    # Replace YOUR_GOOGLE_API_KEY with your Vertex AI API key
-    export GOOGLE_API_KEY="YOUR_GOOGLE_API_KEY"
-    ```
-
-    > **Note:** If you see errors like
-    > `"API keys are not supported by this API..."`, your organization might
-    > restrict API key usage for this service. Try the
-    > [Service Account JSON Key](#b-vertex-ai-service-account-json-key) or
-    > [ADC](#a-vertex-ai-application-default-credentials-adc-using-gcloud)
-    > methods instead.
-
-To make any of these Vertex AI environment variable settings persistent, see
-[Persisting Environment Variables](#persisting-environment-variables).
-
-## Persisting Environment Variables
-
-To avoid setting environment variables in every terminal session, you can:
-
-1.  **Add your environment variables to your shell configuration file:** Append
-    the `export ...` commands to your shell's startup file (e.g., `~/.bashrc`,
-    `~/.zshrc`, or `~/.profile`) and reload your shell (e.g.,
-    `source ~/.bashrc`).
-
-    ```bash
-    # Example for .bashrc
-    echo 'export GOOGLE_CLOUD_PROJECT="YOUR_PROJECT_ID"' >> ~/.bashrc
-    source ~/.bashrc
-    ```
-
-    > **Warning:** Be advised that when you export API keys or service account
-    > paths in your shell configuration file, any process executed from the
-    > shell can potentially read them.
-
-2.  **Use a `.env` file:** Create a `.gemini/.env` file in your project
-    directory or home directory. Gemini CLI automatically loads variables from
-    the first `.env` file it finds, searching up from the current directory,
-    then in `~/.gemini/.env` or `~/.env`. `.gemini/.env` is recommended.
-
-    Example for user-wide settings:
-
-    ```bash
-    mkdir -p ~/.gemini
-    cat >> ~/.gemini/.env <<'EOF'
-    GOOGLE_CLOUD_PROJECT="your-project-id"
-    # Add other variables like GEMINI_API_KEY as needed
-    EOF
-    ```
-
-    Variables are loaded from the first file found, not merged.
-
-## Non-interactive mode / headless environments
-
-Non-interative mode / headless environments will use your existing
-authentication method, if an existing authentication credential is cached.
-
-If you have not already logged in with an authentication credential (such as a
-Google account), you **must** configure authentication using environment
-variables:
-
-1.  **Gemini API Key:** Set `GEMINI_API_KEY`.
-2.  **Vertex AI:**
-    - Set `GOOGLE_GENAI_USE_VERTEXAI=true`.
-    - **With Google Cloud API Key:** Set `GOOGLE_API_KEY`.
-    - **With ADC:** Ensure ADC is configured (e.g., via a service account with
-      `GOOGLE_APPLICATION_CREDENTIALS`) and set `GOOGLE_CLOUD_PROJECT` (or
-      `GOOGLE_CLOUD_PROJECT_ID`) and `GOOGLE_CLOUD_LOCATION`.
-
-The CLI will exit with an error in non-interactive mode if no suitable
-environment variables are found.
-
-## What's next?
-
-Your authentication method affects your quotas, pricing, Terms of Service, and
-privacy notices. Review the following pages to learn more:
-
-- [Gemini CLI: Quotas and Pricing](../quota-and-pricing.md).
-- [Gemini CLI: Terms of Service and Privacy Notice](../tos-privacy.md).
+Launch that binary with the `gemini` command and follow the original
+[Gemini authentication guide](https://github.com/google-gemini/gemini-cli). Keep
+those profiles completely separate from your `codinglm` configuration to avoid
+confusing the CLI about which provider to use.

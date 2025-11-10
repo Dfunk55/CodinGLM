@@ -1,65 +1,59 @@
-# Get Started with Gemini CLI
+# Get Started with CodinGLM CLI
 
-Welcome to Gemini CLI! This guide will help you install, configure, and start
-using the Gemini CLI to enhance your workflow right from your terminal.
+Welcome to CodinGLM CLI! This guide walks you through the fastest way to
+install, authenticate, configure, and start collaborating with the
+GLM-4.6-powered agent in your terminal.
 
-## Quickstart: Install, authenticate, configure, and use Gemini CLI
+## Quickstart: install, authenticate, configure, and run CodinGLM CLI
 
-Gemini CLI brings the power of advanced language models directly to your command
-line interface. As an AI-powered assistant, Gemini CLI can help you with a
-variety of tasks, from understanding and generating code to reviewing and
-editing documents.
+1. Install the CLI:
+   ```bash
+   npm install -g @codinglm/cli
+   ```
+2. Export your Zhipu AI key (or define it in `.env`):
+   ```bash
+   export Z_AI_API_KEY="your-secret-key"
+   ```
+3. Launch the agent:
+   ```bash
+   codinglm
+   ```
+4. Follow the on-screen prompts to pick a workspace and start chatting.
+
+CodinGLM CLI keeps the battle-tested Gemini CLI runtime under the hood, but all
+defaults (models, tooling, telemetry, wording) point to CodinGLM and Z.AI.
 
 ## Install
 
-The standard method to install and run Gemini CLI uses `npm`:
-
-```bash
-npm install -g @google/gemini-cli
-```
-
-Once Gemini CLI is installed, run Gemini CLI from your command line:
-
-```bash
-gemini
-```
-
-For more installation options, see [Gemini CLI Installation](./installation.md).
+The recommended install path is the global `npm` package. You can also run the
+CLI through `npx`, from source, or inside the sandbox container. See the
+[Installation guide](./installation.md) for every supported option.
 
 ## Authenticate
 
-To begin using Gemini CLI, you must authenticate with a Google service. The most
-straightforward authentication method uses your existing Google account:
-
-1. Run Gemini CLI after installation:
-   ```bash
-   gemini
-   ```
-2. When asked "How would you like to authenticate for this project?" select **1.
-   Login with Google**.
-3. Select your Google account.
-4. Click on **Sign in**.
-
-For other authentication options and information, see
-[Gemini CLI Authentication Setup](./authentication.md).
+CodinGLM CLI authenticates with the Zhipu AI CodinGLM platform via
+`Z_AI_API_KEY` (or the compatible fallback `ZAI_API_KEY`). Head over to the
+[Authentication guide](./authentication.md) for instructions on generating a
+key, storing it securely, and loading it for both interactive and CI runs.
 
 ## Configure
 
-Gemini CLI offers several ways to configure its behavior, including environment
-variables, command-line arguments, and settings files.
-
-To explore your configuration options, see
-[Gemini CLI Configuration](./configuration.md).
+Configuration layers mirror the upstream runtime: defaults, system files,
+user/project overrides, environment variables, and CLI flags. Review the
+[Configuration reference](./configuration.md) to see every setting, schema, and
+recommended layout for the `.gemini` directory that still backs CodinGLM CLI.
 
 ## Use
 
-Once installed and authenticated, you can start using Gemini CLI by issuing
-commands and prompts in your terminal. Ask it to generate code, explain files,
-and more.
-
-To explore the power of Gemini CLI, see [Gemini CLI examples](./examples.md).
+Once the CLI is running, issue natural-language prompts such as
+`codinglm -p "Refactor the parser"` or explore the REPL to browse files,
+edit code, and invoke tools. The [Examples catalog](./examples.md) collects
+popular workflows you can copy and adapt.
 
 ## What's next?
 
-- Find out more about [Gemini CLI's tools](../tools/index.md).
-- Review [Gemini CLI's commands](../cli/commands.md).
+- Dive into [CodinGLM CLI tools](../tools/index.md) to learn what the agent can
+  execute on your behalf.
+- Review the [commands reference](../cli/commands.md) for every flag and
+  advanced option.
+- Wire up MCP servers via [Tools → MCP Server guide](../tools/mcp-server.md).

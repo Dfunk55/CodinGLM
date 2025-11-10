@@ -46,7 +46,7 @@ the default way that the CLI executes tools that might have side effects.
   # Example: run a sandbox image you’ve prepared
   docker run --rm -it codinglm/sandbox:latest
   ```
-- **Using the `--sandbox` flag:** If you have Gemini CLI installed locally
+- **Using the `--sandbox` flag:** If you have CodinGLM CLI installed locally
   (using the standard installation described above), you can instruct it to run
   inside the sandbox container.
   ```bash
@@ -102,7 +102,7 @@ registry:
 - `@codinglm/cli`: The user-facing frontend.
 
 These packages are used when performing the standard installation and when
-running Gemini CLI from the source.
+running CodinGLM CLI from the source.
 
 **Build and packaging processes**
 
