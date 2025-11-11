@@ -1,5 +1,5 @@
 /**
- * Internal LLM type definitions replacing @google/genai usage.
+ * Internal LLM type definitions replacing @codinglm/genai usage.
  * Only includes shapes used by CodinGLM.
  */
 

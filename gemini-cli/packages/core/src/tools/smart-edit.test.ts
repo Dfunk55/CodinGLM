@@ -22,12 +22,16 @@ vi.mock('../utils/llm-edit-fixer.js', () => ({
   FixLLMEditWithInstruction: mockFixLLMEditWithInstruction,
 }));
 
-vi.mock('../core/client.js', () => ({
-  GeminiClient: vi.fn().mockImplementation(() => ({
+vi.mock('../core/client.js', () => {
+  const MockClient = vi.fn().mockImplementation(() => ({
     generateJson: mockGenerateJson,
     getHistory: vi.fn().mockResolvedValue([]),
-  })),
-}));
+  }));
+  return {
+    LlmClient: MockClient,
+    LlmClient: MockClient,
+  };
+});
 
 vi.mock('../utils/editor.js', () => ({
   openDiff: mockOpenDiff,
@@ -65,7 +69,7 @@ describe('SmartEditTool', () => {
   let tempDir: string;
   let rootDir: string;
   let mockConfig: Config;
-  let geminiClient: any;
+  let llmClient: any;
   let fileSystemService: StandardFileSystemService;
   let baseLlmClient: BaseLlmClient;
 
@@ -75,7 +79,7 @@ describe('SmartEditTool', () => {
     rootDir = path.join(tempDir, 'root');
     fs.mkdirSync(rootDir);
 
-    geminiClient = {
+    llmClient = {
       generateJson: mockGenerateJson,
       getHistory: vi.fn().mockResolvedValue([]),
     };
@@ -93,7 +97,7 @@ describe('SmartEditTool', () => {
       getUseSmartEdit: vi.fn(() => false),
       getUseModelRouter: vi.fn(() => false),
       getProxy: vi.fn(() => undefined),
-      getGeminiClient: vi.fn().mockReturnValue(geminiClient),
+      getLlmClient: vi.fn().mockReturnValue(llmClient),
       getBaseLlmClient: vi.fn().mockReturnValue(baseLlmClient),
       getTargetDir: () => rootDir,
       getApprovalMode: vi.fn(),
@@ -114,8 +118,8 @@ describe('SmartEditTool', () => {
       getUserAgent: () => 'test-agent',
       getUserMemory: () => '',
       setUserMemory: vi.fn(),
-      getGeminiMdFileCount: () => 0,
-      setGeminiMdFileCount: vi.fn(),
+      getContextFileCount: () => 0,
+      setContextFileCount: vi.fn(),
       getToolRegistry: () => ({}) as any,
     } as unknown as Config;
 

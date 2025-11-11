@@ -1,10 +1,10 @@
 {
-  "name": "@google/gemini-cli-a2a-server",
+  "name": "@codinglm/a2a-server",
   "version": "0.13.0-nightly.20251031.c89bc30d",
-  "description": "Gemini CLI A2A Server",
+  "description": "CodinGLM CLI A2A Server",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/google-gemini/gemini-cli.git",
+    "url": "git+https://github.com/Dfunk55/CodinGLM.git",
     "directory": "packages/a2a-server"
   },
   "type": "module",

@@ -8,19 +8,19 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { setupUser, ProjectIdRequiredError } from './setup.js';
 import { CodeAssistServer } from '../code_assist/server.js';
 import type { OAuth2Client } from 'google-auth-library';
-import type { GeminiUserTier } from './types.js';
+import type { CodinGLMUserTier } from './types.js';
 import { UserTierId } from './types.js';
 
 vi.mock('../code_assist/server.js');
 
-const mockPaidTier: GeminiUserTier = {
+const mockPaidTier: CodinGLMUserTier = {
   id: UserTierId.STANDARD,
   name: 'paid',
   description: 'Paid tier',
   isDefault: true,
 };
 
-const mockFreeTier: GeminiUserTier = {
+const mockFreeTier: CodinGLMUserTier = {
   id: UserTierId.FREE,
   name: 'free',
   description: 'Free tier',

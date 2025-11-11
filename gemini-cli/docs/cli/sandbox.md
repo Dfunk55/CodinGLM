@@ -1,14 +1,14 @@
-# Sandboxing in the Gemini CLI
+# Sandboxing in the CodinGLM CLI
 
-This document provides a guide to sandboxing in the Gemini CLI, including
+This document provides a guide to sandboxing in the CodinGLM CLI, including
 prerequisites, quickstart, and configuration.
 
 ## Prerequisites
 
-Before using sandboxing, you need to install and set up the Gemini CLI:
+Before using sandboxing, you need to install and set up the CodinGLM CLI:
 
 ```bash
-npm install -g @google/gemini-cli
+npm install -g @codinglm/cli
 ```
 
 To verify the installation

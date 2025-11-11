@@ -20,7 +20,7 @@ import { createUserContent } from '../llm/helpers.js';
 import { retryWithBackoff } from '../utils/retry.js';
 import type { Config } from '../config/config.js';
 import {
-  DEFAULT_GEMINI_FLASH_MODEL,
+  DEFAULT_GLM_FLASH_MODEL,
   getEffectiveModel,
 } from '../config/models.js';
 import { hasCycleInSchema } from '../tools/tools.js';
@@ -366,7 +366,7 @@ export class ChatSession {
 
       if (
         this.config.getQuotaErrorOccurred() &&
-        modelToUse === DEFAULT_GEMINI_FLASH_MODEL
+        modelToUse === DEFAULT_GLM_FLASH_MODEL
       ) {
         throw new Error(
           'Please submit a new query to continue with the Flash model.',
@@ -604,7 +604,7 @@ export class ChatSession {
 
   /**
    * Records completed tool calls with full metadata.
-   * This is called by external components when tool calls complete, before sending responses to Gemini.
+   * This is called by external components when tool calls complete, before sending responses to CodinGLM.
    */
   recordCompletedToolCalls(
     model: string,

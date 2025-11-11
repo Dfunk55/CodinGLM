@@ -28,7 +28,7 @@ import { ShellTool } from '../tools/shell.js';
 import { WriteFileTool } from '../tools/write-file.js';
 import { WebFetchTool } from '../tools/web-fetch.js';
 import { ReadManyFilesTool } from '../tools/read-many-files.js';
-import { MemoryTool, setGeminiMdFilename } from '../tools/memoryTool.js';
+import { MemoryTool, setContextFilename } from '../tools/memoryTool.js';
 import { WebSearchTool } from '../tools/web-search.js';
 import { LlmClient } from '../core/client.js';
 import { BaseLlmClient } from '../core/baseLlmClient.js';
@@ -45,10 +45,10 @@ import {
 import { coreEvents } from '../utils/events.js';
 import { tokenLimit } from '../core/tokenLimits.js';
 import {
-  DEFAULT_GEMINI_EMBEDDING_MODEL,
-  DEFAULT_GEMINI_FLASH_MODEL,
-  DEFAULT_GEMINI_MODEL,
-  DEFAULT_GEMINI_MODEL_AUTO,
+  DEFAULT_GLM_EMBEDDING_MODEL,
+  DEFAULT_GLM_FLASH_MODEL,
+  DEFAULT_GLM_MODEL,
+  DEFAULT_GLM_MODEL_AUTO,
   DEFAULT_THINKING_MODE,
 } from './models.js';
 import { shouldAttemptBrowserLaunch } from '../utils/browser.js';
@@ -122,7 +122,7 @@ export interface CodebaseInvestigatorSettings {
  * around on the config object though Core does not use this information
  * directly.
  */
-export interface GeminiCLIExtension {
+export interface CodinGLMExtension {
   name: string;
   version: string;
   isActive: boolean;
@@ -186,7 +186,7 @@ export class MCPServerConfig {
     readonly description?: string,
     readonly includeTools?: string[],
     readonly excludeTools?: string[],
-    readonly extension?: GeminiCLIExtension,
+    readonly extension?: CodinGLMExtension,
     // OAuth configuration
     readonly oauth?: MCPOAuthConfig,
     readonly authProviderType?: AuthProviderType,
@@ -225,8 +225,8 @@ export interface ConfigParameters {
   mcpServerCommand?: string;
   mcpServers?: Record<string, MCPServerConfig>;
   userMemory?: string;
-  geminiMdFileCount?: number;
-  geminiMdFilePaths?: string[];
+  contextFileCount?: number;
+  contextFilePaths?: string[];
   approvalMode?: ApprovalMode;
   showMemoryUsage?: boolean;
   contextFileName?: string | string[];
@@ -235,7 +235,7 @@ export interface ConfigParameters {
   usageStatisticsEnabled?: boolean;
   fileFiltering?: {
     respectGitIgnore?: boolean;
-    respectGeminiIgnore?: boolean;
+    respectContextIgnore?: boolean;
     enableRecursiveFileSearch?: boolean;
     disableFuzzySearch?: boolean;
     customExcludes?: string[];
@@ -320,8 +320,8 @@ export class Config {
   private readonly mcpServerCommand: string | undefined;
   private mcpServers: Record<string, MCPServerConfig> | undefined;
   private userMemory: string;
-  private geminiMdFileCount: number;
-  private geminiMdFilePaths: string[];
+  private contextFileCount: number;
+  private contextFilePaths: string[];
   private approvalMode: ApprovalMode;
   private readonly showMemoryUsage: boolean;
   private readonly accessibility: AccessibilitySettings;
@@ -332,7 +332,7 @@ export class Config {
   private modelRouterService: ModelRouterService;
   private readonly fileFiltering: {
     respectGitIgnore: boolean;
-    respectGeminiIgnore: boolean;
+    respectContextIgnore: boolean;
     enableRecursiveFileSearch: boolean;
     disableFuzzySearch: boolean;
     customExcludes: string[];
@@ -402,7 +402,7 @@ export class Config {
   constructor(params: ConfigParameters) {
     this.sessionId = params.sessionId;
     this.embeddingModel =
-      params.embeddingModel ?? DEFAULT_GEMINI_EMBEDDING_MODEL;
+      params.embeddingModel ?? DEFAULT_GLM_EMBEDDING_MODEL;
     this.fileSystemService = new StandardFileSystemService();
     this.sandbox = params.sandbox;
     this.targetDir = path.resolve(params.targetDir);
@@ -423,8 +423,8 @@ export class Config {
     this.allowedMcpServers = params.allowedMcpServers ?? [];
     this.blockedMcpServers = params.blockedMcpServers ?? [];
     this.userMemory = params.userMemory ?? '';
-    this.geminiMdFileCount = params.geminiMdFileCount ?? 0;
-    this.geminiMdFilePaths = params.geminiMdFilePaths ?? [];
+    this.contextFileCount = params.contextFileCount ?? 0;
+    this.contextFilePaths = params.contextFilePaths ?? [];
     this.approvalMode = params.approvalMode ?? ApprovalMode.DEFAULT;
     this.showMemoryUsage = params.showMemoryUsage ?? false;
     this.accessibility = params.accessibility ?? {};
@@ -443,9 +443,9 @@ export class Config {
       respectGitIgnore:
         params.fileFiltering?.respectGitIgnore ??
         DEFAULT_FILE_FILTERING_OPTIONS.respectGitIgnore,
-      respectGeminiIgnore:
-        params.fileFiltering?.respectGeminiIgnore ??
-        DEFAULT_FILE_FILTERING_OPTIONS.respectGeminiIgnore,
+      respectContextIgnore:
+        params.fileFiltering?.respectContextIgnore ??
+        DEFAULT_FILE_FILTERING_OPTIONS.respectContextIgnore,
       enableRecursiveFileSearch:
         params.fileFiltering?.enableRecursiveFileSearch ?? true,
       disableFuzzySearch: params.fileFiltering?.disableFuzzySearch ?? false,
@@ -511,7 +511,7 @@ export class Config {
       thinkingBudget:
         params.codebaseInvestigatorSettings?.thinkingBudget ??
         DEFAULT_THINKING_MODE,
-      model: params.codebaseInvestigatorSettings?.model ?? DEFAULT_GEMINI_MODEL,
+      model: params.codebaseInvestigatorSettings?.model ?? DEFAULT_GLM_MODEL,
     };
     this.continueOnFailedApiCall = params.continueOnFailedApiCall ?? true;
     this.enableShellOutputEfficiency =
@@ -534,7 +534,7 @@ export class Config {
     this.hooks = params.hooks;
 
     if (params.contextFileName) {
-      setGeminiMdFilename(params.contextFileName);
+      setContextFilename(params.contextFileName);
     }
 
     if (this.telemetrySettings.enabled) {
@@ -598,8 +598,8 @@ export class Config {
     this.useModelRouter = this.initialUseModelRouter;
     if (this.disableModelRouterForAuth?.includes(authMethod)) {
       this.useModelRouter = false;
-      if (this.model === DEFAULT_GEMINI_MODEL_AUTO) {
-        this.model = DEFAULT_GEMINI_MODEL;
+      if (this.model === DEFAULT_GLM_MODEL_AUTO) {
+        this.model = DEFAULT_GLM_MODEL;
       }
     }
 
@@ -830,20 +830,20 @@ export class Config {
     this.userMemory = newUserMemory;
   }
 
-  getGeminiMdFileCount(): number {
-    return this.geminiMdFileCount;
+  getContextFileCount(): number {
+    return this.contextFileCount;
   }
 
-  setGeminiMdFileCount(count: number): void {
-    this.geminiMdFileCount = count;
+  setContextFileCount(count: number): void {
+    this.contextFileCount = count;
   }
 
-  getGeminiMdFilePaths(): string[] {
-    return this.geminiMdFilePaths;
+  getContextFilePaths(): string[] {
+    return this.contextFilePaths;
   }
 
-  setGeminiMdFilePaths(paths: string[]): void {
-    this.geminiMdFilePaths = paths;
+  setContextFilePaths(paths: string[]): void {
+    this.contextFilePaths = paths;
   }
 
   getApprovalMode(): ApprovalMode {
@@ -919,14 +919,14 @@ export class Config {
   getFileFilteringRespectGitIgnore(): boolean {
     return this.fileFiltering.respectGitIgnore;
   }
-  getFileFilteringRespectGeminiIgnore(): boolean {
-    return this.fileFiltering.respectGeminiIgnore;
+  getFileFilteringRespectContextIgnore(): boolean {
+    return this.fileFiltering.respectContextIgnore;
   }
 
   getFileFilteringOptions(): FileFilteringOptions {
     return {
       respectGitIgnore: this.fileFiltering.respectGitIgnore,
-      respectGeminiIgnore: this.fileFiltering.respectGeminiIgnore,
+      respectContextIgnore: this.fileFiltering.respectContextIgnore,
     };
   }
 
@@ -982,7 +982,7 @@ export class Config {
     return this.extensionManagement;
   }
 
-  getExtensions(): GeminiCLIExtension[] {
+  getExtensions(): CodinGLMExtension[] {
     return this._extensionLoader.getExtensions();
   }
 
@@ -1322,4 +1322,4 @@ export class Config {
   }
 }
 // Export model constants for use in CLI
-export { DEFAULT_GEMINI_FLASH_MODEL };
+export { DEFAULT_GLM_FLASH_MODEL };

@@ -6,7 +6,7 @@
 
 import type { Config } from '../config/config.js';
 import { AuthType } from '../core/contentGenerator.js';
-import { DEFAULT_GEMINI_FLASH_MODEL } from '../config/models.js';
+import { DEFAULT_GLM_FLASH_MODEL } from '../config/models.js';
 import { logFlashFallback, FlashFallbackEvent } from '../telemetry/index.js';
 import { coreEvents } from '../utils/events.js';
 
@@ -19,7 +19,7 @@ export async function handleFallback(
   // Applicability Checks
   if (authType !== AuthType.LOGIN_WITH_GOOGLE) return null;
 
-  const fallbackModel = DEFAULT_GEMINI_FLASH_MODEL;
+  const fallbackModel = DEFAULT_GLM_FLASH_MODEL;
 
   if (failedModel === fallbackModel) return null;
 

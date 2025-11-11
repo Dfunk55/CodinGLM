@@ -16,7 +16,7 @@ import {
   executeToolCall,
   shutdownTelemetry,
   isTelemetrySdkInitialized,
-  GeminiEventType,
+  LlmEventType,
   FatalInputError,
   promptIdContext,
   OutputFormat,
@@ -183,7 +183,7 @@ export async function runNonInteractive({
         }
       });
 
-      const geminiClient = config.getLlmClient();
+      const llmClient = config.getLlmClient();
 
       // Emit init event for streaming JSON
       if (streamFormatter) {
@@ -270,7 +270,7 @@ export async function runNonInteractive({
         }
         const toolCallRequests: ToolCallRequestInfo[] = [];
 
-        const responseStream = geminiClient.sendMessageStream(
+        const responseStream = llmClient.sendMessageStream(
           currentMessages[0]?.parts || [],
           abortController.signal,
           prompt_id,
@@ -282,7 +282,7 @@ export async function runNonInteractive({
             handleCancellationError(config);
           }
 
-          if (event.type === GeminiEventType.Content) {
+          if (event.type === LlmEventType.Content) {
             if (streamFormatter) {
               streamFormatter.emitEvent({
                 type: JsonStreamEventType.MESSAGE,
@@ -298,7 +298,7 @@ export async function runNonInteractive({
                 textOutput.write(event.value);
               }
             }
-          } else if (event.type === GeminiEventType.ToolCallRequest) {
+          } else if (event.type === LlmEventType.ToolCallRequest) {
             if (streamFormatter) {
               streamFormatter.emitEvent({
                 type: JsonStreamEventType.TOOL_USE,
@@ -309,7 +309,7 @@ export async function runNonInteractive({
               });
             }
             toolCallRequests.push(event.value);
-          } else if (event.type === GeminiEventType.LoopDetected) {
+          } else if (event.type === LlmEventType.LoopDetected) {
             if (streamFormatter) {
               streamFormatter.emitEvent({
                 type: JsonStreamEventType.ERROR,
@@ -318,7 +318,7 @@ export async function runNonInteractive({
                 message: 'Loop detected, stopping execution',
               });
             }
-          } else if (event.type === GeminiEventType.MaxSessionTurns) {
+          } else if (event.type === LlmEventType.MaxSessionTurns) {
             if (streamFormatter) {
               streamFormatter.emitEvent({
                 type: JsonStreamEventType.ERROR,
@@ -327,7 +327,7 @@ export async function runNonInteractive({
                 message: 'Maximum session turns exceeded',
               });
             }
-          } else if (event.type === GeminiEventType.Error) {
+          } else if (event.type === LlmEventType.Error) {
             throw event.value.error;
           }
         }
@@ -383,11 +383,11 @@ export async function runNonInteractive({
             }
           }
 
-          // Record tool calls with full metadata before sending responses to Gemini
+          // Record tool calls with full metadata before sending responses to CodinGLM
           try {
             const currentModel =
-              geminiClient.getCurrentSequenceModel() ?? config.getModel();
-            geminiClient
+              llmClient.getCurrentSequenceModel() ?? config.getModel();
+            llmClient
               .getChat()
               .recordCompletedToolCalls(currentModel, completedToolCalls);
           } catch (error) {

@@ -94,7 +94,7 @@ runs:
         GEMINI_API_KEY: '${{ inputs.gemini_api_key }}'
         INTEGRATION_TEST_USE_INSTALLED_GEMINI: 'true'
         # We must diable CI mode here because it interferes with interactive tests.
-        # See https://github.com/google-gemini/gemini-cli/issues/10517
+        # See https://github.com/Dfunk55/CodinGLM/issues/10517
         CI: 'false'
       shell: 'bash'
       run: 'npm run test:integration:sandbox:none'

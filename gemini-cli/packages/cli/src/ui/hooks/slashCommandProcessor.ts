@@ -8,7 +8,7 @@ import { useCallback, useMemo, useEffect, useState } from 'react';
 import { type PartListUnion } from '@codinglm/core/llm/types';
 import process from 'node:process';
 import type { UseHistoryManagerReturn } from './useHistoryManager.js';
-import type { Config } from '@google/gemini-cli-core';
+import type { Config } from '@codinglm/core';
 import {
   GitService,
   Logger,
@@ -18,7 +18,7 @@ import {
   ToolConfirmationOutcome,
   Storage,
   IdeClient,
-} from '@google/gemini-cli-core';
+} from '@codinglm/core';
 import { useSessionStats } from '../contexts/SessionContext.js';
 import type {
   Message,
@@ -68,7 +68,7 @@ export const useSlashCommandProcessor = (
   refreshStatic: () => void,
   toggleVimEnabled: () => Promise<boolean>,
   setIsProcessing: (isProcessing: boolean) => void,
-  setGeminiMdFileCount: (count: number) => void,
+  setContextFileCount: (count: number) => void,
   actions: SlashCommandProcessorActions,
   extensionsUpdateState: Map<string, ExtensionUpdateStatus>,
   isConfigInitialized: boolean,
@@ -202,7 +202,7 @@ export const useSlashCommandProcessor = (
         toggleCorgiMode: actions.toggleCorgiMode,
         toggleDebugProfiler: actions.toggleDebugProfiler,
         toggleVimEnabled,
-        setGeminiMdFileCount,
+        setContextFileCount,
         reloadCommands,
         extensionsUpdateState,
         dispatchExtensionStateUpdate: actions.dispatchExtensionStateUpdate,
@@ -229,7 +229,7 @@ export const useSlashCommandProcessor = (
       setPendingItem,
       toggleVimEnabled,
       sessionShellAllowlist,
-      setGeminiMdFileCount,
+      setContextFileCount,
       reloadCommands,
       extensionsUpdateState,
     ],

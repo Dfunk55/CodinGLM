@@ -6,7 +6,7 @@
 
 import { describe, it, expect } from 'vitest';
 import { parseAndFormatApiError } from './errorParsing.js';
-import { DEFAULT_GEMINI_FLASH_MODEL } from '../config/models.js';
+import { DEFAULT_GLM_FLASH_MODEL } from '../config/models.js';
 import { AuthType } from '../core/contentGenerator.js';
 import type { StructuredError } from '../core/turn.js';
 
@@ -30,11 +30,11 @@ describe('parseAndFormatApiError', () => {
       undefined,
       undefined,
       'gemini-2.5-pro',
-      DEFAULT_GEMINI_FLASH_MODEL,
+      DEFAULT_GLM_FLASH_MODEL,
     );
     expect(result).toContain('[API Error: Rate limit exceeded');
     expect(result).toContain(
-      `Possible quota limitations in place or slow response times detected. Switching to the ${DEFAULT_GEMINI_FLASH_MODEL} model`,
+      `Possible quota limitations in place or slow response times detected. Switching to the ${DEFAULT_GLM_FLASH_MODEL} model`,
     );
   });
 
@@ -72,7 +72,7 @@ describe('parseAndFormatApiError', () => {
       error: {
         code: 429,
         message:
-          "Gemini 2.5 Pro Preview doesn't have a free quota tier. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits.",
+          "GLM-4.6 CodinGLM Preview doesn't have a free quota tier. For more information on this error, head to: https://open.bigmodel.cn/dev/api.",
         status: 'RESOURCE_EXHAUSTED',
       },
     });
@@ -86,7 +86,7 @@ describe('parseAndFormatApiError', () => {
     });
 
     const result = parseAndFormatApiError(errorMessage, AuthType.USE_GEMINI);
-    expect(result).toContain('Gemini 2.5 Pro Preview');
+    expect(result).toContain('GLM-4.6 CodinGLM Preview');
     expect(result).toContain(geminiMessage);
   });
 

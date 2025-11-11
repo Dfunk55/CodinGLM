@@ -13,7 +13,7 @@ import { ToolErrorType } from './tool-error.js';
 import { getErrorMessage } from '../utils/errors.js';
 import { type Config } from '../config/config.js';
 import { getResponseText } from '../utils/partUtils.js';
-import { DEFAULT_GEMINI_FLASH_MODEL } from '../config/models.js';
+import { DEFAULT_GLM_FLASH_MODEL } from '../config/models.js';
 
 interface GroundingChunkWeb {
   uri?: string;
@@ -74,14 +74,14 @@ class WebSearchToolInvocation extends BaseToolInvocation<
   }
 
   async execute(signal: AbortSignal): Promise<WebSearchToolResult> {
-    const geminiClient = this.config.getLlmClient();
+    const llmClient = this.config.getLlmClient();
 
     try {
-      const response = await geminiClient.generateContent(
+      const response = await llmClient.generateContent(
         [{ role: 'user', parts: [{ text: this.params.query }] }],
         { tools: [{ googleSearch: {} }] },
         signal,
-        DEFAULT_GEMINI_FLASH_MODEL,
+        DEFAULT_GLM_FLASH_MODEL,
       );
 
       const responseText = getResponseText(response);
@@ -133,7 +133,9 @@ class WebSearchToolInvocation extends BaseToolInvocation<
           const parts: Uint8Array[] = [];
           let lastIndex = responseBytes.length;
           for (const ins of insertions) {
-            const pos = Math.min(ins.index, lastIndex);
+            const clampedIndex = Math.min(ins.index, lastIndex);
+            let pos = adjustUtf8Index(responseBytes, clampedIndex);
+            pos = skipVariationSelectors(responseBytes, pos, lastIndex);
             parts.unshift(responseBytes.subarray(pos, lastIndex));
             parts.unshift(encoder.encode(ins.marker));
             lastIndex = pos;
@@ -179,8 +181,38 @@ class WebSearchToolInvocation extends BaseToolInvocation<
   }
 }
 
+function adjustUtf8Index(bytes: Uint8Array, index: number): number {
+  let pos = Math.max(0, Math.min(index, bytes.length));
+  while (
+    pos > 0 &&
+    pos < bytes.length &&
+    (bytes[pos] & 0b11000000) === 0b10000000
+  ) {
+    pos--;
+  }
+  return pos;
+}
+
+function skipVariationSelectors(
+  bytes: Uint8Array,
+  index: number,
+  limit: number,
+): number {
+  let pos = index;
+  // Variation selectors (like U+FE0F) encode as EF B8 8F in UTF-8.
+  while (
+    pos + 2 < limit &&
+    bytes[pos] === 0xef &&
+    bytes[pos + 1] === 0xb8 &&
+    (bytes[pos + 2] === 0x8f || bytes[pos + 2] === 0x8e)
+  ) {
+    pos += 3;
+  }
+  return pos;
+}
+
 /**
- * A tool to perform web searches using Google Search via the Gemini API.
+ * A tool to perform web searches using Google Search via the CodinGLM API.
  */
 export class WebSearchTool extends BaseDeclarativeTool<
   WebSearchToolParams,
@@ -195,7 +227,7 @@ export class WebSearchTool extends BaseDeclarativeTool<
     super(
       WebSearchTool.Name,
       'GoogleSearch',
-      'Performs a web search using Google Search (via the Gemini API) and returns the results. This tool is useful for finding information on the internet based on a query.',
+      'Performs a web search using Google Search (via the CodinGLM API) and returns the results. This tool is useful for finding information on the internet based on a query.',
       Kind.Search,
       {
         type: 'object',

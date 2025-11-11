@@ -31,12 +31,12 @@ CodinGLM's TUI (Text User Interface) is built with **React** using the **Ink** l
 ├── AppContainer.tsx         # Wrapper managing all state & context
 ├── layouts/                 # Layout components (DefaultAppLayout, ScreenReaderAppLayout)
 ├── components/              # 100+ React components for UI elements
-│   ├── messages/           # Message type components (User, Gemini, Tool, etc.)
+│   ├── messages/           # Message type components (User, CodinGLM, Tool, etc.)
 │   ├── shared/             # Reusable components (TextInput, selections, etc.)
 │   ├── views/              # View components (ChatList, ToolsList, etc.)
 │   └── [Dialog/Input/Display components]
 ├── hooks/                  # 80+ custom React hooks
-│   ├── useGeminiStream.ts # Main streaming/API hook
+│   ├── useCodinGLMStream.ts # Main streaming/API hook
 │   ├── useKeypress.ts     # Keyboard input handling
 │   ├── useMessageQueue.ts # Message queuing
 │   └── [Other utility hooks]
@@ -109,7 +109,7 @@ DefaultAppLayout
 - Renders pending/streaming messages (live updates)
 - Uses Ink's `Static` component for non-scrolling historical content
 - Uses dynamic rendering for pending items with height constraints
-- Max Gemini message lines: 65,536 (performance limit)
+- Max CodinGLM message lines: 65,536 (performance limit)
 
 ### 4. Input System (Composer + InputPrompt)
 **Files**:
@@ -141,11 +141,11 @@ DefaultAppLayout
 - Alt+B/F: Word movement (Vim mode)
 - Alt+M: Toggle markup
 
-### 5. Streaming & API Integration (useGeminiStream)
-**File**: `hooks/useGeminiStream.ts` (1000+ lines)
+### 5. Streaming & API Integration (useCodinGLMStream)
+**File**: `hooks/useCodinGLMStream.ts` (1000+ lines)
 
 **Key Responsibilities**:
-- Manages API stream communication with Gemini
+- Manages API stream communication with CodinGLM
 - Handles streaming responses and partial updates
 - Tool call scheduling and execution
 - Approval mode handling (YOLO, default, manual)
@@ -411,7 +411,7 @@ KeypressContext.broadcast(key)
 ### 2. Memory Management
 - **useMemoryMonitor**: Tracks memory usage during session
 - **Constraint Mode**: Limits visible message height
-- **Message Limits**: Max 65,536 lines for Gemini messages
+- **Message Limits**: Max 65,536 lines for CodinGLM messages
 - **Cleanup**: Proper unmounting and resource cleanup
 
 ### 3. Terminal Handling
@@ -426,7 +426,7 @@ KeypressContext.broadcast(key)
 1. **Alternate Buffer Mode**: Placeholder implementation, not a true alternate buffer
 2. **Scrolling**: Limited scrolling capability in non-alternate buffer mode
 3. **Mouse Support**: Basic mouse support, limited click handling
-4. **Long Messages**: Performance degrades with very long Gemini responses
+4. **Long Messages**: Performance degrades with very long CodinGLM responses
 5. **Complex Rendering**: Markdown rendering can be slow for large code blocks
 6. **Terminal Compatibility**: Some features depend on terminal capabilities (Kitty protocol)
 

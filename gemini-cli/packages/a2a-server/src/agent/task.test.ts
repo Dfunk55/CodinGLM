@@ -15,7 +15,7 @@ import {
 } from 'vitest';
 import { Task } from './task.js';
 import {
-  GeminiEventType,
+  LlmEventType,
   type Config,
   type ToolCallRequestInfo,
 } from '@codinglm/core';
@@ -129,7 +129,7 @@ describe('Task', () => {
 
       const citationText = 'Source: example.com';
       const citationEvent = {
-        type: GeminiEventType.Citation,
+        type: LlmEventType.Citation,
         value: citationText,
       };
 

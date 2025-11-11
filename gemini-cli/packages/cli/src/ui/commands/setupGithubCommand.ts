@@ -20,7 +20,7 @@ import {
 import type { SlashCommand, SlashCommandActionReturn } from './types.js';
 import { CommandKind } from './types.js';
 import { getUrlOpenCommand } from '../../ui/utils/commandUtils.js';
-import { debugLogger } from '@google/gemini-cli-core';
+import { debugLogger } from '@codinglm/core';
 
 export const GITHUB_WORKFLOW_PATHS = [
   'gemini-dispatch/gemini-dispatch.yml',
@@ -202,7 +202,7 @@ export const setupGithubCommand: SlashCommand = {
       toolName: 'run_shell_command',
       toolArgs: {
         description:
-          'Setting up GitHub Actions to triage issues and review PRs with Gemini.',
+          'Setting up GitHub Actions to triage issues and review PRs with CodinGLM.',
         command,
       },
     };

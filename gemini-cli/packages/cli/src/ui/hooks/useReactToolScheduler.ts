@@ -19,8 +19,8 @@ import type {
   ToolCall,
   Status as CoreStatus,
   EditorType,
-} from '@google/gemini-cli-core';
-import { CoreToolScheduler, debugLogger } from '@google/gemini-cli-core';
+} from '@codinglm/core';
+import { CoreToolScheduler, debugLogger } from '@codinglm/core';
 import { useCallback, useState, useMemo, useEffect, useRef } from 'react';
 import type {
   HistoryItemToolGroup,
@@ -35,23 +35,23 @@ export type ScheduleFn = (
 export type MarkToolsAsSubmittedFn = (callIds: string[]) => void;
 
 export type TrackedScheduledToolCall = ScheduledToolCall & {
-  responseSubmittedToGemini?: boolean;
+  responseSubmittedToModel?: boolean;
 };
 export type TrackedValidatingToolCall = ValidatingToolCall & {
-  responseSubmittedToGemini?: boolean;
+  responseSubmittedToModel?: boolean;
 };
 export type TrackedWaitingToolCall = WaitingToolCall & {
-  responseSubmittedToGemini?: boolean;
+  responseSubmittedToModel?: boolean;
 };
 export type TrackedExecutingToolCall = ExecutingToolCall & {
-  responseSubmittedToGemini?: boolean;
+  responseSubmittedToModel?: boolean;
   pid?: number;
 };
 export type TrackedCompletedToolCall = CompletedToolCall & {
-  responseSubmittedToGemini?: boolean;
+  responseSubmittedToModel?: boolean;
 };
 export type TrackedCancelledToolCall = CancelledToolCall & {
-  responseSubmittedToGemini?: boolean;
+  responseSubmittedToModel?: boolean;
 };
 
 export type TrackedToolCall =
@@ -129,8 +129,8 @@ export function useReactToolScheduler(
         return allCoreToolCalls.map((coreTc): TrackedToolCall => {
           const existingTrackedCall = prevCallsMap.get(coreTc.request.callId);
 
-          const responseSubmittedToGemini =
-            existingTrackedCall?.responseSubmittedToGemini ?? false;
+          const responseSubmittedToModel =
+            existingTrackedCall?.responseSubmittedToModel ?? false;
 
           if (coreTc.status === 'executing') {
             // Preserve live output if it exists from a previous render.
@@ -138,14 +138,14 @@ export function useReactToolScheduler(
               ?.liveOutput;
             return {
               ...coreTc,
-              responseSubmittedToGemini,
+              responseSubmittedToModel,
               liveOutput,
               pid: (coreTc as ExecutingToolCall).pid,
             };
           } else {
             return {
               ...coreTc,
-              responseSubmittedToGemini,
+              responseSubmittedToModel,
             };
           }
         });
@@ -196,7 +196,7 @@ export function useReactToolScheduler(
       setToolCallsForDisplay((prevCalls) =>
         prevCalls.map((tc) =>
           callIdsToMark.includes(tc.request.callId)
-            ? { ...tc, responseSubmittedToGemini: true }
+            ? { ...tc, responseSubmittedToModel: true }
             : tc,
         ),
       );

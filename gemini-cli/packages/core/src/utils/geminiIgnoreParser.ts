@@ -8,12 +8,12 @@ import * as fs from 'node:fs';
 import * as path from 'node:path';
 import ignore from 'ignore';
 
-export interface GeminiIgnoreFilter {
+export interface ContextIgnoreFilter {
   isIgnored(filePath: string): boolean;
   getPatterns(): string[];
 }
 
-export class GeminiIgnoreParser implements GeminiIgnoreFilter {
+export class ContextIgnoreParser implements ContextIgnoreFilter {
   private projectRoot: string;
   private patterns: string[] = [];
   private ig = ignore();

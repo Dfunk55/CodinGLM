@@ -12,7 +12,7 @@ import type {
   ToolResult,
   ToolCallConfirmationDetails,
   FilterFilesOptions,
-} from '@google/gemini-cli-core';
+} from '@codinglm/core';
 import {
   AuthType,
   logToolCall,
@@ -27,11 +27,11 @@ import {
   DiscoveredMCPTool,
   StreamEventType,
   ToolCallEvent,
-  DEFAULT_GEMINI_MODEL,
-  DEFAULT_GEMINI_MODEL_AUTO,
-  DEFAULT_GEMINI_FLASH_MODEL,
+  DEFAULT_GLM_MODEL,
+  DEFAULT_GLM_MODEL_AUTO,
+  DEFAULT_GLM_FLASH_MODEL,
   debugLogger,
-} from '@google/gemini-cli-core';
+} from '@codinglm/core';
 import * as acp from './acp.js';
 import { AcpFileSystemService } from './fileSystemService.js';
 import { Readable, Writable } from 'node:stream';
@@ -53,8 +53,8 @@ import { loadCliConfig } from '../config/config.js';
  * mode, otherwise it will use the default model.
  */
 export function resolveModel(model: string, isInFallbackMode: boolean): string {
-  if (model === DEFAULT_GEMINI_MODEL_AUTO) {
-    return isInFallbackMode ? DEFAULT_GEMINI_FLASH_MODEL : DEFAULT_GEMINI_MODEL;
+  if (model === DEFAULT_GLM_MODEL_AUTO) {
+    return isInFallbackMode ? DEFAULT_GLM_FLASH_MODEL : DEFAULT_GLM_MODEL;
   }
   return model;
 }
@@ -74,13 +74,13 @@ export async function runZedIntegration(
   console.debug = console.error;
 
   new acp.AgentSideConnection(
-    (client: acp.Client) => new GeminiAgent(config, settings, argv, client),
+    (client: acp.Client) => new CodinGLMAgent(config, settings, argv, client),
     stdout,
     stdin,
   );
 }
 
-class GeminiAgent {
+class CodinGLMAgent {
   private sessions: Map<string, Session> = new Map();
   private clientCapabilities: acp.ClientCapabilities | undefined;
 
@@ -103,7 +103,7 @@ class GeminiAgent {
       },
       {
         id: AuthType.USE_GEMINI,
-        name: 'Use Gemini API key',
+        name: 'Use Z.AI API key',
         description:
           'Requires setting the `GEMINI_API_KEY` environment variable',
       },
@@ -173,8 +173,8 @@ class GeminiAgent {
       config.setFileSystemService(acpFileSystemService);
     }
 
-    const geminiClient = config.getLlmClient();
-    const chat = await geminiClient.startChat();
+    const llmClient = config.getLlmClient();
+    const chat = await llmClient.startChat();
     const session = new Session(sessionId, chat, config, this.client);
     this.sessions.set(sessionId, session);
 

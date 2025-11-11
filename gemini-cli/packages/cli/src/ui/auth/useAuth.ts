@@ -38,7 +38,7 @@ export function validateAuthMethodWithSettings(
     }
     return 'CodinGLM CLI only supports the Z.AI GLM API key authentication method.';
   }
-  // If using Gemini API key, we don't validate it here as we might need to prompt for it.
+  // If using a Z.AI API key, we don't validate it here as we might need to prompt for it.
   if (authType === AuthType.USE_GEMINI || authType === AuthType.USE_Z_AI) {
     return null;
   }
@@ -97,7 +97,7 @@ export const useAuthCommand = (settings: LoadedSettings, config: Config) => {
           }
         } else if (process.env['GEMINI_API_KEY']) {
           onAuthError(
-            'Existing API key detected (GEMINI_API_KEY). Select "Gemini API Key" option to use it.',
+            'Existing API key detected (GEMINI_API_KEY). Select the "Z.AI API Key" option to use the legacy value.',
           );
         } else {
           onAuthError('No authentication method selected.');

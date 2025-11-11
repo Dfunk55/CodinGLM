@@ -7,7 +7,7 @@
 import { describe, it, expect, vi, type MockInstance, type Mock } from 'vitest';
 import { handleInstall, installCommand } from './install.js';
 import yargs from 'yargs';
-import { debugLogger, type GeminiCLIExtension } from '@google/gemini-cli-core';
+import { debugLogger, type CodinGLMExtension } from '@codinglm/core';
 import type { ExtensionManager } from '../../config/extension-manager.js';
 import type { requestConsentNonInteractive } from '../../config/extensions/consent.js';
 import type * as fs from 'node:fs/promises';
@@ -80,7 +80,7 @@ describe('handleInstall', () => {
   it('should install an extension from a http source', async () => {
     mockInstallOrUpdateExtension.mockResolvedValue({
       name: 'http-extension',
-    } as unknown as GeminiCLIExtension);
+    } as unknown as CodinGLMExtension);
 
     await handleInstall({
       source: 'http://google.com',
@@ -94,7 +94,7 @@ describe('handleInstall', () => {
   it('should install an extension from a https source', async () => {
     mockInstallOrUpdateExtension.mockResolvedValue({
       name: 'https-extension',
-    } as unknown as GeminiCLIExtension);
+    } as unknown as CodinGLMExtension);
 
     await handleInstall({
       source: 'https://google.com',
@@ -108,7 +108,7 @@ describe('handleInstall', () => {
   it('should install an extension from a git source', async () => {
     mockInstallOrUpdateExtension.mockResolvedValue({
       name: 'git-extension',
-    } as unknown as GeminiCLIExtension);
+    } as unknown as CodinGLMExtension);
 
     await handleInstall({
       source: 'git@some-url',
@@ -132,7 +132,7 @@ describe('handleInstall', () => {
   it('should install an extension from a sso source', async () => {
     mockInstallOrUpdateExtension.mockResolvedValue({
       name: 'sso-extension',
-    } as unknown as GeminiCLIExtension);
+    } as unknown as CodinGLMExtension);
 
     await handleInstall({
       source: 'sso://google.com',
@@ -146,7 +146,7 @@ describe('handleInstall', () => {
   it('should install an extension from a local path', async () => {
     mockInstallOrUpdateExtension.mockResolvedValue({
       name: 'local-extension',
-    } as unknown as GeminiCLIExtension);
+    } as unknown as CodinGLMExtension);
     mockStat.mockResolvedValue({} as Stats);
     await handleInstall({
       source: '/some/path',

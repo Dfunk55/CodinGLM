@@ -184,8 +184,8 @@ describe('classifyGoogleError', () => {
           '@type': 'type.googleapis.com/google.rpc.Help',
           links: [
             {
-              description: 'Learn more about Gemini API quotas',
-              url: 'https://ai.google.dev/gemini-api/docs/rate-limits',
+              description: 'Learn more about CodinGLM (Zhipu AI) API quotas',
+              url: 'https://open.bigmodel.cn/dev/api#/?id=quota',
             },
           ],
         },

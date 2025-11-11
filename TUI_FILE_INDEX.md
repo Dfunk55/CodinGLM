@@ -15,8 +15,8 @@
 ## Core Hooks (80+ Total)
 
 ### Most Important Hooks
-- **Streaming/API**: `/home/user/CodinGLM/gemini-cli/packages/cli/src/ui/hooks/useGeminiStream.ts` (1000+ lines)
-  - Manages Gemini API streaming
+- **Streaming/API**: `/home/user/CodinGLM/gemini-cli/packages/cli/src/ui/hooks/useCodinGLMStream.ts` (1000+ lines)
+  - Manages CodinGLM API streaming
   - Tool scheduling and execution
   - Approval modes
   - Error handling
@@ -89,8 +89,8 @@
 
 ### Message Type Components (in `/components/messages/`)
 - **User Message**: `UserMessage.tsx`
-- **Gemini Message**: `GeminiMessage.tsx`
-- **Gemini Content**: `GeminiMessageContent.tsx`
+- **CodinGLM Message**: `CodinGLMMessage.tsx`
+- **CodinGLM Content**: `CodinGLMMessageContent.tsx`
 - **Tool Message**: `ToolMessage.tsx`
 - **Tool Group**: `ToolGroupMessage.tsx`
 - **Tool Confirmation**: `ToolConfirmationMessage.tsx`
@@ -264,7 +264,7 @@ Test files mirror component/hook structure with `.test.ts` or `.test.tsx` suffix
 
 Key test files:
 - `AppContainer.test.tsx` (51,194 bytes - comprehensive)
-- `useGeminiStream.test.tsx`
+- `useCodinGLMStream.test.tsx`
 - `useKeypress.test.tsx`
 - `InputPrompt.test.tsx`
 - Component-specific tests throughout

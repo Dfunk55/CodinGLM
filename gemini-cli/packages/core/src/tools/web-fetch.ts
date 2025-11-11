@@ -19,7 +19,7 @@ import type { MessageBus } from '../confirmation-bus/message-bus.js';
 import { ToolErrorType } from './tool-error.js';
 import { getErrorMessage } from '../utils/errors.js';
 import type { Config } from '../config/config.js';
-import { DEFAULT_GEMINI_FLASH_MODEL } from '../config/config.js';
+import { DEFAULT_GLM_FLASH_MODEL } from '../config/config.js';
 import { ApprovalMode } from '../policy/types.js';
 
 import { getResponseText } from '../utils/partUtils.js';
@@ -161,7 +161,7 @@ class WebFetchToolInvocation extends BaseToolInvocation<
 
       textContent = textContent.substring(0, MAX_CONTENT_LENGTH);
 
-      const geminiClient = this.config.getLlmClient();
+      const llmClient = this.config.getLlmClient();
       const fallbackPrompt = `The user requested the following: "${this.params.prompt}".
 
 I was unable to access the URL directly. Instead, I have fetched the raw content of the page. Please use the following content to answer the request. Do not attempt to access the URL again.
@@ -170,11 +170,11 @@ I was unable to access the URL directly. Instead, I have fetched the raw content
 ${textContent}
 ---
 `;
-      const result = await geminiClient.generateContent(
+      const result = await llmClient.generateContent(
         [{ role: 'user', parts: [{ text: fallbackPrompt }] }],
         {},
         signal,
-        DEFAULT_GEMINI_FLASH_MODEL,
+        DEFAULT_GLM_FLASH_MODEL,
       );
       const resultText = getResponseText(result) || '';
       return {
@@ -251,14 +251,14 @@ ${textContent}
       return this.executeFallback(signal);
     }
 
-    const geminiClient = this.config.getLlmClient();
+    const llmClient = this.config.getLlmClient();
 
     try {
-      const response = await geminiClient.generateContent(
+      const response = await llmClient.generateContent(
         [{ role: 'user', parts: [{ text: userPrompt }] }],
         { tools: [{ urlContext: {} }] },
         signal, // Pass signal
-        DEFAULT_GEMINI_FLASH_MODEL,
+        DEFAULT_GLM_FLASH_MODEL,
       );
 
       debugLogger.debug(

@@ -37,7 +37,7 @@ import {
   type SettingsValue,
   TOGGLE_TYPES,
 } from '../../config/settingsSchema.js';
-import { debugLogger } from '@google/gemini-cli-core';
+import { debugLogger } from '@codinglm/core';
 import { keyMatchers, Command } from '../keyMatchers.js';
 
 interface SettingsDialogProps {

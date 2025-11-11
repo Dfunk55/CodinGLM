@@ -105,7 +105,7 @@ describe('ChatCompressionService', () => {
   let service: ChatCompressionService;
   let mockChat: ChatSession;
   let mockConfig: Config;
-  const mockModel = 'gemini-pro';
+  const mockModel = 'glm-4.6';
   const mockPromptId = 'test-prompt-id';
 
   beforeEach(() => {

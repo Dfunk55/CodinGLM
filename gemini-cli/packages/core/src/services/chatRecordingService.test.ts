@@ -45,7 +45,7 @@ describe('ChatRecordingService', () => {
           .fn()
           .mockReturnValue('/test/project/root/.gemini/tmp'),
       },
-      getModel: vi.fn().mockReturnValue('gemini-pro'),
+      getModel: vi.fn().mockReturnValue('glm-4.6'),
       getDebugMode: vi.fn().mockReturnValue(false),
       getToolRegistry: vi.fn().mockReturnValue({
         getTool: vi.fn().mockReturnValue({
@@ -130,7 +130,7 @@ describe('ChatRecordingService', () => {
       chatRecordingService.recordMessage({
         type: 'user',
         content: 'Hello',
-        model: 'gemini-pro',
+        model: 'glm-4.6',
       });
       expect(mkdirSyncSpy).toHaveBeenCalled();
       expect(writeFileSyncSpy).toHaveBeenCalled();
@@ -165,7 +165,7 @@ describe('ChatRecordingService', () => {
       chatRecordingService.recordMessage({
         type: 'user',
         content: 'World',
-        model: 'gemini-pro',
+        model: 'glm-4.6',
       });
 
       expect(mkdirSyncSpy).toHaveBeenCalled();
@@ -316,7 +316,7 @@ describe('ChatRecordingService', () => {
         status: 'awaiting_approval',
         timestamp: new Date().toISOString(),
       };
-      chatRecordingService.recordToolCalls('gemini-pro', [toolCall]);
+      chatRecordingService.recordToolCalls('glm-4.6', [toolCall]);
 
       expect(mkdirSyncSpy).toHaveBeenCalled();
       expect(writeFileSyncSpy).toHaveBeenCalled();
@@ -363,7 +363,7 @@ describe('ChatRecordingService', () => {
         status: 'awaiting_approval',
         timestamp: new Date().toISOString(),
       };
-      chatRecordingService.recordToolCalls('gemini-pro', [toolCall]);
+      chatRecordingService.recordToolCalls('glm-4.6', [toolCall]);
 
       expect(mkdirSyncSpy).toHaveBeenCalled();
       expect(writeFileSyncSpy).toHaveBeenCalled();
@@ -374,7 +374,7 @@ describe('ChatRecordingService', () => {
       expect(conversation.messages[1]).toEqual({
         ...conversation.messages[1],
         id: 'this-is-a-test-uuid',
-        model: 'gemini-pro',
+        model: 'glm-4.6',
         type: 'gemini',
         thoughts: [],
         content: '',

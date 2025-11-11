@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import type { GeminiCLIExtension } from '@google/gemini-cli-core';
+import type { CodinGLMExtension } from '@codinglm/core';
 import { createMockCommandContext } from '../../test-utils/mockCommandContext.js';
 import { MessageType } from '../types.js';
 import { extensionsCommand } from './extensionsCommand.js';
@@ -240,7 +240,7 @@ describe('extensionsCommand', () => {
         throw new Error('Update completion not found');
       }
 
-      const extensionOne: GeminiCLIExtension = {
+      const extensionOne: CodinGLMExtension = {
         name: 'ext-one',
         id: 'ext-one-id',
         version: '1.0.0',
@@ -253,7 +253,7 @@ describe('extensionsCommand', () => {
           source: 'https://github.com/some/extension.git',
         },
       };
-      const extensionTwo: GeminiCLIExtension = {
+      const extensionTwo: CodinGLMExtension = {
         name: 'another-ext',
         id: 'another-ext-id',
         version: '1.0.0',
@@ -266,7 +266,7 @@ describe('extensionsCommand', () => {
           source: 'https://github.com/some/extension.git',
         },
       };
-      const allExt: GeminiCLIExtension = {
+      const allExt: CodinGLMExtension = {
         name: 'all-ext',
         id: 'all-ext-id',
         version: '1.0.0',

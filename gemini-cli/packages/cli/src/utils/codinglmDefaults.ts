@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { AuthType } from '@google/gemini-cli-core';
+import { AuthType } from '@codinglm/core';
 
 const DEFAULT_Z_AI_BASE_URL = 'https://api.z.ai/api/coding/paas/v4';
 const DEFAULT_CODINGLM_MODEL = 'glm-4.6';

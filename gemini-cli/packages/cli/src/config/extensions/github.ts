@@ -9,7 +9,7 @@ import { getErrorMessage } from '../../utils/errors.js';
 import {
   debugLogger,
   type ExtensionInstallMetadata,
-  type GeminiCLIExtension,
+  type CodinGLMExtension,
 } from '@codinglm/core';
 import { ExtensionUpdateState } from '../../ui/state/extensions.js';
 import * as os from 'node:os';
@@ -152,7 +152,7 @@ export async function fetchReleaseFromGithub(
 }
 
 export async function checkForExtensionUpdate(
-  extension: GeminiCLIExtension,
+  extension: CodinGLMExtension,
   extensionManager: ExtensionManager,
 ): Promise<ExtensionUpdateState> {
   const installMetadata = extension.installMetadata;

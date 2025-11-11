@@ -23,7 +23,7 @@ import { useUIActions } from '../contexts/UIActionsContext.js';
 import { useVimMode } from '../contexts/VimModeContext.js';
 import { useConfig } from '../contexts/ConfigContext.js';
 import { useSettings } from '../contexts/SettingsContext.js';
-import { ApprovalMode } from '@google/gemini-cli-core';
+import { ApprovalMode } from '@codinglm/core';
 import { StreamingState } from '../types.js';
 import { ConfigInitDisplay } from '../components/ConfigInitDisplay.js';
 import { TodoTray } from './messages/Todo.js';
@@ -99,7 +99,7 @@ export const Composer = () => {
             !settings.merged.ui?.hideContextSummary && (
               <ContextSummaryDisplay
                 ideContext={uiState.ideContextState}
-                geminiMdFileCount={uiState.geminiMdFileCount}
+                contextFileCount={uiState.contextFileCount}
                 contextFileNames={contextFileNames}
                 mcpServers={config.getMcpClientManager()?.getMcpServers() ?? {}}
                 blockedMcpServers={

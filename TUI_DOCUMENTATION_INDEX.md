@@ -143,7 +143,7 @@ User Input (Keyboard/Mouse)
 KeypressContext (sequence parsing)
     ↓
 AppContainer (state management hub)
-    ├─→ useGeminiStream (API communication)
+    ├─→ useCodinGLMStream (API communication)
     ├─→ useHistory (message persistence)
     ├─→ useTextBuffer (text editing)
     └─→ 20+ other hooks
@@ -168,7 +168,7 @@ DefaultAppLayout
 | **MainContent** | Renders chat history | components/MainContent.tsx |
 | **Composer** | Input area wrapper | components/Composer.tsx |
 | **InputPrompt** | Text input field | components/InputPrompt.tsx |
-| **useGeminiStream** | API streaming | hooks/useGeminiStream.ts (1000+ lines) |
+| **useCodinGLMStream** | API streaming | hooks/useCodinGLMStream.ts (1000+ lines) |
 | **KeypressContext** | Keyboard input | contexts/KeypressContext.tsx (1000+ lines) |
 | **HistoryItemDisplay** | Message router | components/HistoryItemDisplay.tsx |
 | **DefaultAppLayout** | Main layout | layouts/DefaultAppLayout.tsx |
@@ -179,7 +179,7 @@ DefaultAppLayout
 
 | Hook | Purpose |
 |------|---------|
-| **useGeminiStream** | API streaming, tool execution, approval modes |
+| **useCodinGLMStream** | API streaming, tool execution, approval modes |
 | **useHistory** | Chat history management |
 | **useTextBuffer** | Multi-line text editing |
 | **useKeypress** | Subscribe to keyboard events |
@@ -197,7 +197,7 @@ DefaultAppLayout
 - `/src/gemini.tsx` - Entry point
 - `/src/ui/AppContainer.tsx` - State management hub
 - `/src/ui/contexts/KeypressContext.tsx` - Input handling
-- `/src/ui/hooks/useGeminiStream.ts` - API streaming
+- `/src/ui/hooks/useCodinGLMStream.ts` - API streaming
 
 **Layout Files**:
 - `/src/ui/layouts/DefaultAppLayout.tsx` - Main layout
@@ -210,7 +210,7 @@ DefaultAppLayout
 
 **Message Display**:
 - `/src/ui/components/HistoryItemDisplay.tsx` - Message router
-- `/src/ui/components/messages/GeminiMessage.tsx` - API response display
+- `/src/ui/components/messages/CodinGLMMessage.tsx` - API response display
 - `/src/ui/utils/MarkdownDisplay.tsx` - Markdown rendering
 
 ---

@@ -34,7 +34,7 @@ export class ServiceAccountImpersonationProvider
   // Properties required by OAuthClientProvider, with no-op values
   readonly redirectUrl = '';
   readonly clientMetadata: OAuthClientMetadata = {
-    client_name: 'Gemini CLI (Service Account Impersonation)',
+    client_name: 'CodinGLM CLI (Service Account Impersonation)',
     redirect_uris: [],
     grant_types: [],
     response_types: [],

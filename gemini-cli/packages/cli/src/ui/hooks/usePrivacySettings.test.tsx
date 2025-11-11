@@ -11,15 +11,15 @@ import type {
   Config,
   CodeAssistServer,
   LoadCodeAssistResponse,
-} from '@google/gemini-cli-core';
-import { UserTierId, getCodeAssistServer } from '@google/gemini-cli-core';
+} from '@codinglm/core';
+import { UserTierId, getCodeAssistServer } from '@codinglm/core';
 import { usePrivacySettings } from './usePrivacySettings.js';
 import { waitFor } from '../../test-utils/async.js';
 
 // Mock the dependencies
-vi.mock('@google/gemini-cli-core', async (importOriginal) => {
+vi.mock('@codinglm/core', async (importOriginal) => {
   const actual =
-    await importOriginal<typeof import('@google/gemini-cli-core')>();
+    await importOriginal<typeof import('@codinglm/core')>();
   return {
     ...actual,
     getCodeAssistServer: vi.fn(),

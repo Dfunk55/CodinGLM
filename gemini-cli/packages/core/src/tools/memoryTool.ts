@@ -61,35 +61,54 @@ Do NOT use this tool:
 
 - \`fact\` (string, required): The specific fact or piece of information to remember. This should be a clear, self-contained statement. For example, if the user says "My favorite color is blue", the fact would be "My favorite color is blue".`;
 
-export const DEFAULT_CONTEXT_FILENAME = 'GEMINI.md';
-export const MEMORY_SECTION_HEADER = '## Gemini Added Memories';
+export const DEFAULT_CONTEXT_FILENAME = 'CODINGLM.md';
+const LEGACY_CONTEXT_FILENAMES = ['GEMINI.md'];
+export const MEMORY_SECTION_HEADER = '## CodinGLM Added Memories';
 
-// This variable will hold the currently configured filename for GEMINI.md context files.
-// It defaults to DEFAULT_CONTEXT_FILENAME but can be overridden by setGeminiMdFilename.
-let currentGeminiMdFilename: string | string[] = DEFAULT_CONTEXT_FILENAME;
+// This variable holds the configured filenames for context files (CODINGLM.md or custom).
+// It defaults to DEFAULT_CONTEXT_FILENAME but can be overridden by setContextFilename.
+let currentContextFilename: string | string[] = DEFAULT_CONTEXT_FILENAME;
 
-export function setGeminiMdFilename(newFilename: string | string[]): void {
+export function setContextFilename(newFilename: string | string[]): void {
   if (Array.isArray(newFilename)) {
     if (newFilename.length > 0) {
-      currentGeminiMdFilename = newFilename.map((name) => name.trim());
+      currentContextFilename = newFilename.map((name) => name.trim());
     }
   } else if (newFilename && newFilename.trim() !== '') {
-    currentGeminiMdFilename = newFilename.trim();
+    currentContextFilename = newFilename.trim();
   }
 }
 
-export function getCurrentGeminiMdFilename(): string {
-  if (Array.isArray(currentGeminiMdFilename)) {
-    return currentGeminiMdFilename[0];
+export function getCurrentContextFilename(): string {
+  if (Array.isArray(currentContextFilename)) {
+    return currentContextFilename[0];
   }
-  return currentGeminiMdFilename;
+  return currentContextFilename;
 }
 
-export function getAllGeminiMdFilenames(): string[] {
-  if (Array.isArray(currentGeminiMdFilename)) {
-    return currentGeminiMdFilename;
+export function getAllContextFilenames(): string[] {
+  const filenames = Array.isArray(currentContextFilename)
+    ? currentContextFilename.filter((name) => name.trim().length > 0)
+    : [currentContextFilename].filter((name) => name.trim().length > 0);
+
+  const normalized = filenames.map((name) => name.trim());
+  const nameSet = new Set(normalized);
+
+  const usingDefault =
+    normalized.length === 1 &&
+    normalized[0].localeCompare(DEFAULT_CONTEXT_FILENAME, undefined, {
+      sensitivity: 'accent',
+    }) === 0;
+
+  if (usingDefault) {
+    for (const legacy of LEGACY_CONTEXT_FILENAMES) {
+      if (!nameSet.has(legacy)) {
+        nameSet.add(legacy);
+      }
+    }
   }
-  return [currentGeminiMdFilename];
+
+  return Array.from(nameSet);
 }
 
 interface SaveMemoryParams {
@@ -99,7 +118,7 @@ interface SaveMemoryParams {
 }
 
 export function getGlobalMemoryFilePath(): string {
-  return path.join(Storage.getGlobalGeminiDir(), getCurrentGeminiMdFilename());
+  return path.join(Storage.getGlobalAgentDataDir(), getCurrentContextFilename());
 }
 
 /**

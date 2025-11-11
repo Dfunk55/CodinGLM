@@ -3,7 +3,7 @@
 :::note This feature is currently in testing. To enable it, set
 `tools.enableMessageBusIntegration` to `true` in your `settings.json` file. :::
 
-The Gemini CLI includes a powerful policy engine that provides fine-grained
+The CodinGLM CLI includes a powerful policy engine that provides fine-grained
 control over tool execution. It allows users and administrators to define rules
 that determine whether a tool call should be allowed, denied, or require user
 confirmation.
@@ -75,7 +75,7 @@ has a designated number that forms the base of the final priority calculation.
 
 | Tier    | Base | Description                                                                |
 | :------ | :--- | :------------------------------------------------------------------------- |
-| Default | 1    | Built-in policies that ship with the Gemini CLI.                           |
+| Default | 1    | Built-in policies that ship with the CodinGLM CLI.                           |
 | User    | 2    | Custom policies defined by the user.                                       |
 | Admin   | 3    | Policies managed by an administrator (e.g., in an enterprise environment). |
 
@@ -235,7 +235,7 @@ priority = 500
 
 ## Default policies
 
-The Gemini CLI ships with a set of default policies to provide a safe
+The CodinGLM CLI ships with a set of default policies to provide a safe
 out-of-the-box experience.
 
 - **Read-only tools** (like `read_file`, `glob`) are generally **allowed**.

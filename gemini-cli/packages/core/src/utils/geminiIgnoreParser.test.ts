@@ -5,12 +5,12 @@
  */
 
 import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { GeminiIgnoreParser } from './geminiIgnoreParser.js';
+import { ContextIgnoreParser } from './geminiIgnoreParser.js';
 import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
 import * as os from 'node:os';
 
-describe('GeminiIgnoreParser', () => {
+describe('ContextIgnoreParser', () => {
   let projectRoot: string;
 
   async function createTestFile(filePath: string, content = '') {
@@ -49,7 +49,7 @@ describe('GeminiIgnoreParser', () => {
     });
 
     it('should ignore files specified in .geminiignore', () => {
-      const parser = new GeminiIgnoreParser(projectRoot);
+      const parser = new ContextIgnoreParser(projectRoot);
       expect(parser.getPatterns()).toEqual(['ignored.txt', '/ignored_dir/']);
       expect(parser.isIgnored('ignored.txt')).toBe(true);
       expect(parser.isIgnored('not_ignored.txt')).toBe(false);
@@ -62,7 +62,7 @@ describe('GeminiIgnoreParser', () => {
 
   describe('when .geminiignore does not exist', () => {
     it('should not load any patterns and not ignore any files', () => {
-      const parser = new GeminiIgnoreParser(projectRoot);
+      const parser = new ContextIgnoreParser(projectRoot);
       expect(parser.getPatterns()).toEqual([]);
       expect(parser.isIgnored('any_file.txt')).toBe(false);
     });

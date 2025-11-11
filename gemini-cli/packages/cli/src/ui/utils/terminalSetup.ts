@@ -30,7 +30,7 @@ import { exec } from 'node:child_process';
 import { promisify } from 'node:util';
 import { isKittyProtocolEnabled } from './kittyProtocolDetector.js';
 import { VSCODE_SHIFT_ENTER_SEQUENCE } from './platformConstants.js';
-import { debugLogger } from '@google/gemini-cli-core';
+import { debugLogger } from '@codinglm/core';
 
 const execAsync = promisify(exec);
 

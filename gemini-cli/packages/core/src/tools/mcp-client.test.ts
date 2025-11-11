@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import * as GenAiLib from '@google/genai';
+import * as GenAiLib from '@codinglm/genai';
 import * as ClientLib from '@modelcontextprotocol/sdk/client/index.js';
 import { SSEClientTransport } from '@modelcontextprotocol/sdk/client/sse.js';
 import * as SdkClientStdioLib from '@modelcontextprotocol/sdk/client/stdio.js';
@@ -33,7 +33,7 @@ import { coreEvents } from '../utils/events.js';
 
 vi.mock('@modelcontextprotocol/sdk/client/stdio.js');
 vi.mock('@modelcontextprotocol/sdk/client/index.js');
-vi.mock('@google/genai');
+vi.mock('@codinglm/genai');
 vi.mock('../mcp/oauth-provider.js');
 vi.mock('../mcp/oauth-token-storage.js');
 vi.mock('../mcp/oauth-utils.js');
@@ -104,6 +104,7 @@ describe('mcp-client', () => {
       await client.connect();
       await client.discover({} as Config);
       expect(mockedMcpToTool).toHaveBeenCalledOnce();
+      expect(mockedToolRegistry.registerTool).toHaveBeenCalledTimes(1);
     });
 
     it('should not skip tools even if a parameter is missing a type', async () => {

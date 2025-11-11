@@ -1,5 +1,5 @@
 {
-  "name": "@google/gemini-cli-test-utils",
+  "name": "@codinglm/test-utils",
   "version": "0.13.0-nightly.20251031.c89bc30d",
   "private": true,
   "main": "src/index.ts",

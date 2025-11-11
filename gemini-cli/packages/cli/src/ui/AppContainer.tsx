@@ -35,11 +35,11 @@ import {
   type IdeContext,
   type UserTierId,
   type UserFeedbackPayload,
-  DEFAULT_GEMINI_FLASH_MODEL,
+  DEFAULT_GLM_FLASH_MODEL,
   IdeClient,
   ideContextStore,
   getErrorMessage,
-  getAllGeminiMdFilenames,
+  getAllContextFilenames,
   AuthType,
   clearCachedCredentialFile,
   recordExitFail,
@@ -51,7 +51,7 @@ import {
   type ModelChangedPayload,
 } from '@codinglm/core';
 import { validateAuthMethod } from '../config/auth.js';
-import { loadHierarchicalGeminiMemory } from '../config/config.js';
+import { loadHierarchicalContextMemory } from '../config/config.js';
 import process from 'node:process';
 import { useHistory } from './hooks/useHistoryManager.js';
 import { useMemoryMonitor } from './hooks/useMemoryMonitor.js';
@@ -156,8 +156,8 @@ export const AppContainer = (props: AppContainerProps) => {
   const [showDebugProfiler, setShowDebugProfiler] = useState(false);
   const [copyModeEnabled, setCopyModeEnabled] = useState(false);
 
-  const [geminiMdFileCount, setGeminiMdFileCount] = useState<number>(
-    initializationResult.geminiMdFileCount,
+  const [contextFileCount, setContextFileCount] = useState<number>(
+    initializationResult.contextFileCount,
   );
   const [shellModeActive, setShellModeActive] = useState(false);
   const [modelSwitchedFromQuotaError, setModelSwitchedFromQuotaError] =
@@ -209,7 +209,7 @@ export const AppContainer = (props: AppContainerProps) => {
   // Helper to determine the effective model, considering the fallback state.
   const getEffectiveModel = useCallback(() => {
     if (config.isInFallbackMode()) {
-      return DEFAULT_GEMINI_FLASH_MODEL;
+      return DEFAULT_GLM_FLASH_MODEL;
     }
     return config.getModel();
   }, [config]);
@@ -566,7 +566,7 @@ Logging in with Google... Please restart CodinGLM to continue.
     refreshStatic,
     toggleVimEnabled,
     setIsProcessing,
-    setGeminiMdFileCount,
+    setContextFileCount,
     slashCommandActions,
     extensionsUpdateStateInternal,
     isConfigInitialized,
@@ -576,13 +576,13 @@ Logging in with Google... Please restart CodinGLM to continue.
     historyManager.addItem(
       {
         type: MessageType.INFO,
-        text: 'Refreshing hierarchical memory (GEMINI.md or other context files)...',
+        text: 'Refreshing hierarchical memory (CODINGLM.md or other context files)...',
       },
       Date.now(),
     );
     try {
       const { memoryContent, fileCount, filePaths } =
-        await loadHierarchicalGeminiMemory(
+        await loadHierarchicalContextMemory(
           process.cwd(),
           settings.merged.context?.loadMemoryFromIncludeDirectories
             ? config.getWorkspaceContext().getDirectories()
@@ -597,10 +597,10 @@ Logging in with Google... Please restart CodinGLM to continue.
         );
 
       config.setUserMemory(memoryContent);
-      config.setGeminiMdFileCount(fileCount);
-      config.setGeminiMdFilePaths(filePaths);
+      config.setContextFileCount(fileCount);
+      config.setContextFilePaths(filePaths);
 
-      setGeminiMdFileCount(fileCount);
+      setContextFileCount(fileCount);
 
       historyManager.addItem(
         {
@@ -649,7 +649,7 @@ Logging in with Google... Please restart CodinGLM to continue.
     streamingState,
     submitQuery,
     initError,
-    pendingHistoryItems: pendingGeminiHistoryItems,
+    pendingHistoryItems: pendingAgentHistoryItems,
     thought,
     cancelOngoingRequest,
     handleApprovalModeChange,
@@ -699,7 +699,7 @@ Logging in with Google... Please restart CodinGLM to continue.
   cancelHandlerRef.current = useCallback(() => {
     const pendingHistoryItems = [
       ...pendingSlashCommandHistoryItems,
-      ...pendingGeminiHistoryItems,
+      ...pendingAgentHistoryItems,
     ];
     if (isToolExecuting(pendingHistoryItems)) {
       buffer.setText(''); // Just clear the prompt
@@ -724,7 +724,7 @@ Logging in with Google... Please restart CodinGLM to continue.
     getQueuedMessagesText,
     clearQueue,
     pendingSlashCommandHistoryItems,
-    pendingGeminiHistoryItems,
+    pendingAgentHistoryItems,
   ]);
 
   const handleFinalSubmit = useCallback(
@@ -796,12 +796,12 @@ Logging in with Google... Please restart CodinGLM to continue.
       ? Array.isArray(fromSettings)
         ? fromSettings
         : [fromSettings]
-      : getAllGeminiMdFilenames();
+      : getAllContextFilenames();
   }, [settings.merged.context?.fileName]);
   // Initial prompt handling
   const initialPrompt = useMemo(() => config.getQuestion(), [config]);
   const initialPromptSubmitted = useRef(false);
-  const geminiClient = config.getLlmClient();
+  const llmClient = config.getLlmClient();
 
   useEffect(() => {
     if (activePtyId) {
@@ -823,7 +823,7 @@ Logging in with Google... Please restart CodinGLM to continue.
       !isThemeDialogOpen &&
       !isEditorDialogOpen &&
       !showPrivacyNotice &&
-      geminiClient?.isInitialized?.()
+      llmClient?.isInitialized?.()
     ) {
       handleFinalSubmit(initialPrompt);
       initialPromptSubmitted.current = true;
@@ -837,7 +837,7 @@ Logging in with Google... Please restart CodinGLM to continue.
     isThemeDialogOpen,
     isEditorDialogOpen,
     showPrivacyNotice,
-    geminiClient,
+    llmClient,
   ]);
 
   const [idePromptAnswered, setIdePromptAnswered] = useState(false);
@@ -1225,8 +1225,8 @@ Logging in with Google... Please restart CodinGLM to continue.
     authState === AuthState.AwaitingApiKeyInput;
 
   const pendingHistoryItems = useMemo(
-    () => [...pendingSlashCommandHistoryItems, ...pendingGeminiHistoryItems],
-    [pendingSlashCommandHistoryItems, pendingGeminiHistoryItems],
+    () => [...pendingSlashCommandHistoryItems, ...pendingAgentHistoryItems],
+    [pendingSlashCommandHistoryItems, pendingAgentHistoryItems],
   );
 
   const uiState: UIState = useMemo(
@@ -1257,10 +1257,10 @@ Logging in with Google... Please restart CodinGLM to continue.
       confirmationRequest,
       confirmUpdateExtensionRequests,
       loopDetectionConfirmationRequest,
-      geminiMdFileCount,
+      contextFileCount,
       streamingState,
       initError,
-      pendingGeminiHistoryItems,
+      pendingAgentHistoryItems,
       thought,
       shellModeActive,
       userMessages,
@@ -1339,10 +1339,10 @@ Logging in with Google... Please restart CodinGLM to continue.
       confirmationRequest,
       confirmUpdateExtensionRequests,
       loopDetectionConfirmationRequest,
-      geminiMdFileCount,
+      contextFileCount,
       streamingState,
       initError,
-      pendingGeminiHistoryItems,
+      pendingAgentHistoryItems,
       thought,
       shellModeActive,
       userMessages,

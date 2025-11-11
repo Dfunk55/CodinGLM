@@ -20,7 +20,7 @@ Any tool supporting the **OpenAI Protocol** can run on **GLM-4.6**.Simply replac
 Below are some common and popular tools supporting the **OpenAI Protocol** that can integrate `GLM-4.6` using the same approach:
 
 * **Cursor**
-* **Gemini CLI**
+* **CodinGLM CLI**
 * **Cherry studio**
 * ...
 

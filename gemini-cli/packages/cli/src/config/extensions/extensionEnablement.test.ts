@@ -13,8 +13,8 @@ import { ExtensionEnablementManager, Override } from './extensionEnablement.js';
 import {
   coreEvents,
   GEMINI_DIR,
-  type GeminiCLIExtension,
-} from '@google/gemini-cli-core';
+  type CodinGLMExtension,
+} from '@codinglm/core';
 
 vi.mock('os', async (importOriginal) => {
   const mockedOs = await importOriginal<typeof os>();
@@ -297,7 +297,7 @@ describe('ExtensionEnablementManager', () => {
       const extensions = [
         { name: 'ext-one' },
         { name: 'ext-two' },
-      ] as GeminiCLIExtension[];
+      ] as CodinGLMExtension[];
       manager.validateExtensionOverrides(extensions);
       expect(coreEventsEmitSpy).not.toHaveBeenCalled();
     });
@@ -311,7 +311,7 @@ describe('ExtensionEnablementManager', () => {
       const extensions = [
         { name: 'ext-one' },
         { name: 'ext-two' },
-      ] as GeminiCLIExtension[];
+      ] as CodinGLMExtension[];
       manager.validateExtensionOverrides(extensions);
       expect(coreEventsEmitSpy).toHaveBeenCalledTimes(2);
       expect(coreEventsEmitSpy).toHaveBeenCalledWith(

@@ -6,7 +6,7 @@
 
 ✅ **CodinGLM is PRODUCTION READY (95%)**
 
-The CLI tool is **fully functional** and can be used immediately from any terminal by typing `codinglm`. The migration from the Python implementation to a TypeScript fork of Google's gemini-cli is complete, with full Z.AI GLM-4.6 integration.
+The CLI tool is **fully functional** and can be used immediately from any terminal by typing `codinglm`. The migration from the Python implementation to a TypeScript fork of the upstream gemini-cli runtime is complete, with full Z.AI GLM-4.6 integration.
 
 ---
 
@@ -31,7 +31,7 @@ The CLI tool is **fully functional** and can be used immediately from any termin
 ### 3. Repository Health (100%)
 - ✅ Git repository cleaned (all deleted Python files committed)
 - ✅ Git remote configured to `https://github.com/Dfunk55/CodinGLM.git`
-- ✅ Upstream remote added for Google's gemini-cli updates
+- ✅ Upstream remote added for gemini-cli updates
 - ✅ All commits pushed to remote successfully
 - ✅ OAuth credentials removed (CodinGLM uses Z.AI API key auth only)
 - ✅ Working directory clean
@@ -55,7 +55,7 @@ The CLI tool is **fully functional** and can be used immediately from any termin
 ## 📊 Technical Specifications
 
 ### Architecture
-- **Base:** Google gemini-cli (TypeScript/Node.js)
+- **Base:** Upstream gemini-cli (TypeScript/Node.js)
 - **Build Tool:** esbuild
 - **Package Manager:** npm
 - **Node Version Required:** >=20.0.0
@@ -161,9 +161,9 @@ Add custom MCP servers in `.codinglm.json`
    - Will be fixed in upstream gemini-cli or dependency updates
 
 2. **OAuth Code Removed**
-   - Google OAuth authentication stubbed out
+   - Legacy OAuth authentication stubbed out
    - CodinGLM uses Z.AI API keys exclusively
-   - Original Google auth flows not available
+   - Original upstream auth flows not available
 
 ### Requirements
 1. **Z_AI_API_KEY must be set** in environment to use the CLI
@@ -176,7 +176,7 @@ Add custom MCP servers in `.codinglm.json`
 
 ### Remotes
 - **Origin:** `https://github.com/Dfunk55/CodinGLM.git` (your fork)
-- **Upstream:** `https://github.com/google-gemini/gemini-cli.git` (Google's original)
+- **Upstream:** `https://github.com/google-gemini/gemini-cli.git` (open-source original)
 
 ### Latest Commits
 ```
@@ -257,9 +257,9 @@ npm run bundle
 codinglm
 ```
 
-### Stay Updated with Google's gemini-cli
+### Stay Updated with the upstream gemini-cli
 ```bash
-# Fetch latest changes from Google
+# Fetch latest changes from upstream
 git fetch upstream
 
 # Review changes
@@ -290,7 +290,7 @@ git merge upstream/main
 - **GLM-4.6 Model Card:** `GLM-4.6_MODEL_CARD.md`
 - **Setup Guide:** `GLM-4.6_setup.md`
 - **Config Example:** `.codinglm.json.example`
-- **Gemini CLI Docs:** `gemini-cli/docs/`
+- **CodinGLM CLI Docs:** `gemini-cli/docs/`
 
 ### Links
 - **Z.AI Dashboard:** https://z.ai/
@@ -308,7 +308,7 @@ The CLI tool is fully functional and waiting for you to:
 2. Type `codinglm` in your terminal
 3. Start building with GLM-4.6's advanced reasoning and coding capabilities
 
-All core features are implemented, tested, and documented. The fork successfully combines Google's robust gemini-cli infrastructure with Z.AI's powerful GLM-4.6 model.
+All core features are implemented, tested, and documented. The fork successfully combines the upstream gemini-cli infrastructure with Z.AI's powerful GLM-4.6 model.
 
 **Status:** ✅ **READY TO USE**
 

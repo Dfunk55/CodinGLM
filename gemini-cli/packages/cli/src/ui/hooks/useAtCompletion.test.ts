@@ -9,10 +9,10 @@ import { act, useState } from 'react';
 import { renderHook } from '../../test-utils/render.js';
 import { waitFor } from '../../test-utils/async.js';
 import { useAtCompletion } from './useAtCompletion.js';
-import type { Config, FileSearch } from '@google/gemini-cli-core';
-import { FileSearchFactory } from '@google/gemini-cli-core';
-import type { FileSystemStructure } from '@google/gemini-cli-test-utils';
-import { createTmpDir, cleanupTmpDir } from '@google/gemini-cli-test-utils';
+import type { Config, FileSearch } from '@codinglm/core';
+import { FileSearchFactory } from '@codinglm/core';
+import type { FileSystemStructure } from '@codinglm/test-utils';
+import { createTmpDir, cleanupTmpDir } from '@codinglm/test-utils';
 import type { Suggestion } from '../components/SuggestionsDisplay.js';
 
 // Test harness to capture the state from the hook's callbacks.
@@ -45,7 +45,7 @@ describe('useAtCompletion', () => {
     mockConfig = {
       getFileFilteringOptions: vi.fn(() => ({
         respectGitIgnore: true,
-        respectGeminiIgnore: true,
+        respectContextIgnore: true,
       })),
       getEnableRecursiveFileSearch: () => true,
       getFileFilteringDisableFuzzySearch: () => false,
@@ -146,7 +146,7 @@ describe('useAtCompletion', () => {
         projectRoot: testRootDir,
         ignoreDirs: [],
         useGitignore: false,
-        useGeminiignore: false,
+        usecontextIgnore: false,
         cache: false,
         cacheTtl: 0,
         enableRecursiveFileSearch: true,
@@ -241,7 +241,7 @@ describe('useAtCompletion', () => {
         projectRoot: testRootDir,
         ignoreDirs: [],
         useGitignore: true,
-        useGeminiignore: true,
+        usecontextIgnore: true,
         cache: false,
         cacheTtl: 0,
         enableRecursiveFileSearch: true,
@@ -525,7 +525,7 @@ describe('useAtCompletion', () => {
         getEnableRecursiveFileSearch: () => false,
         getFileFilteringOptions: vi.fn(() => ({
           respectGitIgnore: true,
-          respectGeminiIgnore: true,
+          respectContextIgnore: true,
         })),
         getFileFilteringDisableFuzzySearch: () => false,
       } as unknown as Config;

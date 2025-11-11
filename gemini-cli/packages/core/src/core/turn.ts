@@ -46,7 +46,7 @@ export interface ServerTool {
   ): Promise<ToolCallConfirmationDetails | false>;
 }
 
-export enum GeminiEventType {
+export enum LlmEventType {
   Content = 'content',
   ToolCallRequest = 'tool_call_request',
   ToolCallResponse = 'tool_call_response',
@@ -64,20 +64,20 @@ export enum GeminiEventType {
   InvalidStream = 'invalid_stream',
 }
 
-export type ServerGeminiRetryEvent = {
-  type: GeminiEventType.Retry;
+export type ServerLlmRetryEvent = {
+  type: LlmEventType.Retry;
 };
 
-export type ServerGeminiContextWindowWillOverflowEvent = {
-  type: GeminiEventType.ContextWindowWillOverflow;
+export type ServerLlmContextWindowWillOverflowEvent = {
+  type: LlmEventType.ContextWindowWillOverflow;
   value: {
     estimatedRequestTokenCount: number;
     remainingTokenCount: number;
   };
 };
 
-export type ServerGeminiInvalidStreamEvent = {
-  type: GeminiEventType.InvalidStream;
+export type ServerLlmInvalidStreamEvent = {
+  type: LlmEventType.InvalidStream;
 };
 
 export interface StructuredError {
@@ -85,11 +85,11 @@ export interface StructuredError {
   status?: number;
 }
 
-export interface GeminiErrorEventValue {
+export interface LlmErrorEventValue {
   error: StructuredError;
 }
 
-export interface GeminiFinishedEventValue {
+export interface LlmFinishedEventValue {
   reason: FinishReason | undefined;
   usageMetadata: GenerateContentResponseUsageMetadata | undefined;
 }
@@ -117,40 +117,40 @@ export interface ServerToolCallConfirmationDetails {
   details: ToolCallConfirmationDetails;
 }
 
-export type ServerGeminiContentEvent = {
-  type: GeminiEventType.Content;
+export type ServerLlmContentEvent = {
+  type: LlmEventType.Content;
   value: string;
   traceId?: string;
 };
 
-export type ServerGeminiThoughtEvent = {
-  type: GeminiEventType.Thought;
+export type ServerLlmThoughtEvent = {
+  type: LlmEventType.Thought;
   value: ThoughtSummary;
   traceId?: string;
 };
 
-export type ServerGeminiToolCallRequestEvent = {
-  type: GeminiEventType.ToolCallRequest;
+export type ServerLlmToolCallRequestEvent = {
+  type: LlmEventType.ToolCallRequest;
   value: ToolCallRequestInfo;
 };
 
-export type ServerGeminiToolCallResponseEvent = {
-  type: GeminiEventType.ToolCallResponse;
+export type ServerLlmToolCallResponseEvent = {
+  type: LlmEventType.ToolCallResponse;
   value: ToolCallResponseInfo;
 };
 
-export type ServerGeminiToolCallConfirmationEvent = {
-  type: GeminiEventType.ToolCallConfirmation;
+export type ServerLlmToolCallConfirmationEvent = {
+  type: LlmEventType.ToolCallConfirmation;
   value: ServerToolCallConfirmationDetails;
 };
 
-export type ServerGeminiUserCancelledEvent = {
-  type: GeminiEventType.UserCancelled;
+export type ServerLlmUserCancelledEvent = {
+  type: LlmEventType.UserCancelled;
 };
 
-export type ServerGeminiErrorEvent = {
-  type: GeminiEventType.Error;
-  value: GeminiErrorEventValue;
+export type ServerLlmErrorEvent = {
+  type: LlmEventType.Error;
+  value: LlmErrorEventValue;
 };
 
 export enum CompressionStatus {
@@ -173,46 +173,46 @@ export interface ChatCompressionInfo {
   compressionStatus: CompressionStatus;
 }
 
-export type ServerGeminiChatCompressedEvent = {
-  type: GeminiEventType.ChatCompressed;
+export type ServerLlmChatCompressedEvent = {
+  type: LlmEventType.ChatCompressed;
   value: ChatCompressionInfo | null;
 };
 
-export type ServerGeminiMaxSessionTurnsEvent = {
-  type: GeminiEventType.MaxSessionTurns;
+export type ServerLlmMaxSessionTurnsEvent = {
+  type: LlmEventType.MaxSessionTurns;
 };
 
-export type ServerGeminiFinishedEvent = {
-  type: GeminiEventType.Finished;
-  value: GeminiFinishedEventValue;
+export type ServerLlmFinishedEvent = {
+  type: LlmEventType.Finished;
+  value: LlmFinishedEventValue;
 };
 
-export type ServerGeminiLoopDetectedEvent = {
-  type: GeminiEventType.LoopDetected;
+export type ServerLlmLoopDetectedEvent = {
+  type: LlmEventType.LoopDetected;
 };
 
-export type ServerGeminiCitationEvent = {
-  type: GeminiEventType.Citation;
+export type ServerLlmCitationEvent = {
+  type: LlmEventType.Citation;
   value: string;
 };
 
 // The original union type, now composed of the individual types
-export type ServerGeminiStreamEvent =
-  | ServerGeminiChatCompressedEvent
-  | ServerGeminiCitationEvent
-  | ServerGeminiContentEvent
-  | ServerGeminiErrorEvent
-  | ServerGeminiFinishedEvent
-  | ServerGeminiLoopDetectedEvent
-  | ServerGeminiMaxSessionTurnsEvent
-  | ServerGeminiThoughtEvent
-  | ServerGeminiToolCallConfirmationEvent
-  | ServerGeminiToolCallRequestEvent
-  | ServerGeminiToolCallResponseEvent
-  | ServerGeminiUserCancelledEvent
-  | ServerGeminiRetryEvent
-  | ServerGeminiContextWindowWillOverflowEvent
-  | ServerGeminiInvalidStreamEvent;
+export type ServerLlmStreamEvent =
+  | ServerLlmChatCompressedEvent
+  | ServerLlmCitationEvent
+  | ServerLlmContentEvent
+  | ServerLlmErrorEvent
+  | ServerLlmFinishedEvent
+  | ServerLlmLoopDetectedEvent
+  | ServerLlmMaxSessionTurnsEvent
+  | ServerLlmThoughtEvent
+  | ServerLlmToolCallConfirmationEvent
+  | ServerLlmToolCallRequestEvent
+  | ServerLlmToolCallResponseEvent
+  | ServerLlmUserCancelledEvent
+  | ServerLlmRetryEvent
+  | ServerLlmContextWindowWillOverflowEvent
+  | ServerLlmInvalidStreamEvent;
 
 // A turn manages the agentic loop turn within the server context.
 export class Turn {
@@ -230,7 +230,7 @@ export class Turn {
     model: string,
     req: PartListUnion,
     signal: AbortSignal,
-  ): AsyncGenerator<ServerGeminiStreamEvent> {
+  ): AsyncGenerator<ServerLlmStreamEvent> {
     try {
       // Note: This assumes `sendMessageStream` yields events like
       // { type: StreamEventType.RETRY } || { type: StreamEventType.CHUNK, value: GenerateContentResponse }
@@ -247,13 +247,13 @@ export class Turn {
 
       for await (const streamEvent of responseStream) {
         if (signal?.aborted) {
-          yield { type: GeminiEventType.UserCancelled };
+          yield { type: LlmEventType.UserCancelled };
           return;
         }
 
         // Handle the new RETRY event
         if (streamEvent.type === 'retry') {
-          yield { type: GeminiEventType.Retry };
+          yield { type: LlmEventType.Retry };
           continue; // Skip to the next event in the stream
         }
 
@@ -269,7 +269,7 @@ export class Turn {
         if (thoughtPart?.thought) {
           const thought = parseThought(thoughtPart.text ?? '');
           yield {
-            type: GeminiEventType.Thought,
+            type: LlmEventType.Thought,
             value: thought,
             traceId,
           };
@@ -278,7 +278,7 @@ export class Turn {
 
         const text = getResponseText(resp);
         if (text) {
-          yield { type: GeminiEventType.Content, value: text, traceId };
+          yield { type: LlmEventType.Content, value: text, traceId };
         }
 
         // Handle function calls (requesting tool execution)
@@ -301,7 +301,7 @@ export class Turn {
         if (finishReason) {
           if (this.pendingCitations.size > 0) {
             yield {
-              type: GeminiEventType.Citation,
+              type: LlmEventType.Citation,
               value: `Citations:\n${[...this.pendingCitations].sort().join('\n')}`,
             };
             this.pendingCitations.clear();
@@ -309,7 +309,7 @@ export class Turn {
 
           this.finishReason = finishReason;
           yield {
-            type: GeminiEventType.Finished,
+            type: LlmEventType.Finished,
             value: {
               reason: finishReason,
               usageMetadata: resp.usageMetadata,
@@ -319,13 +319,13 @@ export class Turn {
       }
     } catch (e) {
       if (signal.aborted) {
-        yield { type: GeminiEventType.UserCancelled };
+        yield { type: LlmEventType.UserCancelled };
         // Regular cancellation error, fail gracefully.
         return;
       }
 
       if (e instanceof InvalidStreamError || (e && (e as Error).name === 'InvalidStreamError') || (e && (e as any).type === 'NO_FINISH_REASON') || (e && (e as any).type === 'NO_RESPONSE_TEXT') ) {
-        yield { type: GeminiEventType.InvalidStream };
+        yield { type: LlmEventType.InvalidStream };
         return;
       }
 
@@ -340,7 +340,7 @@ export class Turn {
       ];
       await reportError(
         error,
-        'Error when talking to Gemini API',
+        'Error when talking to CodinGLM API',
         contextForReport,
         'Turn.run-sendMessageStream',
       );
@@ -356,14 +356,14 @@ export class Turn {
         status,
       };
       await this.chat.maybeIncludeSchemaDepthContext(structuredError);
-      yield { type: GeminiEventType.Error, value: { error: structuredError } };
+      yield { type: LlmEventType.Error, value: { error: structuredError } };
       return;
     }
   }
 
   private handlePendingFunctionCall(
     fnCall: FunctionCall,
-  ): ServerGeminiStreamEvent | null {
+  ): ServerLlmStreamEvent | null {
     const callId =
       fnCall.id ??
       `${fnCall.name}-${Date.now()}-${Math.random().toString(16).slice(2)}`;
@@ -381,7 +381,7 @@ export class Turn {
     this.pendingToolCalls.push(toolCallRequest);
 
     // Yield a request for the tool call, not the pending/confirming status
-    return { type: GeminiEventType.ToolCallRequest, value: toolCallRequest };
+    return { type: LlmEventType.ToolCallRequest, value: toolCallRequest };
   }
 
   getDebugResponses(): GenerateContentResponse[] {

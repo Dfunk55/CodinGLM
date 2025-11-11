@@ -11,10 +11,10 @@ import type {
   FinishReason,
   FunctionCallingConfig,
 } from '../llm/types.js';
-import { DEFAULT_GEMINI_FLASH_MODEL } from '../config/models.js';
+import { DEFAULT_GLM_FLASH_MODEL } from '../config/models.js';
 
 /**
- * Decoupled LLM request format - stable across Gemini CLI versions
+ * Decoupled LLM request format - stable across CodinGLM CLI versions
  */
 export interface LLMRequest {
   model: string;
@@ -37,7 +37,7 @@ export interface LLMRequest {
 }
 
 /**
- * Decoupled LLM response format - stable across Gemini CLI versions
+ * Decoupled LLM response format - stable across CodinGLM CLI versions
  */
 export interface LLMResponse {
   text?: string;
@@ -62,7 +62,7 @@ export interface LLMResponse {
 }
 
 /**
- * Decoupled tool configuration - stable across Gemini CLI versions
+ * Decoupled tool configuration - stable across CodinGLM CLI versions
  */
 export interface HookToolConfig {
   mode?: 'AUTO' | 'ANY' | 'NONE';
@@ -206,7 +206,7 @@ export class HookTranslatorGenAIv1 extends HookTranslator {
     const config = extractGenerationConfig(sdkRequest);
 
     return {
-      model: sdkRequest.model || DEFAULT_GEMINI_FLASH_MODEL,
+      model: sdkRequest.model || DEFAULT_GLM_FLASH_MODEL,
       messages,
       config: {
         temperature: config?.temperature,

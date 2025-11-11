@@ -7,7 +7,7 @@
 import type { Mock } from 'vitest';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { handleAtCommand } from './atCommandProcessor.js';
-import type { Config } from '@google/gemini-cli-core';
+import type { Config } from '@codinglm/core';
 import {
   FileDiscoveryService,
   GlobTool,
@@ -16,7 +16,7 @@ import {
   ToolRegistry,
   COMMON_IGNORE_PATTERNS,
   // DEFAULT_FILE_EXCLUDES,
-} from '@google/gemini-cli-core';
+} from '@codinglm/core';
 import * as os from 'node:os';
 import { ToolCallStatus } from '../types.js';
 import type { UseHistoryManagerReturn } from './useHistoryManager.js';
@@ -59,10 +59,10 @@ describe('handleAtCommand', () => {
       isSandboxed: () => false,
       getFileService: () => new FileDiscoveryService(testRootDir),
       getFileFilteringRespectGitIgnore: () => true,
-      getFileFilteringRespectGeminiIgnore: () => true,
+      getFileFilteringRespectContextIgnore: () => true,
       getFileFilteringOptions: () => ({
         respectGitIgnore: true,
-        respectGeminiIgnore: true,
+        respectContextIgnore: true,
       }),
       getFileSystemService: () => new StandardFileSystemService(),
       getEnableRecursiveFileSearch: vi.fn(() => true),
@@ -617,10 +617,10 @@ describe('handleAtCommand', () => {
         shouldProceed: true,
       });
       expect(mockOnDebugMessage).toHaveBeenCalledWith(
-        `Path ${geminiIgnoredFile} is gemini-ignored and will be skipped.`,
+        `Path ${geminiIgnoredFile} is context-ignored and will be skipped.`,
       );
       expect(mockOnDebugMessage).toHaveBeenCalledWith(
-        `Ignored 1 files:\nGemini-ignored: ${geminiIgnoredFile}`,
+        `Ignored 1 files:\nContext-ignored: ${geminiIgnoredFile}`,
       );
     });
   });
@@ -691,10 +691,10 @@ describe('handleAtCommand', () => {
       shouldProceed: true,
     });
     expect(mockOnDebugMessage).toHaveBeenCalledWith(
-      `Path ${geminiIgnoredFile} is gemini-ignored and will be skipped.`,
+      `Path ${geminiIgnoredFile} is context-ignored and will be skipped.`,
     );
     expect(mockOnDebugMessage).toHaveBeenCalledWith(
-      `Ignored 1 files:\nGemini-ignored: ${geminiIgnoredFile}`,
+      `Ignored 1 files:\nContext-ignored: ${geminiIgnoredFile}`,
     );
   });
 

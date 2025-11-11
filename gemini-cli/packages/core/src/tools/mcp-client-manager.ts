@@ -6,7 +6,7 @@
 
 import type {
   Config,
-  GeminiCLIExtension,
+  CodinGLMExtension,
   MCPServerConfig,
 } from '../config/config.js';
 import type { ToolRegistry } from './tool-registry.js';
@@ -57,9 +57,9 @@ export class McpClientManager {
    *
    *    - Removes all its MCP servers from the global configuration object.
    *    - Disconnects all MCP clients from their servers.
-   *    - Updates the Gemini chat configuration to load the new tools.
+   *    - Updates the CodinGLM chat configuration to load the new tools.
    */
-  async stopExtension(extension: GeminiCLIExtension) {
+  async stopExtension(extension: CodinGLMExtension) {
     debugLogger.log(`Unloading extension: ${extension.name}`);
     await Promise.all(
       Object.keys(extension.mcpServers ?? {}).map(
@@ -73,9 +73,9 @@ export class McpClientManager {
    *
    *    - Adds all its MCP servers to the global configuration object.
    *    - Connects MCP clients to each server and discovers their tools.
-   *    - Updates the Gemini chat configuration to load the new tools.
+   *    - Updates the CodinGLM chat configuration to load the new tools.
    */
-  async startExtension(extension: GeminiCLIExtension) {
+  async startExtension(extension: CodinGLMExtension) {
     debugLogger.log(`Loading extension: ${extension.name}`);
     await Promise.all(
       Object.entries(extension.mcpServers ?? {}).map(([name, config]) =>
@@ -121,9 +121,9 @@ export class McpClientManager {
       } finally {
         // This is required to update the content generator configuration with the
         // new tool configuration.
-        const geminiClient = this.cliConfig.getLlmClient();
-        if (geminiClient.isInitialized()) {
-          await geminiClient.setTools();
+        const llmClient = this.cliConfig.getLlmClient();
+        if (llmClient.isInitialized()) {
+          await llmClient.setTools();
         }
       }
     }
@@ -198,9 +198,9 @@ export class McpClientManager {
         } finally {
           // This is required to update the content generator configuration with the
           // new tool configuration.
-          const geminiClient = this.cliConfig.getLlmClient();
-          if (geminiClient.isInitialized()) {
-            await geminiClient.setTools();
+          const llmClient = this.cliConfig.getLlmClient();
+          if (llmClient.isInitialized()) {
+            await llmClient.setTools();
           }
           resolve();
         }

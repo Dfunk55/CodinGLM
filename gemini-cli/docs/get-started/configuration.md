@@ -17,7 +17,7 @@ the different configuration methods and available settings.
 
 > **Compatibility note:** CodinGLM CLI keeps the upstream `.gemini` directories,
 > schema names, and environment-variable prefixes (for example `GEMINI_*`) so it
-> can run on the same runtime as the Google-branded CLI. The values described
+> can run on the same runtime as the upstream-branded CLI. The values described
 > here are still the knobs you configure, even though the product name has
 > changed.
 
@@ -45,12 +45,12 @@ locations for these files:
 > **Tip:** JSON-aware editors can use autocomplete and validation by pointing to
 > the generated schema at `schemas/settings.schema.json` in this repository.
 > When working outside the repo, reference the hosted schema at
-> `https://raw.githubusercontent.com/google-gemini/gemini-cli/main/schemas/settings.schema.json`.
+> `https://raw.githubusercontent.com/Dfunk55/CodinGLM/main/schemas/settings.schema.json`.
 
 - **System defaults file:**
   - **Location:** `/etc/gemini-cli/system-defaults.json` (Linux),
     `C:\ProgramData\gemini-cli\system-defaults.json` (Windows) or
-    `/Library/Application Support/GeminiCli/system-defaults.json` (macOS). The
+    `/Library/Application Support/CodinGLMCli/system-defaults.json` (macOS). The
     path can be overridden using the `GEMINI_CLI_SYSTEM_DEFAULTS_PATH`
     environment variable.
   - **Scope:** Provides a base layer of system-wide default settings. These
@@ -67,7 +67,7 @@ locations for these files:
 - **System settings file:**
   - **Location:** `/etc/gemini-cli/settings.json` (Linux),
     `C:\ProgramData\gemini-cli\settings.json` (Windows) or
-    `/Library/Application Support/GeminiCli/settings.json` (macOS). The path can
+    `/Library/Application Support/CodinGLMCli/settings.json` (macOS). The path can
     be overridden using the `GEMINI_CLI_SYSTEM_SETTINGS_PATH` environment
     variable.
   - **Scope:** Applies to all CodinGLM CLI sessions on the system, for all users.
@@ -195,7 +195,7 @@ their corresponding top-level category object in your `settings.json` file.
   - **Default:** `false`
 
 - **`ui.hideContextSummary`** (boolean):
-  - **Description:** Hide the context summary (GEMINI.md, MCP servers) above the
+  - **Description:** Hide the context summary (CODINGLM.md, MCP servers) above the
     input.
   - **Default:** `false`
 
@@ -323,7 +323,7 @@ their corresponding top-level category object in your `settings.json` file.
   - **Default:** `[]`
 
 - **`context.loadMemoryFromIncludeDirectories`** (boolean):
-  - **Description:** Controls how /memory refresh loads GEMINI.md files. When
+  - **Description:** Controls how /memory refresh loads CODINGLM.md files. When
     true, include directories are scanned; when false, only the current
     directory is used.
   - **Default:** `false`
@@ -333,7 +333,7 @@ their corresponding top-level category object in your `settings.json` file.
   - **Default:** `true`
   - **Requires restart:** Yes
 
-- **`context.fileFiltering.respectGeminiIgnore`** (boolean):
+- **`context.fileFiltering.respectCodinGLMIgnore`** (boolean):
   - **Description:** Respect .geminiignore files when searching
   - **Default:** `true`
   - **Requires restart:** Yes
@@ -691,7 +691,7 @@ of v0.3.0:
     }
   },
   "context": {
-    "fileName": ["CONTEXT.md", "GEMINI.md"],
+    "fileName": ["CONTEXT.md", "CODINGLM.md"],
     "includeDirectories": ["path/to/dir1", "~/path/to/dir2", "../path/to/dir3"],
     "loadFromIncludeDirectories": true,
     "fileFiltering": {
@@ -813,15 +813,14 @@ the `advanced.excludedEnvVars` setting in your `settings.json` file.
   - Specifies the endpoint for the code assist server.
   - This is useful for development and testing.
 
-### Legacy Google / Vertex variables
+### Legacy upstream variables
 
 Variables such as `GEMINI_API_KEY`, `GOOGLE_API_KEY`,
 `GOOGLE_CLOUD_PROJECT`, `GOOGLE_CLOUD_LOCATION`, and
-`GOOGLE_APPLICATION_CREDENTIALS` belong to the upstream Google Gemini CLI +
-Vertex AI workflows. CodinGLM CLI ignores them unless you intentionally run the
-Google provider. If you still need to use those flows, follow the dedicated
-[Gemini authentication instructions](https://github.com/google-gemini/gemini-cli)
-or keep a separate installation of the upstream CLI.
+`GOOGLE_APPLICATION_CREDENTIALS` belong to the upstream compatibility layer and
+are ignored unless you explicitly configure that provider. If you still need to
+use those flows, keep a separate installation of the upstream CLI and follow
+its authentication instructions.
 
 ## Command-Line Arguments
 
@@ -903,7 +902,7 @@ for that specific session.
 ## Context Files (Hierarchical Instructional Context)
 
 While not strictly configuration for the CLI's _behavior_, context files
-(defaulting to `GEMINI.md` but configurable via the `context.fileName` setting)
+(defaulting to `CODINGLM.md` but configurable via the `context.fileName` setting)
 are crucial for configuring the _instructional context_ (also referred to as
 "memory") provided to the GLM model. This powerful feature allows you to give
 project-specific instructions, coding style guides, or any relevant background
@@ -916,7 +915,7 @@ context.
   that you want the GLM model to be aware of during your interactions. The
   system is designed to manage this instructional context hierarchically.
 
-### Example Context File Content (e.g., `GEMINI.md`)
+### Example Context File Content (e.g., `CODINGLM.md`)
 
 Here's a conceptual example of what a context file at the root of a TypeScript
 project might contain:
@@ -958,14 +957,14 @@ you. Project-specific context files are highly encouraged to establish
 conventions and context.
 
 - **Hierarchical Loading and Precedence:** The CLI implements a sophisticated
-  hierarchical memory system by loading context files (e.g., `GEMINI.md`) from
+  hierarchical memory system by loading context files (e.g., `CODINGLM.md`) from
   several locations. Content from files lower in this list (more specific)
   typically overrides or supplements content from files higher up (more
   general). The exact concatenation order and final context can be inspected
   using the `/memory show` command. The typical loading order is:
   1.  **Global Context File:**
       - Location: `~/.gemini/<configured-context-filename>` (e.g.,
-        `~/.gemini/GEMINI.md` in your user home directory).
+        `~/.gemini/CODINGLM.md` in your user home directory).
       - Scope: Provides default instructions for all your projects.
   2.  **Project Root & Ancestors Context Files:**
       - Location: The CLI searches for the configured context file in the

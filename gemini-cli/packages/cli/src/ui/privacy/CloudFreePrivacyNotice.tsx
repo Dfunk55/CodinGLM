@@ -8,7 +8,7 @@ import { Box, Newline, Text } from 'ink';
 import { RadioButtonSelect } from '../components/shared/RadioButtonSelect.js';
 import { usePrivacySettings } from '../hooks/usePrivacySettings.js';
 
-import type { Config } from '@google/gemini-cli-core';
+import type { Config } from '@codinglm/core';
 import { theme } from '../semantic-colors.js';
 import { useKeypress } from '../hooks/useKeypress.js';
 
@@ -55,12 +55,10 @@ export const CloudFreePrivacyNotice = ({
     return (
       <Box flexDirection="column" marginY={1}>
         <Text bold color={theme.text.accent}>
-          Gemini Code Assist Privacy Notice
+          CodinGLM Privacy Notice
         </Text>
         <Newline />
-        <Text>
-          https://developers.google.com/gemini-code-assist/resources/privacy-notices
-        </Text>
+        <Text>https://open.bigmodel.cn/usercenter/privacy</Text>
         <Newline />
         <Text color={theme.text.secondary}>Press Esc to exit.</Text>
       </Box>
@@ -75,38 +73,33 @@ export const CloudFreePrivacyNotice = ({
   return (
     <Box flexDirection="column" marginY={1}>
       <Text bold color={theme.text.accent}>
-        Gemini Code Assist for Individuals Privacy Notice
+        CodinGLM Privacy & Data Collection Notice
       </Text>
       <Newline />
       <Text color={theme.text.primary}>
-        This notice and our Privacy Policy
-        <Text color={theme.text.link}>[1]</Text> describe how Gemini Code Assist
-        handles your data. Please read them carefully.
+        This notice and the Zhipu AI Privacy Policy
+        <Text color={theme.text.link}>[1]</Text> describe how CodinGLM (powered
+        by Zhipu AI) handles your data. Please read them carefully.
       </Text>
       <Newline />
       <Text color={theme.text.primary}>
-        When you use Gemini Code Assist for individuals with CodinGLM, Google
-        collects your prompts, related code, generated output, code edits,
-        related feature usage information, and your feedback to provide,
-        improve, and develop Google products and services and machine learning
-        technologies.
+        When you use CodinGLM with Zhipu AI, Zhipu AI may collect your prompts,
+        related code, generated output, code edits, feature usage information,
+        and feedback to provide, improve, and develop its services and machine
+        learning technologies.
       </Text>
       <Newline />
       <Text color={theme.text.primary}>
-        To help with quality and improve our products (such as generative
-        machine-learning models), human reviewers may read, annotate, and
-        process the data collected above. We take steps to protect your privacy
-        as part of this process. This includes disconnecting the data from your
-        Google Account before reviewers see or annotate it, and storing those
-        disconnected copies for up to 18 months. Please don&apos;t submit
-        confidential information or any data you wouldn&apos;t want a reviewer
-        to see or Google to use to improve our products, services and
-        machine-learning technologies.
+        To help with quality and improve CodinGLM experiences, reviewers within
+        Zhipu AI may read, annotate, and process the data collected above. Data
+        is handled according to the Zhipu AI Privacy Policy. Avoid submitting
+        confidential information or anything you do not want a reviewer to see
+        or Zhipu AI to use to improve its services.
       </Text>
       <Newline />
       <Box flexDirection="column">
         <Text color={theme.text.primary}>
-          Allow Google to use this data to develop and improve our products?
+          Allow Zhipu AI to use this data to develop and improve its products?
         </Text>
         <RadioButtonSelect
           items={items}
@@ -123,7 +116,7 @@ export const CloudFreePrivacyNotice = ({
       <Newline />
       <Text>
         <Text color={theme.text.link}>[1]</Text>{' '}
-        https://policies.google.com/privacy
+        https://open.bigmodel.cn/usercenter/privacy
       </Text>
       <Newline />
       <Text color={theme.text.secondary}>

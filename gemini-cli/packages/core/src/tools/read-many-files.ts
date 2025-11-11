@@ -98,7 +98,7 @@ type FileProcessingResult =
 
 /**
  * Creates the default exclusion patterns including dynamic patterns.
- * This combines the shared patterns with dynamic patterns like GEMINI.md.
+ * This combines the shared patterns with dynamic patterns like CODINGLM.md.
  * NOTE: Custom exclusion patterns can now be configured through .codinglm.json:
  * { "fileFiltering": { "customExcludes": [...] } }
  * Future enhancement: Support CLI arguments for runtime override.
@@ -216,10 +216,10 @@ ${finalExclusionPatternsForDescription
             this.params.file_filtering_options?.respect_git_ignore ??
             this.config.getFileFilteringOptions().respectGitIgnore ??
             DEFAULT_FILE_FILTERING_OPTIONS.respectGitIgnore,
-          respectGeminiIgnore:
+          respectContextIgnore:
             this.params.file_filtering_options?.respect_gemini_ignore ??
-            this.config.getFileFilteringOptions().respectGeminiIgnore ??
-            DEFAULT_FILE_FILTERING_OPTIONS.respectGeminiIgnore,
+            this.config.getFileFilteringOptions().respectContextIgnore ??
+            DEFAULT_FILE_FILTERING_OPTIONS.respectContextIgnore,
         });
 
       for (const relativePath of filteredPaths) {

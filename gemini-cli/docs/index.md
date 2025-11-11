@@ -2,7 +2,7 @@
 
 This site is the home for everything you need to install, configure, extend,
 and operate CodinGLM CLI. The CLI layers CodinGLM defaults, tooling, and guard
-rails on top of the open-source Gemini CLI runtime so you can work with the
+rails on top of the open-source CodinGLM CLI runtime so you can work with the
 GLM-4.6 model from Zhipu AI directly inside your terminal.
 
 ## Overview

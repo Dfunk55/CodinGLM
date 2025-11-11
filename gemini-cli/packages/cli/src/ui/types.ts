@@ -6,13 +6,13 @@
 
 import type {
   CompressionStatus,
-  GeminiCLIExtension,
+  CodinGLMExtension,
   MCPServerConfig,
   ThoughtSummary,
   ToolCallConfirmationDetails,
   ToolConfirmationOutcome,
   ToolResultDisplay,
-} from '@google/gemini-cli-core';
+} from '@codinglm/core';
 import type { PartListUnion } from '@codinglm/core/llm/types';
 import { type ReactNode } from 'react';
 
@@ -82,7 +82,7 @@ export interface CompressionProps {
 }
 
 export interface HistoryItemBase {
-  text?: string; // Text content for user/gemini/info/error messages
+  text?: string; // Text content for user/model/info/error messages
 }
 
 export type HistoryItemUser = HistoryItemBase & {
@@ -91,12 +91,12 @@ export type HistoryItemUser = HistoryItemBase & {
 };
 
 export type HistoryItemCodinGLM = HistoryItemBase & {
-  type: 'gemini';
+  type: 'model';
   text: string;
 };
 
 export type HistoryItemCodinGLMContent = HistoryItemBase & {
-  type: 'gemini_content';
+  type: 'model_content';
   text: string;
 };
 
@@ -166,7 +166,7 @@ export type HistoryItemCompression = HistoryItemBase & {
 
 export type HistoryItemExtensionsList = HistoryItemBase & {
   type: 'extensions_list';
-  extensions: GeminiCLIExtension[];
+  extensions: CodinGLMExtension[];
 };
 
 export interface ChatDetail {
@@ -264,7 +264,7 @@ export enum MessageType {
   MODEL_STATS = 'model_stats',
   TOOL_STATS = 'tool_stats',
   QUIT = 'quit',
-  GEMINI = 'gemini',
+  MODEL_RESPONSE = 'model',
   COMPRESSION = 'compression',
   EXTENSIONS_LIST = 'extensions_list',
   TOOLS_LIST = 'tools_list',
@@ -332,7 +332,7 @@ export interface ConsoleMessageItem {
 
 /**
  * Result type for a slash command that should immediately result in a prompt
- * being submitted to the Gemini model.
+ * being submitted to the GLM model.
  */
 export interface SubmitPromptResult {
   type: 'submit_prompt';
@@ -340,7 +340,7 @@ export interface SubmitPromptResult {
 }
 
 /**
- * Defines the result of the slash command processor for its consumer (useGeminiStream).
+ * Defines the result of the slash command processor for its consumer (useModelStream).
  */
 export type SlashCommandProcessorResult =
   | {

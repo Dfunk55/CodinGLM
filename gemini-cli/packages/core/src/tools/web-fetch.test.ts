@@ -25,7 +25,7 @@ import {
 import { convert } from 'html-to-text';
 
 const mockGenerateContent = vi.fn();
-const mockGetGeminiClient = vi.fn(() => ({
+const mockGetLlmClient = vi.fn(() => ({
   generateContent: mockGenerateContent,
 }));
 
@@ -141,7 +141,7 @@ describe('WebFetchTool', () => {
       getApprovalMode: vi.fn(),
       setApprovalMode: vi.fn(),
       getProxy: vi.fn(),
-      getGeminiClient: mockGetGeminiClient,
+      getLlmClient: mockGetLlmClient,
     } as unknown as Config;
   });
 

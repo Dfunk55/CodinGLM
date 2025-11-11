@@ -1,31 +1,31 @@
-# MCP servers with the Gemini CLI
+# MCP servers with the CodinGLM CLI
 
 This document provides a guide to configuring and using Model Context Protocol
-(MCP) servers with the Gemini CLI.
+(MCP) servers with the CodinGLM CLI.
 
 ## What is an MCP server?
 
-An MCP server is an application that exposes tools and resources to the Gemini
+An MCP server is an application that exposes tools and resources to the CodinGLM
 CLI through the Model Context Protocol, allowing it to interact with external
-systems and data sources. MCP servers act as a bridge between the Gemini model
+systems and data sources. MCP servers act as a bridge between the GLM model
 and your local environment or other services like APIs.
 
-An MCP server enables the Gemini CLI to:
+An MCP server enables the CodinGLM CLI to:
 
 - **Discover tools:** List available tools, their descriptions, and parameters
   through standardized schema definitions.
 - **Execute tools:** Call specific tools with defined arguments and receive
   structured responses.
-- **Access resources:** Read data from specific resources (though the Gemini CLI
+- **Access resources:** Read data from specific resources (though the CodinGLM CLI
   primarily focuses on tool execution).
 
-With an MCP server, you can extend the Gemini CLI's capabilities to perform
+With an MCP server, you can extend the CodinGLM CLI's capabilities to perform
 actions beyond its built-in features, such as interacting with databases, APIs,
 custom scripts, or specialized workflows.
 
 ## Core Integration Architecture
 
-The Gemini CLI integrates with MCP servers through a sophisticated discovery and
+The CodinGLM CLI integrates with MCP servers through a sophisticated discovery and
 execution system built into the core package (`packages/core/src/tools/`):
 
 ### Discovery Layer (`mcp-client.ts`)
@@ -37,7 +37,7 @@ The discovery process is orchestrated by `discoverMcpTools()`, which:
 2. **Establishes connections** using appropriate transport mechanisms (Stdio,
    SSE, or Streamable HTTP)
 3. **Fetches tool definitions** from each server using the MCP protocol
-4. **Sanitizes and validates** tool schemas for compatibility with the Gemini
+4. **Sanitizes and validates** tool schemas for compatibility with the CodinGLM
    API
 5. **Registers tools** in the global tool registry with conflict resolution
 
@@ -53,7 +53,7 @@ Each discovered MCP tool is wrapped in a `DiscoveredMCPTool` instance that:
 
 ### Transport Mechanisms
 
-The Gemini CLI supports three MCP transport types:
+The CodinGLM CLI supports three MCP transport types:
 
 - **Stdio Transport:** Spawns a subprocess and communicates via stdin/stdout
 - **SSE Transport:** Connects to Server-Sent Events endpoints
@@ -61,7 +61,7 @@ The Gemini CLI supports three MCP transport types:
 
 ## How to set up your MCP server
 
-The Gemini CLI uses the `mcpServers` configuration in your `settings.json` file
+The CodinGLM CLI uses the `mcpServers` configuration in your `settings.json` file
 to locate and connect to MCP servers. This configuration supports multiple
 servers with different transport mechanisms.
 
@@ -153,13 +153,13 @@ Each server configuration supports the following properties:
 - **`targetAudience`** (string): The OAuth Client ID allowlisted on the
   IAP-protected application you are trying to access. Used with
   `authProviderType: 'service_account_impersonation'`.
-- **`targetServiceAccount`** (string): The email address of the Google Cloud
-  Service Account to impersonate. Used with
+- **`targetServiceAccount`** (string): The email address of the service account
+  to impersonate when calling legacy GCP IAP-protected services. Used with
   `authProviderType: 'service_account_impersonation'`.
 
 ### OAuth Support for Remote MCP Servers
 
-The Gemini CLI supports OAuth 2.0 authentication for remote MCP servers using
+The CodinGLM CLI supports OAuth 2.0 authentication for remote MCP servers using
 SSE or HTTP transports. This enables secure access to MCP servers that require
 authentication.
 
@@ -257,15 +257,14 @@ property:
   one of the following:
   - **`dynamic_discovery`** (default): The CLI will automatically discover the
     OAuth configuration from the server.
-  - **`google_credentials`**: The CLI will use the Google Application Default
-    Credentials (ADC) to authenticate with the server. When using this provider,
-    you must specify the required scopes.
-  - **`service_account_impersonation`**: The CLI will impersonate a Google Cloud
-    Service Account to authenticate with the server. This is useful for
-    accessing IAP-protected services (this was specifically designed for Cloud
-    Run services).
+  - **`google_credentials`**: Legacy provider that uses the Application Default
+    Credentials (ADC) stack to authenticate with an MCP server. When using this
+    provider, you must specify the required scopes.
+  - **`service_account_impersonation`**: Legacy provider that impersonates a GCP
+    service account to access Identity-Aware Proxy (IAP) protected services
+    (originally designed for Cloud Run services).
 
-#### Google Credentials
+#### Legacy ADC Credentials
 
 ```json
 {
@@ -289,8 +288,8 @@ following properties:
 
 - **`targetAudience`** (string): The OAuth Client ID allowslisted on the
   IAP-protected application you are trying to access.
-- **`targetServiceAccount`** (string): The email address of the Google Cloud
-  Service Account to impersonate.
+- **`targetServiceAccount`** (string): The email address of the legacy GCP
+  service account to impersonate.
 
 The CLI will use your local Application Default Credentials (ADC) to generate an
 OIDC ID token for the specified service account and audience. This token will
@@ -443,7 +442,7 @@ then be used to authenticate with the MCP server.
 
 ## Discovery Process Deep Dive
 
-When the Gemini CLI starts, it performs MCP server discovery through the
+When the CodinGLM CLI starts, it performs MCP server discovery through the
 following detailed process:
 
 ### 1. Server Iteration and Connection
@@ -468,7 +467,7 @@ Upon successful connection:
 2. **Schema validation:** Each tool's function declaration is validated
 3. **Tool filtering:** Tools are filtered based on `includeTools` and
    `excludeTools` configuration
-4. **Name sanitization:** Tool names are cleaned to meet Gemini API
+4. **Name sanitization:** Tool names are cleaned to meet CodinGLM API
    requirements:
    - Invalid characters (non-alphanumeric, underscore, dot, hyphen) are replaced
      with underscores
@@ -488,7 +487,7 @@ When multiple servers expose tools with the same name:
 
 ### 4. Schema Processing
 
-Tool parameter schemas undergo sanitization for Gemini API compatibility:
+Tool parameter schemas undergo sanitization for CodinGLM API compatibility:
 
 - **`$schema` properties** are removed
 - **`additionalProperties`** are stripped
@@ -509,7 +508,7 @@ After discovery:
 
 ## Tool Execution Flow
 
-When the Gemini model decides to use an MCP tool, the following execution flow
+When the GLM model decides to use an MCP tool, the following execution flow
 occurs:
 
 ### 1. Tool Invocation
@@ -617,7 +616,7 @@ Discovery State: COMPLETED
 
 ### Tool Usage
 
-Once discovered, MCP tools are available to the Gemini model like built-in
+Once discovered, MCP tools are available to the GLM model like built-in
 tools. The model will automatically:
 
 1. **Select appropriate tools** based on your requests
@@ -730,14 +729,14 @@ The MCP integration tracks several states:
 ### Schema Compatibility
 
 - **Property stripping:** The system automatically removes certain schema
-  properties (`$schema`, `additionalProperties`) for Gemini API compatibility
+  properties (`$schema`, `additionalProperties`) for CodinGLM API compatibility
 - **Name sanitization:** Tool names are automatically sanitized to meet API
   requirements
 - **Conflict resolution:** Tool name conflicts between servers are resolved
   through automatic prefixing
 
 This comprehensive integration makes MCP servers a powerful way to extend the
-Gemini CLI's capabilities while maintaining security, reliability, and ease of
+CodinGLM CLI's capabilities while maintaining security, reliability, and ease of
 use.
 
 ## Returning Rich Content from Tools
@@ -757,7 +756,7 @@ To return rich content, your tool's response must adhere to the MCP
 specification for a
 [`CallToolResult`](https://modelcontextprotocol.io/specification/2025-06-18/server/tools#tool-result).
 The `content` field of the result should be an array of `ContentBlock` objects.
-The Gemini CLI will correctly process this array, separating text from binary
+The CodinGLM CLI will correctly process this array, separating text from binary
 data and packaging it for the model.
 
 You can mix and match different content block types in the `content` array. The
@@ -794,7 +793,7 @@ text description and an image:
 }
 ```
 
-When the Gemini CLI receives this response, it will:
+When the CodinGLM CLI receives this response, it will:
 
 1.  Extract all the text and combine it into a single `functionResponse` part
     for the model.
@@ -803,12 +802,12 @@ When the Gemini CLI receives this response, it will:
     and an image were received.
 
 This enables you to build sophisticated tools that can provide rich, multi-modal
-context to the Gemini model.
+context to the GLM model.
 
 ## MCP Prompts as Slash Commands
 
 In addition to tools, MCP servers can expose predefined prompts that can be
-executed as slash commands within the Gemini CLI. This allows you to create
+executed as slash commands within the CodinGLM CLI. This allows you to create
 shortcuts for common or complex queries that can be easily invoked by name.
 
 ### Defining Prompts on the Server
@@ -868,16 +867,16 @@ Once a prompt is discovered, you can invoke it using its name as a slash
 command. The CLI will automatically handle parsing arguments.
 
 ```bash
-/poem-writer --title="Gemini CLI" --mood="reverent"
+/poem-writer --title="CodinGLM CLI" --mood="reverent"
 ```
 
 or, using positional arguments:
 
 ```bash
-/poem-writer "Gemini CLI" reverent
+/poem-writer "CodinGLM CLI" reverent
 ```
 
-When you run this command, the Gemini CLI executes the `prompts/get` method on
+When you run this command, the CodinGLM CLI executes the `prompts/get` method on
 the MCP server with the provided arguments. The server is responsible for
 substituting the arguments into the prompt template and returning the final
 prompt text. The CLI then sends this prompt to the model for execution. This
@@ -886,7 +885,7 @@ provides a convenient way to automate and share common workflows.
 ## Managing MCP Servers with `gemini mcp`
 
 While you can always configure MCP servers by manually editing your
-`settings.json` file, the Gemini CLI provides a convenient set of commands to
+`settings.json` file, the CodinGLM CLI provides a convenient set of commands to
 manage your server configurations programmatically. These commands streamline
 the process of adding, listing, and removing MCP servers without needing to
 directly edit JSON files.

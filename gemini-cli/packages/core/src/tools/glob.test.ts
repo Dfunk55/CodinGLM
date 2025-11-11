@@ -30,7 +30,7 @@ describe('GlobTool', () => {
     getFileFilteringRespectGitIgnore: () => true,
     getFileFilteringOptions: () => ({
       respectGitIgnore: true,
-      respectGeminiIgnore: true,
+      respectContextIgnore: true,
     }),
     getTargetDir: () => tempRootDir,
     getWorkspaceContext: () => createMockWorkspaceContext(tempRootDir),

@@ -8,11 +8,12 @@ import type { MockInstance } from 'vitest';
 import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { ideCommand } from './ideCommand.js';
 import { type CommandContext } from './types.js';
-import { IDE_DEFINITIONS } from '@google/gemini-cli-core';
-import * as core from '@google/gemini-cli-core';
+import { IDE_DEFINITIONS } from '@codinglm/core';
+import * as core from '@codinglm/core';
 
-vi.mock('@google/gemini-cli-core', async (importOriginal) => {
-  const original = await importOriginal<typeof core>();
+vi.mock('@codinglm/core', async (importOriginal) => {
+  const original =
+    await importOriginal<typeof import('@codinglm/core')>();
   return {
     ...original,
     getOauthClient: vi.fn(original.getOauthClient),

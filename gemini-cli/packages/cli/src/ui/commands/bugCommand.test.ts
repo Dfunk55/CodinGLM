@@ -16,9 +16,9 @@ import { formatMemoryUsage } from '../utils/formatters.js';
 vi.mock('open');
 vi.mock('../../utils/version.js');
 vi.mock('../utils/formatters.js');
-vi.mock('@google/gemini-cli-core', async (importOriginal) => {
+vi.mock('@codinglm/core', async (importOriginal) => {
   const actual =
-    await importOriginal<typeof import('@google/gemini-cli-core')>();
+    await importOriginal<typeof import('@codinglm/core')>();
   return {
     ...actual,
     IdeClient: {
@@ -55,7 +55,7 @@ describe('bugCommand', () => {
     const mockContext = createMockCommandContext({
       services: {
         config: {
-          getModel: () => 'gemini-pro',
+          getModel: () => 'glm-4.6',
           getBugCommand: () => undefined,
           getIdeMode: () => true,
         },
@@ -71,12 +71,12 @@ describe('bugCommand', () => {
 * **Session ID:** test-session-id
 * **Operating System:** test-platform v20.0.0
 * **Sandbox Environment:** test
-* **Model Version:** gemini-pro
+* **Model Version:** glm-4.6
 * **Memory Usage:** 100 MB
 * **IDE Client:** VSCode
 `;
     const expectedUrl =
-      'https://github.com/google-gemini/gemini-cli/issues/new?template=bug_report.yml&title=A%20test%20bug&info=' +
+      'https://github.com/Dfunk55/CodinGLM/issues/new?template=bug_report.yml&title=A%20test%20bug&info=' +
       encodeURIComponent(expectedInfo);
 
     expect(open).toHaveBeenCalledWith(expectedUrl);
@@ -88,7 +88,7 @@ describe('bugCommand', () => {
     const mockContext = createMockCommandContext({
       services: {
         config: {
-          getModel: () => 'gemini-pro',
+          getModel: () => 'glm-4.6',
           getBugCommand: () => ({ urlTemplate: customTemplate }),
           getIdeMode: () => true,
         },
@@ -104,7 +104,7 @@ describe('bugCommand', () => {
 * **Session ID:** test-session-id
 * **Operating System:** test-platform v20.0.0
 * **Sandbox Environment:** test
-* **Model Version:** gemini-pro
+* **Model Version:** glm-4.6
 * **Memory Usage:** 100 MB
 * **IDE Client:** VSCode
 `;

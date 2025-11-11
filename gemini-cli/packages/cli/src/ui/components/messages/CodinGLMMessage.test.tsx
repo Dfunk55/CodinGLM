@@ -4,11 +4,11 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { CodinGLMMessage as GeminiMessage } from './CodinGLMMessage.js';
+import { CodinGLMMessage as CodinGLMMessage } from './CodinGLMMessage.js';
 import { StreamingState } from '../../types.js';
 import { renderWithProviders } from '../../../test-utils/render.js';
 
-describe('<GeminiMessage /> - Raw Markdown Display Snapshots', () => {
+describe('<CodinGLMMessage /> - Raw Markdown Display Snapshots', () => {
   const baseProps = {
     text: 'Test **bold** and `code` markdown\n\n```javascript\nconst x = 1;\n```',
     isPending: false,
@@ -25,7 +25,7 @@ describe('<GeminiMessage /> - Raw Markdown Display Snapshots', () => {
     'renders with renderMarkdown=$renderMarkdown $description',
     ({ renderMarkdown }) => {
       const { lastFrame } = renderWithProviders(
-        <GeminiMessage {...baseProps} />,
+        <CodinGLMMessage {...baseProps} />,
         {
           uiState: { renderMarkdown, streamingState: StreamingState.Idle },
         },
@@ -38,7 +38,7 @@ describe('<GeminiMessage /> - Raw Markdown Display Snapshots', () => {
     'renders pending state with renderMarkdown=$renderMarkdown',
     ({ renderMarkdown }) => {
       const { lastFrame } = renderWithProviders(
-        <GeminiMessage {...baseProps} isPending={true} />,
+        <CodinGLMMessage {...baseProps} isPending={true} />,
         {
           uiState: { renderMarkdown, streamingState: StreamingState.Idle },
         },

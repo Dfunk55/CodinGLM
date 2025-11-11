@@ -20,7 +20,7 @@ import {
   TOOL_STATUS,
 } from '../../constants.js';
 import { theme } from '../../semantic-colors.js';
-import type { AnsiOutput, Config } from '@google/gemini-cli-core';
+import type { AnsiOutput, Config } from '@codinglm/core';
 import { useUIState } from '../../contexts/UIStateContext.js';
 
 const STATIC_HEIGHT = 1;

@@ -52,11 +52,11 @@ async function main() {
       default: false,
     })
     .example(
-      '$0 --original-pr 8655 --exit-code 0 --commit abc1234 --channel preview --repository google-gemini/gemini-cli --test',
+      '$0 --original-pr 8655 --exit-code 0 --commit abc1234 --channel preview --repository Dfunk55/CodinGLM --test',
       'Test success comment',
     )
     .example(
-      '$0 --original-pr 8655 --exit-code 1 --commit abc1234 --channel stable --repository google-gemini/gemini-cli --test',
+      '$0 --original-pr 8655 --exit-code 1 --commit abc1234 --channel stable --repository Dfunk55/CodinGLM --test',
       'Test failure comment',
     )
     .help()
@@ -76,7 +76,7 @@ async function main() {
   const commit = argv.commit || process.env.COMMIT;
   const channel = argv.channel || process.env.CHANNEL;
   const repository =
-    argv.repository || process.env.REPOSITORY || 'google-gemini/gemini-cli';
+    argv.repository || process.env.REPOSITORY || 'Dfunk55/CodinGLM';
   const runId = argv.runId || process.env.GITHUB_RUN_ID || '0';
 
   // Validate required parameters

@@ -1,13 +1,13 @@
 {
   "name": "gemini-cli-vscode-ide-companion",
-  "displayName": "Gemini CLI Companion",
-  "description": "Enable Gemini CLI with direct access to your IDE workspace.",
+  "displayName": "CodinGLM CLI Companion",
+  "description": "Enable CodinGLM CLI with direct access to your IDE workspace.",
   "version": "0.13.0-nightly.20251031.c89bc30d",
   "publisher": "google",
   "icon": "assets/icon.png",
   "repository": {
     "type": "git",
-    "url": "https://github.com/google-gemini/gemini-cli.git",
+    "url": "https://github.com/Dfunk55/CodinGLM.git",
     "directory": "packages/vscode-ide-companion"
   },
   "engines": {
@@ -32,12 +32,12 @@
   ],
   "contributes": {
     "configuration": {
-      "title": "Gemini CLI",
+      "title": "CodinGLM CLI",
       "properties": {
         "gemini-cli.debug.logging.enabled": {
           "type": "boolean",
           "default": false,
-          "description": "Enable detailed logging for debugging the Gemini CLI Companion."
+          "description": "Enable detailed logging for debugging the CodinGLM CLI Companion."
         }
       }
     },
@@ -49,21 +49,21 @@
     "commands": [
       {
         "command": "gemini.diff.accept",
-        "title": "Gemini CLI: Accept Diff",
+        "title": "CodinGLM CLI: Accept Diff",
         "icon": "$(check)"
       },
       {
         "command": "gemini.diff.cancel",
-        "title": "Gemini CLI: Close Diff Editor",
+        "title": "CodinGLM CLI: Close Diff Editor",
         "icon": "$(close)"
       },
       {
-        "command": "gemini-cli.runGeminiCLI",
-        "title": "Gemini CLI: Run"
+        "command": "gemini-cli.runCodinGLMCLI",
+        "title": "CodinGLM CLI: Run"
       },
       {
         "command": "gemini-cli.showNotices",
-        "title": "Gemini CLI: View Third-Party Notices"
+        "title": "CodinGLM CLI: View Third-Party Notices"
       }
     ],
     "menus": {

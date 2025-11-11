@@ -15,7 +15,7 @@ import type { Part } from '../llm/types.js';
 import type { CallableTool } from './mcp-tool.js';
 import { ToolErrorType } from './tool-error.js';
 
-// Mock @google/genai mcpToTool and CallableTool
+// Mock @codinglm/genai mcpToTool and CallableTool
 // We only need to mock the parts of CallableTool that DiscoveredMCPTool uses.
 const mockCallTool = vi.fn();
 const mockToolMethod = vi.fn();

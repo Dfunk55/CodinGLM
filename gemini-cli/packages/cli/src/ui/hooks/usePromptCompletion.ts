@@ -5,12 +5,12 @@
  */
 
 import { useState, useCallback, useRef, useEffect, useMemo } from 'react';
-import type { Config } from '@google/gemini-cli-core';
+import type { Config } from '@codinglm/core';
 import {
   debugLogger,
-  DEFAULT_GEMINI_FLASH_LITE_MODEL,
+  DEFAULT_GLM_FLASH_LITE_MODEL,
   getResponseText,
-} from '@google/gemini-cli-core';
+} from '@codinglm/core';
 import type { Content, GenerateContentConfig } from '@codinglm/core/llm/types';
 import type { TextBuffer } from '../components/shared/text-buffer.js';
 import { isSlashCommand } from '../utils/commandUtils.js';
@@ -70,7 +70,7 @@ export function usePromptCompletion({
 
   const generatePromptSuggestions = useCallback(async () => {
     const trimmedText = buffer.text.trim();
-    const geminiClient = config?.getLlmClient();
+    const llmClient = config?.getLlmClient();
 
     if (trimmedText === lastRequestedTextRef.current) {
       return;
@@ -82,7 +82,7 @@ export function usePromptCompletion({
 
     if (
       trimmedText.length < PROMPT_COMPLETION_MIN_LENGTH ||
-      !geminiClient ||
+      !llmClient ||
       isSlashCommand(trimmedText) ||
       trimmedText.includes('@') ||
       !isPromptCompletionEnabled
@@ -118,11 +118,11 @@ export function usePromptCompletion({
         },
       };
 
-      const response = await geminiClient.generateContent(
+      const response = await llmClient.generateContent(
         contents,
         generationConfig,
         signal,
-        DEFAULT_GEMINI_FLASH_LITE_MODEL,
+        DEFAULT_GLM_FLASH_LITE_MODEL,
       );
 
       if (signal.aborted) {

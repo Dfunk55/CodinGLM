@@ -7,7 +7,7 @@
 import {
   CoreToolScheduler,
   type LlmClient,
-  GeminiEventType,
+  LlmEventType,
   ToolConfirmationOutcome,
   ApprovalMode,
   getAllMCPServerStatuses,
@@ -20,8 +20,8 @@ import {
   type ToolConfirmationPayload,
   type CompletedToolCall,
   type ToolCallRequestInfo,
-  type ServerGeminiErrorEvent,
-  type ServerGeminiStreamEvent,
+  type ServerLlmErrorEvent,
+  type ServerLlmStreamEvent,
   type ToolCallConfirmationDetails,
   type Config,
   type UserTierId,
@@ -60,7 +60,7 @@ export class Task {
   contextId: string;
   scheduler: CoreToolScheduler;
   config: Config;
-  geminiClient: LlmClient;
+  llmClient: LlmClient;
   pendingToolConfirmationDetails: Map<string, ToolCallConfirmationDetails>;
   taskState: TaskState;
   eventBus?: ExecutionEventBus;
@@ -85,7 +85,7 @@ export class Task {
     this.contextId = contextId;
     this.config = config;
     this.scheduler = this.createScheduler();
-    this.geminiClient = this.config.getLlmClient();
+    this.llmClient = this.config.getLlmClient();
     this.pendingToolConfirmationDetails = new Map();
     this.taskState = 'submitted';
     this.eventBus = eventBus;
@@ -266,6 +266,7 @@ export class Task {
     traceId?: string,
   ): void {
     this.taskState = newState;
+    console.error('DEBUG setTaskState', newState, coderAgentMessage.kind);
     let message: Message | undefined;
 
     if (messageText) {
@@ -582,7 +583,7 @@ export class Task {
     await this.scheduler.schedule(updatedRequests, abortSignal);
   }
 
-  async acceptAgentMessage(event: ServerGeminiStreamEvent): Promise<void> {
+  async acceptAgentMessage(event: ServerLlmStreamEvent): Promise<void> {
     const stateChange: StateChange = {
       kind: CoderAgentEvent.StateChangeEvent,
     };
@@ -590,26 +591,26 @@ export class Task {
       'traceId' in event && event.traceId ? event.traceId : undefined;
 
     switch (event.type) {
-      case GeminiEventType.Content:
+      case LlmEventType.Content:
         logger.info('[Task] Sending agent message content...');
         this._sendTextContent(event.value, traceId);
         break;
-      case GeminiEventType.ToolCallRequest:
+      case LlmEventType.ToolCallRequest:
         // This is now handled by the agent loop, which collects all requests
         // and calls scheduleToolCalls once.
         logger.warn(
           '[Task] A single tool call request was passed to acceptAgentMessage. This should be handled in a batch by the agent. Ignoring.',
         );
         break;
-      case GeminiEventType.ToolCallResponse:
-        // This event type from ServerGeminiStreamEvent might be for when LLM *generates* a tool response part.
+      case LlmEventType.ToolCallResponse:
+        // This event type from ServerLlmStreamEvent might be for when LLM *generates* a tool response part.
         // The actual execution result comes via user message.
         logger.info(
           '[Task] Received tool call response from LLM (part of generation):',
           event.value,
         );
         break;
-      case GeminiEventType.ToolCallConfirmation:
+      case LlmEventType.ToolCallConfirmation:
         // This is when LLM requests confirmation, not when user provides it.
         logger.info(
           '[Task] Received tool call confirmation request from LLM:',
@@ -622,7 +623,7 @@ export class Task {
         // This will be handled by the scheduler and _schedulerToolCallsUpdate will set InputRequired if needed.
         // No direct state change here, scheduler drives it.
         break;
-      case GeminiEventType.UserCancelled:
+      case LlmEventType.UserCancelled:
         logger.info('[Task] Received user cancelled event from LLM stream.');
         this.cancelPendingTools('User cancelled via LLM stream event');
         this.setTaskStateAndPublishUpdate(
@@ -635,23 +636,23 @@ export class Task {
           traceId,
         );
         break;
-      case GeminiEventType.Thought:
+      case LlmEventType.Thought:
         logger.info('[Task] Sending agent thought...');
         this._sendThought(event.value, traceId);
         break;
-      case GeminiEventType.Citation:
+      case LlmEventType.Citation:
         logger.info('[Task] Received citation from LLM stream.');
         this._sendCitation(event.value);
         break;
-      case GeminiEventType.ChatCompressed:
+      case LlmEventType.ChatCompressed:
         break;
-      case GeminiEventType.Finished:
+      case LlmEventType.Finished:
         logger.info(`[Task ${this.id}] Agent finished its turn.`);
         break;
-      case GeminiEventType.Error:
+      case LlmEventType.Error:
       default: {
         // Block scope for lexical declaration
-        const errorEvent = event as ServerGeminiErrorEvent; // Type assertion
+        const errorEvent = event as ServerLlmErrorEvent; // Type assertion
         const errorMessage =
           errorEvent.value?.error.message ?? 'Unknown error from LLM stream';
         logger.error(
@@ -815,7 +816,7 @@ export class Task {
       } else {
         parts = [response];
       }
-      this.geminiClient.addHistory({
+      this.llmClient.addHistory({
         role: 'user',
         parts,
       });
@@ -825,7 +826,7 @@ export class Task {
   async *sendCompletedToolsToLlm(
     completedToolCalls: CompletedToolCall[],
     aborted: AbortSignal,
-  ): AsyncGenerator<ServerGeminiStreamEvent> {
+  ): AsyncGenerator<ServerLlmStreamEvent> {
     if (completedToolCalls.length === 0) {
       yield* (async function* () {})(); // Yield nothing
       return;
@@ -854,7 +855,7 @@ export class Task {
     // Set task state to working as we are about to call LLM
     this.setTaskStateAndPublishUpdate('working', stateChange);
     // TODO: Determine what it mean to have, then add a prompt ID.
-    yield* this.geminiClient.sendMessageStream(
+    yield* this.llmClient.sendMessageStream(
       llmParts,
       aborted,
       /*prompt_id*/ '',
@@ -864,7 +865,7 @@ export class Task {
   async *acceptUserMessage(
     requestContext: RequestContext,
     aborted: AbortSignal,
-  ): AsyncGenerator<ServerGeminiStreamEvent> {
+  ): AsyncGenerator<ServerLlmStreamEvent> {
     const userMessage = requestContext.userMessage;
     const llmParts: PartUnion[] = [];
     let anyConfirmationHandled = false;
@@ -894,7 +895,7 @@ export class Task {
       // Set task state to working as we are about to call LLM
       this.setTaskStateAndPublishUpdate('working', stateChange);
       // TODO: Determine what it mean to have, then add a prompt ID.
-      yield* this.geminiClient.sendMessageStream(
+      yield* this.llmClient.sendMessageStream(
         llmParts,
         aborted,
         /*prompt_id*/ '',
@@ -934,6 +935,7 @@ export class Task {
       return;
     }
     logger.info('[Task] Sending text content to event bus.');
+    console.error('DEBUG task state before text content', this.taskState);
     const message = this._createTextMessage(content);
     const textContent: TextContent = {
       kind: CoderAgentEvent.TextContentEvent,

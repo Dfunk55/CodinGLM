@@ -13,7 +13,7 @@ import type {
 import {
   AuthType,
   EditTool,
-  GeminiClient,
+  LlmClient,
   ToolConfirmationOutcome,
   ToolErrorType,
   ToolRegistry,
@@ -92,12 +92,12 @@ import * as metrics from './metrics.js';
 import { FileOperation } from './metrics.js';
 import * as sdk from './sdk.js';
 import { vi, describe, beforeEach, it, expect, afterEach } from 'vitest';
-import { type GeminiCLIExtension } from '../config/config.js';
+import { type CodinGLMExtension } from '../config/config.js';
 import {
   FinishReason,
   type CallableTool,
   type GenerateContentResponseUsageMetadata,
-} from '@google/genai';
+} from '@codinglm/genai';
 import { DiscoveredMCPTool } from '../tools/mcp-tool.js';
 import * as uiTelemetry from './uiTelemetry.js';
 import { makeFakeConfig } from '../test-utils/config.js';
@@ -203,7 +203,7 @@ describe('loggers', () => {
           [
             { name: 'ext-one', id: 'id-one' },
             { name: 'ext-two', id: 'id-two' },
-          ] as GeminiCLIExtension[],
+          ] as CodinGLMExtension[],
         getMcpClientManager: () => ({
           getMcpServers: () => ({
             'test-server': {
@@ -757,7 +757,7 @@ describe('loggers', () => {
     const cfg1 = {
       getSessionId: () => 'test-session-id',
       getTargetDir: () => 'target-dir',
-      getGeminiClient: () => mockGeminiClient,
+      getLlmClient: () => mockLlmClient,
     } as Config;
     const cfg2 = {
       getSessionId: () => 'test-session-id',
@@ -786,11 +786,11 @@ describe('loggers', () => {
       getUserMemory: () => 'user-memory',
     } as unknown as Config;
 
-    const mockGeminiClient = new GeminiClient(cfg2);
+    const mockLlmClient = new LlmClient(cfg2);
     const mockConfig = {
       getSessionId: () => 'test-session-id',
       getTargetDir: () => 'target-dir',
-      getGeminiClient: () => mockGeminiClient,
+      getLlmClient: () => mockLlmClient,
       getUsageStatisticsEnabled: () => true,
       getTelemetryEnabled: () => true,
       getTelemetryLogPromptsEnabled: () => true,
@@ -1450,7 +1450,7 @@ describe('loggers', () => {
 
     it('should log the event to Clearcut and OTEL, and record metrics', () => {
       const event = new ModelRoutingEvent(
-        'gemini-pro',
+        'glm-4.6',
         'default',
         100,
         'test-reason',
@@ -1465,7 +1465,7 @@ describe('loggers', () => {
       ).toHaveBeenCalledWith(event);
 
       expect(mockLogger.emit).toHaveBeenCalledWith({
-        body: 'Model routing decision. Model: gemini-pro, Source: default',
+        body: 'Model routing decision. Model: glm-4.6, Source: default',
         attributes: {
           'session.id': 'test-session-id',
           'user.email': 'test-user@example.com',
@@ -1484,7 +1484,7 @@ describe('loggers', () => {
     it('should only log to Clearcut if OTEL SDK is not initialized', () => {
       vi.spyOn(sdk, 'isTelemetrySdkInitialized').mockReturnValue(false);
       const event = new ModelRoutingEvent(
-        'gemini-pro',
+        'glm-4.6',
         'default',
         100,
         'test-reason',

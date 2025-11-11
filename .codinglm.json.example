@@ -47,7 +47,7 @@
   },
   "fileFiltering": {
     "respectGitIgnore": true,
-    "respectGeminiIgnore": true,
+    "respectContextIgnore": true,
     "customExcludes": [
       "**/*.tmp",
       "**/temp/**"

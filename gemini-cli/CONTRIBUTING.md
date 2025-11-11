@@ -4,36 +4,33 @@ We would love to accept your patches and contributions to this project. This
 document includes:
 
 - **[Before you begin](#before-you-begin):** Essential steps to take before
-  becoming a Gemini CLI contributor.
+  becoming a CodinGLM CLI contributor.
 - **[Code contribution process](#code-contribution-process):** How to contribute
-  code to Gemini CLI.
+  code to CodinGLM CLI.
 - **[Development setup and workflow](#development-setup-and-workflow):** How to
   set up your development environment and workflow.
 - **[Documentation contribution process](#documentation-contribution-process):**
-  How to contribute documentation to Gemini CLI.
+  How to contribute documentation to CodinGLM CLI.
 
 We're looking forward to seeing your contributions!
 
 ## Before you begin
 
-### Sign our Contributor License Agreement
+### Acknowledge the Developer Certificate of Origin
 
-Contributions to this project must be accompanied by a
-[Contributor License Agreement](https://cla.developers.google.com/about) (CLA).
-You (or your employer) retain the copyright to your contribution; this simply
-gives us permission to use and redistribute your contributions as part of the
-project.
+Contributions to CodinGLM CLI require agreement with the
+[Developer Certificate of Origin](https://developercertificate.org/) (DCO). You
+retain copyright to your work; the DCO simply confirms you have the right to
+contribute it under the Apache 2.0 license.
 
-If you or your current employer have already signed the Google CLA (even if it
-was for a different project), you probably don't need to do it again.
-
-Visit <https://cla.developers.google.com/> to see your current agreements or to
-sign a new one.
+Sign each commit with `git commit -s` (or add a `Signed-off-by: Name <email>`
+trailer) to indicate your agreement. Commits without a DCO sign-off cannot be
+merged.
 
 ### Review our Community Guidelines
 
-This project follows
-[Google's Open Source Community Guidelines](https://opensource.google/conduct/).
+This project follows the
+[Contributor Covenant Code of Conduct](https://www.contributor-covenant.org/version/2/1/code_of_conduct/).
 
 ## Code contribution process
 
@@ -58,7 +55,7 @@ recommend running our automated frontend review tool. **Note: This tool is
 currently experimental.** It helps detect common React anti-patterns, testing
 issues, and other frontend-specific best practices that are easy to miss.
 
-To run the review tool, enter the following command from within Gemini CLI:
+To run the review tool, enter the following command from within CodinGLM CLI:
 
 ```text
 /review-frontend <PR_NUMBER>
@@ -72,7 +69,7 @@ augment their manual review process.
 
 If you're looking for an issue to work on, check out our list of issues that are
 labeled
-["help wanted"](https://github.com/google-gemini/gemini-cli/issues?q=is%3Aissue+state%3Aopen+label%3A%22help+wanted%22).
+["help wanted"](https://github.com/Dfunk55/CodinGLM/issues?q=is%3Aissue+state%3Aopen+label%3A%22help+wanted%22).
 
 To assign an issue to yourself, simply add a comment with the text `/assign`.
 The comment must contain only that text and nothing else. This command will
@@ -180,7 +177,7 @@ development setup of this project.
 To clone the repository:
 
 ```bash
-git clone https://github.com/google-gemini/gemini-cli.git # Or your fork's URL
+   git clone https://github.com/Dfunk55/CodinGLM.git # Or your fork's URL
 cd gemini-cli
 ```
 
@@ -218,7 +215,7 @@ To skip building the sandbox container, you can use `npm run build` instead.
 
 ### Running the CLI
 
-To start the Gemini CLI from the source code (after building), run the following
+To start the CodinGLM CLI from the source code (after building), run the following
 command from the root directory:
 
 ```bash
@@ -249,7 +246,7 @@ comprehensive check, it is recommended to run `npm run preflight`.
 #### Integration tests
 
 The integration tests are designed to validate the end-to-end functionality of
-the Gemini CLI. They are not run as part of the default `npm run test` command.
+the CodinGLM CLI. They are not run as part of the default `npm run test` command.
 
 To run the integration tests, use the following command:
 
@@ -312,7 +309,7 @@ npm run lint
 - Please adhere to the coding style, patterns, and conventions used throughout
   the existing codebase.
 - Consult
-  [GEMINI.md](https://github.com/google-gemini/gemini-cli/blob/main/GEMINI.md)
+  [CODINGLM.md](./CODINGLM.md)
   (typically found in the project root) for specific instructions related to
   AI-assisted development, including conventions for React, comments, and Git
   usage.
@@ -322,13 +319,13 @@ npm run lint
 ### Project structure
 
 - `packages/`: Contains the individual sub-packages of the project.
-  - `a2a-server`: A2A server implementation for the Gemini CLI. (Experimental)
+  - `a2a-server`: A2A server implementation for the CodinGLM CLI. (Experimental)
   - `cli/`: The command-line interface.
-  - `core/`: The core backend logic for the Gemini CLI.
+  - `core/`: The core backend logic for the CodinGLM CLI.
   - `test-utils` Utilities for creating and cleaning temporary file systems for
     testing.
-  - `vscode-ide-companion/`: The Gemini CLI Companion extension pairs with
-    Gemini CLI.
+  - `vscode-ide-companion/`: The CodinGLM CLI Companion extension pairs with
+    CodinGLM CLI.
 - `docs/`: Contains all project documentation.
 - `scripts/`: Utility scripts for building, testing, and development tasks.
 
@@ -369,7 +366,7 @@ specific debug settings.
 To debug the CLI's React-based UI, you can use React DevTools. Ink, the library
 used for the CLI's interface, is compatible with React DevTools version 4.x.
 
-1.  **Start the Gemini CLI in development mode:**
+1.  **Start the CodinGLM CLI in development mode:**
 
     ```bash
     DEV=true npm start
@@ -426,7 +423,7 @@ sandbox.
 
 Container-based sandboxing mounts the project directory (and system temp
 directory) with read-write access and is started/stopped/removed automatically
-as you start/stop Gemini CLI. Files created within the sandbox should be
+as you start/stop CodinGLM CLI. Files created within the sandbox should be
 automatically mapped to your user/group on host machine. You can easily specify
 additional mounts, ports, or environment variables by setting
 `SANDBOX_{MOUNTS,PORTS,ENV}` as needed. You can also fully customize the sandbox
@@ -468,7 +465,7 @@ our documentation to be clear, concise, and helpful to our users. We value:
 - **Accuracy:** Ensure all information is correct and up-to-date.
 - **Completeness:** Cover all aspects of a feature or topic.
 - **Examples:** Provide practical examples to help users understand how to use
-  Gemini CLI.
+  CodinGLM CLI.
 
 ### Getting started
 
@@ -497,8 +494,8 @@ table of contents. When adding new documentation:
 ### Style guide
 
 We follow the
-[Google Developer Documentation Style Guide](https://developers.google.com/style).
-Please refer to it for guidance on writing style, tone, and formatting.
+[Microsoft Writing Style Guide](https://learn.microsoft.com/style-guide/welcome/)
+for tone, structure, and formatting.
 
 #### Key style points
 
@@ -541,8 +538,8 @@ If you have questions about contributing documentation:
 
 - Check our [FAQ](/docs/faq.md).
 - Review existing documentation for examples.
-- Open [an issue](https://github.com/google-gemini/gemini-cli/issues) to discuss
+- Open [an issue](https://github.com/Dfunk55/CodinGLM/issues) to discuss
   your proposed changes.
 - Reach out to the maintainers.
 
-We appreciate your contributions to making Gemini CLI documentation better!
+We appreciate your contributions to making CodinGLM CLI documentation better!

@@ -125,7 +125,7 @@ describe('RecordingContentGenerator', () => {
       filePath,
       safeJsonStringify({
         method: 'countTokens',
-        response: mockResponse,
+        response: { totalTokens: mockResponse.totalTokens },
       }) + '\n',
     );
   });

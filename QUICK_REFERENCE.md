@@ -9,7 +9,7 @@
 | Item | Details |
 |------|---------|
 | **Project Type** | TypeScript/Node.js CLI tool |
-| **Base Framework** | Google gemini-cli (fork) |
+| **Base Framework** | Upstream gemini-cli runtime (Apache 2.0 fork) |
 | **Model** | GLM-4.6 (Zhipu AI) |
 | **Version** | 0.1.0-alpha.0 |
 | **Node.js Required** | 20.0.0+ |

@@ -5,3 +5,5 @@
  */
 
 export * from './mock-tool.js';
+export * from './mockWorkspaceContext.js';
+export * from './config.js';

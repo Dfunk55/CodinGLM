@@ -1,8 +1,8 @@
-# Gemini CLI
+# CodinGLM CLI
 
-Within Gemini CLI, `packages/cli` is the frontend for users to send and receive
-prompts with the Gemini AI model and its associated tools. For a general
-overview of Gemini CLI, see the [main documentation page](../index.md).
+Within CodinGLM CLI, `packages/cli` is the frontend for users to send and receive
+prompts with the CodinGLM AI model and its associated tools. For a general
+overview of CodinGLM CLI, see the [main documentation page](../index.md).
 
 ## Basic features
 
@@ -10,7 +10,7 @@ overview of Gemini CLI, see the [main documentation page](../index.md).
   (e.g., `/help`, `/chat`, `/tools`).
 - **[Custom Commands](./custom-commands.md):** Create your own commands and
   shortcuts for frequently used prompts.
-- **[Headless Mode](./headless.md):** Use Gemini CLI programmatically for
+- **[Headless Mode](./headless.md):** Use CodinGLM CLI programmatically for
   scripting and automation.
 - **[Themes](./themes.md):** Customizing the CLI's appearance with different
   themes.
@@ -22,7 +22,7 @@ overview of Gemini CLI, see the [main documentation page](../index.md).
 
 - **[Checkpointing](./checkpointing.md):** Automatically save and restore
   snapshots of your session and files.
-- **[Enterprise Configuration](./enterprise.md):** Deploying and manage Gemini
+- **[Enterprise Configuration](./enterprise.md):** Deploying and manage CodinGLM
   CLI in an enterprise environment.
 - **[Sandboxing](./sandbox.md):** Isolate tool execution in a secure,
   containerized environment.
@@ -33,16 +33,16 @@ overview of Gemini CLI, see the [main documentation page](../index.md).
   which projects can use the full capabilities of the CLI.
 - **[Ignoring Files (.geminiignore)](./gemini-ignore.md):** Exclude specific
   files and directories from being accessed by tools.
-- **[Context Files (GEMINI.md)](./gemini-md.md):** Provide persistent,
+- **[Context Files (CODINGLM.md)](./gemini-md.md):** Provide persistent,
   hierarchical context to the model.
 
 ## Non-interactive mode
 
-Gemini CLI can be run in a non-interactive mode, which is useful for scripting
+CodinGLM CLI can be run in a non-interactive mode, which is useful for scripting
 and automation. In this mode, you pipe input to the CLI, it executes the
 command, and then it exits.
 
-The following example pipes a command to Gemini CLI from your terminal:
+The following example pipes a command to CodinGLM CLI from your terminal:
 
 ```bash
 echo "What is fine tuning?" | gemini

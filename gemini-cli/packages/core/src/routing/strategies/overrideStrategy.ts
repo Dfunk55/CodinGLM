@@ -5,7 +5,7 @@
  */
 
 import type { Config } from '../../config/config.js';
-import { DEFAULT_GEMINI_MODEL_AUTO } from '../../config/models.js';
+import { DEFAULT_GLM_MODEL_AUTO } from '../../config/models.js';
 import type { BaseLlmClient } from '../../core/baseLlmClient.js';
 import type {
   RoutingContext,
@@ -27,7 +27,7 @@ export class OverrideStrategy implements RoutingStrategy {
     const overrideModel = config.getModel();
 
     // If the model is 'auto' we should pass to the next strategy.
-    if (overrideModel === DEFAULT_GEMINI_MODEL_AUTO) return null;
+    if (overrideModel === DEFAULT_GLM_MODEL_AUTO) return null;
 
     // Return the overridden model name.
     return {

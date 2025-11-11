@@ -37,7 +37,7 @@ describe('LSTool', () => {
       getFileService: () => new FileDiscoveryService(tempRootDir),
       getFileFilteringOptions: () => ({
         respectGitIgnore: true,
-        respectGeminiIgnore: true,
+        respectContextIgnore: true,
       }),
     } as unknown as Config;
 

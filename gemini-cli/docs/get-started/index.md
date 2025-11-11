@@ -20,7 +20,7 @@ GLM-4.6-powered agent in your terminal.
    ```
 4. Follow the on-screen prompts to pick a workspace and start chatting.
 
-CodinGLM CLI keeps the battle-tested Gemini CLI runtime under the hood, but all
+CodinGLM CLI keeps the battle-tested CodinGLM CLI runtime under the hood, but all
 defaults (models, tooling, telemetry, wording) point to CodinGLM and Z.AI.
 
 ## Install

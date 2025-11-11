@@ -12,7 +12,7 @@ import { ApprovalMode } from '../policy/types.js';
 import type { HookDefinition } from '../hooks/types.js';
 import { HookType, HookEventName } from '../hooks/types.js';
 import * as path from 'node:path';
-import { setGeminiMdFilename as mockSetGeminiMdFilename } from '../tools/memoryTool.js';
+import { setContextFilename as mockSetContextFilename } from '../tools/memoryTool.js';
 import {
   DEFAULT_TELEMETRY_TARGET,
   DEFAULT_OTLP_ENDPOINT,
@@ -75,20 +75,24 @@ vi.mock('../tools/web-fetch');
 vi.mock('../tools/read-many-files');
 vi.mock('../tools/memoryTool', () => ({
   MemoryTool: vi.fn(),
-  setGeminiMdFilename: vi.fn(),
-  getCurrentGeminiMdFilename: vi.fn(() => 'GEMINI.md'), // Mock the original filename
-  DEFAULT_CONTEXT_FILENAME: 'GEMINI.md',
+  setContextFilename: vi.fn(),
+  getCurrentContextFilename: vi.fn(() => 'CODINGLM.md'), // Mock the original filename
+  DEFAULT_CONTEXT_FILENAME: 'CODINGLM.md',
   GEMINI_DIR: '.gemini',
 }));
 
 vi.mock('../core/contentGenerator.js');
 
-vi.mock('../core/client.js', () => ({
-  LlmClient: vi.fn().mockImplementation(() => ({
+vi.mock('../core/client.js', () => {
+  const MockClient = vi.fn().mockImplementation(() => ({
     initialize: vi.fn().mockResolvedValue(undefined),
     stripThoughtsFromHistory: vi.fn(),
-  })),
-}));
+  }));
+  return {
+    LlmClient: MockClient,
+    LlmClient: MockClient,
+  };
+});
 
 vi.mock('../telemetry/index.js', async (importOriginal) => {
   const actual = await importOriginal<typeof import('../telemetry/index.js')>();
@@ -163,7 +167,7 @@ vi.mock('../core/tokenLimits.js', () => ({
 }));
 
 describe('Server Config (config.ts)', () => {
-  const MODEL = 'gemini-pro';
+  const MODEL = 'glm-4.6';
   const SANDBOX: SandboxConfig = {
     command: 'docker',
     image: 'gemini-cli-sandbox',
@@ -312,19 +316,19 @@ describe('Server Config (config.ts)', () => {
     expect(config.getUserMemory()).toBe('');
   });
 
-  it('Config constructor should call setGeminiMdFilename with contextFileName if provided', () => {
+  it('Config constructor should call setContextFilename with contextFileName if provided', () => {
     const contextFileName = 'CUSTOM_AGENTS.md';
     const paramsWithContextFile: ConfigParameters = {
       ...baseParams,
       contextFileName,
     };
     new Config(paramsWithContextFile);
-    expect(mockSetGeminiMdFilename).toHaveBeenCalledWith(contextFileName);
+    expect(mockSetContextFilename).toHaveBeenCalledWith(contextFileName);
   });
 
-  it('Config constructor should not call setGeminiMdFilename if contextFileName is not provided', () => {
+  it('Config constructor should not call setContextFilename if contextFileName is not provided', () => {
     new Config(baseParams); // baseParams does not have contextFileName
-    expect(mockSetGeminiMdFilename).not.toHaveBeenCalled();
+    expect(mockSetContextFilename).not.toHaveBeenCalled();
   });
 
   it('should set default file filtering settings when not provided', () => {
@@ -653,13 +657,13 @@ describe('Server Config (config.ts)', () => {
       const config = new Config({
         ...baseParams,
         useModelRouter: true,
-        model: 'gemini-flash-latest',
+        model: 'glm-4.6-mini-latest',
       });
 
       await config.refreshAuth(AuthType.LOGIN_WITH_GOOGLE);
 
       expect(config.getUseModelRouter()).toBe(true);
-      expect(config.getModel()).toBe('gemini-flash-latest');
+      expect(config.getModel()).toBe('glm-4.6-mini-latest');
     });
   });
 
@@ -1151,7 +1155,7 @@ describe('isYoloModeDisabled', () => {
 });
 
 describe('BaseLlmClient Lifecycle', () => {
-  const MODEL = 'gemini-pro';
+  const MODEL = 'glm-4.6';
   const SANDBOX: SandboxConfig = {
     command: 'docker',
     image: 'gemini-cli-sandbox',
@@ -1187,7 +1191,7 @@ describe('BaseLlmClient Lifecycle', () => {
   it('should successfully initialize BaseLlmClient after refreshAuth is called', async () => {
     const config = new Config(baseParams);
     const authType = AuthType.USE_GEMINI;
-    const mockContentConfig = { model: 'gemini-flash', apiKey: 'test-key' };
+    const mockContentConfig = { model: 'glm-4.6-mini', apiKey: 'test-key' };
 
     vi.mocked(createContentGeneratorConfig).mockResolvedValue(
       mockContentConfig,
@@ -1211,7 +1215,7 @@ describe('Config getHooks', () => {
     targetDir: '/path/to/target',
     debugMode: false,
     sessionId: 'test-session-id',
-    model: 'gemini-pro',
+    model: 'glm-4.6',
     usageStatisticsEnabled: false,
   };
 

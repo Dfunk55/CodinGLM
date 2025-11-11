@@ -180,8 +180,8 @@ export default tseslint.config(
       'no-restricted-imports': [
         'error',
         {
-          name: '@google/gemini-cli',
-          message: 'Please use relative imports within the @google/gemini-cli package.',
+          name: '@codinglm/cli',
+          message: 'Please use relative imports within the @codinglm/cli package.',
         },
       ],
     },

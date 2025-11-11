@@ -9,7 +9,7 @@ import * as fs from 'node:fs';
 import * as os from 'node:os';
 import * as path from 'node:path';
 import { checkForAllExtensionUpdates, updateExtension } from './update.js';
-import { GEMINI_DIR, KeychainTokenStorage } from '@google/gemini-cli-core';
+import { GEMINI_DIR, KeychainTokenStorage } from '@codinglm/core';
 import { isWorkspaceTrusted } from '../trustedFolders.js';
 import { ExtensionUpdateState } from '../../ui/state/extensions.js';
 import { createExtension } from '../../test-utils/createExtension.js';
@@ -55,15 +55,17 @@ vi.mock('../trustedFolders.js', () => ({
 const mockLogExtensionInstallEvent = vi.hoisted(() => vi.fn());
 const mockLogExtensionUninstall = vi.hoisted(() => vi.fn());
 
-vi.mock('@google/gemini-cli-core', async (importOriginal) => {
+vi.mock('@codinglm/core', async (importOriginal) => {
   const actual =
-    await importOriginal<typeof import('@google/gemini-cli-core')>();
+    await importOriginal<typeof import('@codinglm/core')>();
   return {
     ...actual,
     logExtensionInstallEvent: mockLogExtensionInstallEvent,
     logExtensionUninstall: mockLogExtensionUninstall,
+    logExtensionUpdateEvent: vi.fn(),
     ExtensionInstallEvent: vi.fn(),
     ExtensionUninstallEvent: vi.fn(),
+    ExtensionUpdateEvent: vi.fn(),
     KeychainTokenStorage: vi.fn().mockImplementation(() => ({
       getSecret: vi.fn(),
       setSecret: vi.fn(),

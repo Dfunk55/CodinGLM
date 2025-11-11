@@ -69,7 +69,7 @@ describe('ShellTool', () => {
       getWorkspaceContext: vi
         .fn()
         .mockReturnValue(createMockWorkspaceContext('/test/dir')),
-      getGeminiClient: vi.fn(),
+      getLlmClient: vi.fn(),
       getEnableInteractiveShell: vi.fn().mockReturnValue(false),
       isInteractive: vi.fn().mockReturnValue(true),
     } as unknown as Config;

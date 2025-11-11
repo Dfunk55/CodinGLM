@@ -1,13 +1,13 @@
-# Getting Started with Gemini CLI Extensions
+# Getting Started with CodinGLM CLI Extensions
 
-This guide will walk you through creating your first Gemini CLI extension.
+This guide will walk you through creating your first CodinGLM CLI extension.
 You'll learn how to set up a new extension, add a custom tool via an MCP server,
-create a custom command, and provide context to the model with a `GEMINI.md`
+create a custom command, and provide context to the model with a `CODINGLM.md`
 file.
 
 ## Prerequisites
 
-Before you start, make sure you have the Gemini CLI installed and a basic
+Before you start, make sure you have the CodinGLM CLI installed and a basic
 understanding of Node.js and TypeScript.
 
 ## Step 1: Create a New Extension
@@ -38,7 +38,7 @@ Let's look at the key files in your new extension.
 
 ### `gemini-extension.json`
 
-This is the manifest file for your extension. It tells Gemini CLI how to load
+This is the manifest file for your extension. It tells CodinGLM CLI how to load
 and use your extension.
 
 ```json
@@ -60,7 +60,7 @@ and use your extension.
 - `mcpServers`: This section defines one or more Model Context Protocol (MCP)
   servers. MCP servers are how you can add new tools for the model to use.
   - `command`, `args`, `cwd`: These fields specify how to start your server.
-    Notice the use of the `${extensionPath}` variable, which Gemini CLI replaces
+    Notice the use of the `${extensionPath}` variable, which CodinGLM CLI replaces
     with the absolute path to your extension's installation directory. This
     allows your extension to work regardless of where it's installed.
 
@@ -72,7 +72,7 @@ server that uses the `@modelcontextprotocol/sdk`.
 ```typescript
 /**
  * @license
- * Copyright 2025 Google LLC
+ * Copyright 2025 CodinGLM Contributors
  * SPDX-License-Identifier: Apache-2.0
  */
 
@@ -127,7 +127,7 @@ These are standard configuration files for a TypeScript project. The
 ## Step 3: Build and Link Your Extension
 
 Before you can use the extension, you need to compile the TypeScript code and
-link the extension to your Gemini CLI installation for local development.
+link the extension to your CodinGLM CLI installation for local development.
 
 1.  **Install dependencies:**
 
@@ -147,7 +147,7 @@ link the extension to your Gemini CLI installation for local development.
 
 3.  **Link the extension:**
 
-    The `link` command creates a symbolic link from the Gemini CLI extensions
+    The `link` command creates a symbolic link from the CodinGLM CLI extensions
     directory to your development directory. This means any changes you make
     will be reflected immediately without needing to reinstall.
 
@@ -155,7 +155,7 @@ link the extension to your Gemini CLI installation for local development.
     gemini extensions link .
     ```
 
-Now, restart your Gemini CLI session. The new `fetch_posts` tool will be
+Now, restart your CodinGLM CLI session. The new `fetch_posts` tool will be
 available. You can test it by asking: "fetch posts".
 
 ## Step 4: Add a Custom Command
@@ -183,17 +183,17 @@ a command that searches for a pattern in your code.
     This command, `/fs:grep-code`, will take an argument, run the `grep` shell
     command with it, and pipe the results into a prompt for summarization.
 
-After saving the file, restart the Gemini CLI. You can now run
+After saving the file, restart the CodinGLM CLI. You can now run
 `/fs:grep-code "some pattern"` to use your new command.
 
-## Step 5: Add a Custom `GEMINI.md`
+## Step 5: Add a Custom `CODINGLM.md`
 
-You can provide persistent context to the model by adding a `GEMINI.md` file to
+You can provide persistent context to the model by adding a `CODINGLM.md` file to
 your extension. This is useful for giving the model instructions on how to
 behave or information about your extension's tools. Note that you may not always
 need this for extensions built to expose commands and prompts.
 
-1.  Create a file named `GEMINI.md` in the root of your extension directory:
+1.  Create a file named `CODINGLM.md` in the root of your extension directory:
 
     ```markdown
     # My First Extension Instructions
@@ -208,7 +208,7 @@ need this for extensions built to expose commands and prompts.
     {
       "name": "my-first-extension",
       "version": "1.0.0",
-      "contextFileName": "GEMINI.md",
+      "contextFileName": "CODINGLM.md",
       "mcpServers": {
         "nodeServer": {
           "command": "node",
@@ -219,7 +219,7 @@ need this for extensions built to expose commands and prompts.
     }
     ```
 
-Restart the CLI again. The model will now have the context from your `GEMINI.md`
+Restart the CLI again. The model will now have the context from your `CODINGLM.md`
 file in every session where the extension is active.
 
 ## Step 6: Releasing Your Extension
@@ -233,7 +233,7 @@ For detailed instructions on both methods, please refer to the
 
 ## Conclusion
 
-You've successfully created a Gemini CLI extension! You learned how to:
+You've successfully created a CodinGLM CLI extension! You learned how to:
 
 - Bootstrap a new extension from a template.
 - Add custom tools with an MCP server.
@@ -242,4 +242,4 @@ You've successfully created a Gemini CLI extension! You learned how to:
 - Link your extension for local development.
 
 From here, you can explore more advanced features and build powerful new
-capabilities into the Gemini CLI.
+capabilities into the CodinGLM CLI.

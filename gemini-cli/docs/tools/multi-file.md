@@ -1,6 +1,6 @@
 # Multi File Read Tool (`read_many_files`)
 
-This document describes the `read_many_files` tool for the Gemini CLI.
+This document describes the `read_many_files` tool for the CodinGLM CLI.
 
 ## Description
 
@@ -43,7 +43,7 @@ relevant files.
 - `respect_git_ignore` (boolean, optional): Whether to respect .gitignore
   patterns when finding files. Defaults to true.
 
-## How to use `read_many_files` with the Gemini CLI
+## How to use `read_many_files` with the CodinGLM CLI
 
 `read_many_files` searches for files matching the provided `paths` and `include`
 patterns, while respecting `exclude` patterns and default excludes (if enabled).

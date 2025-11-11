@@ -33,9 +33,9 @@ vi.mock('../agent/task.js', () => {
     config = {
       getContentGeneratorConfig: vi
         .fn()
-        .mockReturnValue({ model: 'gemini-pro' }),
+        .mockReturnValue({ model: 'glm-4.6' }),
     };
-    geminiClient = {
+    llmClient = {
       initialize: vi.fn().mockResolvedValue(undefined),
     };
     constructor(id: string, contextId: string) {
@@ -51,7 +51,7 @@ vi.mock('../agent/task.js', () => {
       id: this.id,
       contextId: this.contextId,
       taskState: this.taskState,
-      model: 'gemini-pro',
+      model: 'glm-4.6',
       mcpServers: [],
       availableTools: [],
     }));
@@ -156,7 +156,7 @@ describe('Agent Server Endpoints', () => {
     const response = await request(app).get('/.well-known/agent-card.json');
     const port = (server.address() as AddressInfo).port;
     expect(response.status).toBe(200);
-    expect(response.body.name).toBe('Gemini SDLC Agent');
+    expect(response.body.name).toBe('CodinGLM SDLC Agent');
     expect(response.body.url).toBe(`http://localhost:${port}/`);
   });
 });

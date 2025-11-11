@@ -15,7 +15,7 @@ import {
   GEMINI_DIR,
   type Config,
   type GitService,
-} from '@google/gemini-cli-core';
+} from '@codinglm/core';
 
 describe('restoreCommand', () => {
   let mockContext: CommandContext;
@@ -47,7 +47,7 @@ describe('restoreCommand', () => {
         getProjectTempCheckpointsDir: vi.fn().mockReturnValue(checkpointsDir),
         getProjectTempDir: vi.fn().mockReturnValue(geminiTempDir),
       },
-      getGeminiClient: vi.fn().mockReturnValue({
+      getLlmClient: vi.fn().mockReturnValue({
         setHistory: mockSetHistory,
       }),
     } as unknown as Config;

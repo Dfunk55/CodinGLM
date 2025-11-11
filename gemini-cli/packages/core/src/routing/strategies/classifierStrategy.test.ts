@@ -14,9 +14,9 @@ import {
   isFunctionResponse,
 } from '../../utils/messageInspectors.js';
 import {
-  DEFAULT_GEMINI_FLASH_MODEL,
-  DEFAULT_GEMINI_FLASH_LITE_MODEL,
-  DEFAULT_GEMINI_MODEL,
+  DEFAULT_GLM_FLASH_MODEL,
+  DEFAULT_GLM_FLASH_LITE_MODEL,
+  DEFAULT_GLM_MODEL,
 } from '../../config/models.js';
 import { promptIdContext } from '../../utils/promptIdContext.js';
 import type { Content } from '../../llm/types.js';
@@ -60,7 +60,7 @@ describe('ClassifierStrategy', () => {
 
     expect(mockBaseLlmClient.generateJson).toHaveBeenCalledWith(
       expect.objectContaining({
-        model: DEFAULT_GEMINI_FLASH_LITE_MODEL,
+        model: DEFAULT_GLM_FLASH_LITE_MODEL,
         config: expect.objectContaining({
           temperature: 0,
           maxOutputTokens: 1024,
@@ -90,7 +90,7 @@ describe('ClassifierStrategy', () => {
 
     expect(mockBaseLlmClient.generateJson).toHaveBeenCalledOnce();
     expect(decision).toEqual({
-      model: DEFAULT_GEMINI_FLASH_MODEL,
+      model: DEFAULT_GLM_FLASH_MODEL,
       metadata: {
         source: 'Classifier',
         latencyMs: expect.any(Number),
@@ -117,7 +117,7 @@ describe('ClassifierStrategy', () => {
 
     expect(mockBaseLlmClient.generateJson).toHaveBeenCalledOnce();
     expect(decision).toEqual({
-      model: DEFAULT_GEMINI_MODEL,
+      model: DEFAULT_GLM_MODEL,
       metadata: {
         source: 'Classifier',
         latencyMs: expect.any(Number),

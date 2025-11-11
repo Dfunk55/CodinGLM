@@ -1,7 +1,7 @@
 # Release Confidence Strategy
 
 This document outlines the strategy for gaining confidence in every release of
-the Gemini CLI. It serves as a checklist and quality gate for release manager to
+the CodinGLM CLI. It serves as a checklist and quality gate for release manager to
 ensure we are shipping a high-quality product.
 
 ## The Goal
@@ -44,7 +44,7 @@ All workflows in `.github/workflows/e2e.yml` must pass.
 After a release is published to npm, the `smoke-test.yml` workflow runs. This
 must pass to confirm the package is installable and the binary is executable.
 
-- **Command:** `npx -y @google/gemini-cli@<tag> --version` must return the
+- **Command:** `npx -y @codinglm/cli@<tag> --version` must return the
   correct version without error.
 - **Platform:** Currently runs on `ubuntu-latest`.
 
@@ -61,7 +61,7 @@ The weekly release cadence promotes code from `main` -> `nightly` -> `preview`
   least **one week** before being promoted to `stable`.
 - **Action:** Maintainers should install the preview version locally:
   ```bash
-  npm install -g @google/gemini-cli@preview
+  npm install -g @codinglm/cli@preview
   ```
 - **Goal:** To catch regressions and UX issues in day-to-day usage before they
   reach the broad user base.
@@ -73,14 +73,14 @@ manually run through this checklist.
 
 - **Setup:**
   - [ ] Uninstall any existing global version:
-        `npm uninstall -g @google/gemini-cli`
+        `npm uninstall -g @codinglm/cli`
   - [ ] Clear npx cache (optional but recommended): `npm cache clean --force`
-  - [ ] Install the preview version: `npm install -g @google/gemini-cli@preview`
+  - [ ] Install the preview version: `npm install -g @codinglm/cli@preview`
   - [ ] Verify version: `gemini --version`
 
 - **Authentication:**
   - [ ] In interactive mode run `/auth` and verify all login flows work:
-    - [ ] Login With Google
+    - [ ] Login with upstream OAuth provider (legacy)
     - [ ] API Key
     - [ ] Vertex AI
 
@@ -138,14 +138,14 @@ A bug bash should be considered for any release that involves:
 
 ### Dashboard Health
 
-- [ ] Go to `go/gemini-cli-dash`.
+- [ ] Go to `go/cli-dash`.
 - [ ] Navigate to the "Tool Call" tab.
 - [ ] Validate that there are no spikes in errors for the release you would like
       to promote.
 
 ### Model Evaluation
 
-- [ ] Navigate to `go/gemini-cli-offline-evals-dash`.
+- [ ] Navigate to `go/cli-offline-evals-dash`.
 - [ ] Make sure that the release you want to promote's recurring run is within
       average eval runs.
 

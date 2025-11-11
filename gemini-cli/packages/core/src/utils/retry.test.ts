@@ -6,7 +6,7 @@
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { ApiError } from '@google/genai';
+import { ApiError } from '@codinglm/genai';
 import { AuthType } from '../core/contentGenerator.js';
 import type { HttpError } from './retry.js';
 import { retryWithBackoff } from './retry.js';

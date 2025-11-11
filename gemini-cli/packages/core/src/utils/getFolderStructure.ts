@@ -124,7 +124,7 @@ async function readFullStructure(
     const subFoldersInCurrentDir: FullFolderInfo[] = [];
     const filterFileOptions: FilterFilesOptions = {
       respectGitIgnore: options.fileFilteringOptions?.respectGitIgnore,
-      respectGeminiIgnore: options.fileFilteringOptions?.respectGeminiIgnore,
+      respectContextIgnore: options.fileFilteringOptions?.respectContextIgnore,
     };
 
     // Process files first in the current directory

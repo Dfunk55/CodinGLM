@@ -1,6 +1,6 @@
 # Headless Mode
 
-Headless mode allows you to run Gemini CLI programmatically from command line
+Headless mode allows you to run CodinGLM CLI programmatically from command line
 scripts and automation tools without any interactive UI. This is ideal for
 scripting, automation, CI/CD pipelines, and building AI-powered tools.
 
@@ -37,7 +37,7 @@ scripting, automation, CI/CD pipelines, and building AI-powered tools.
 
 ## Overview
 
-The headless mode provides a headless interface to Gemini CLI that:
+The headless mode provides a headless interface to CodinGLM CLI that:
 
 - Accepts prompts via command line arguments or stdin
 - Returns structured output (text or JSON)
@@ -57,7 +57,7 @@ gemini --prompt "What is machine learning?"
 
 ### Stdin Input
 
-Pipe input to Gemini CLI from your terminal:
+Pipe input to CodinGLM CLI from your terminal:
 
 ```bash
 echo "Explain this code" | gemini
@@ -65,7 +65,7 @@ echo "Explain this code" | gemini
 
 ### Combining with File Input
 
-Read from files and process with Gemini:
+Read from files and process with CodinGLM:
 
 ```bash
 cat README.md | gemini --prompt "Summarize this documentation"
@@ -300,7 +300,7 @@ Key command-line options for headless usage:
 | ----------------------- | ---------------------------------- | -------------------------------------------------- |
 | `--prompt`, `-p`        | Run in headless mode               | `gemini -p "query"`                                |
 | `--output-format`       | Specify output format (text, json) | `gemini -p "query" --output-format json`           |
-| `--model`, `-m`         | Specify the Gemini model           | `gemini -p "query" -m gemini-2.5-flash`            |
+| `--model`, `-m`         | Specify the GLM model           | `gemini -p "query" -m gemini-2.5-flash`            |
 | `--debug`, `-d`         | Enable debug mode                  | `gemini -p "query" --debug`                        |
 | `--include-directories` | Include additional directories     | `gemini -p "query" --include-directories src,docs` |
 | `--yolo`, `-y`          | Auto-approve all actions           | `gemini -p "query" --yolo`                         |

@@ -22,6 +22,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const require = createRequire(import.meta.url);
 const pkg = require(path.resolve(__dirname, 'package.json'));
+const punycodeModule = require.resolve('punycode/', { paths: [__dirname] });
 
 function createWasmPlugins() {
   const wasmBinaryPlugin = {
@@ -73,7 +74,7 @@ const baseConfig = {
   write: true,
 };
 
-// Removed Google/Gemini bundle; CodinGLM bundles only codinglm.
+// Removed the legacy Google-specific bundle; CodinGLM bundles only codinglm.
 
 const codinglmConfig = {
   ...baseConfig,
@@ -88,16 +89,17 @@ const codinglmConfig = {
   plugins: createWasmPlugins(),
   alias: {
     'is-in-ci': path.resolve(__dirname, 'packages/cli/src/patches/is-in-ci.ts'),
-    '@google/gemini-cli-core': path.resolve(
+    '@codinglm/core': path.resolve(
       __dirname,
       'packages/core/index.ts',
     ),
     '@codinglm/core': path.resolve(__dirname, 'packages/core/index.ts'),
     '@codinglm/core/llm': path.resolve(__dirname, 'packages/core/src/llm'),
-    '@google/genai': path.resolve(
+    '@codinglm/genai': path.resolve(
       __dirname,
       'packages/core/src/shim/genai.ts',
     ),
+    punycode: punycodeModule,
   },
   metafile: true,
 };
@@ -114,11 +116,12 @@ const a2aServerConfig = {
   },
   plugins: createWasmPlugins(),
   alias: {
-    '@google/genai': path.resolve(
+    '@codinglm/genai': path.resolve(
       __dirname,
       'packages/core/src/shim/genai.ts',
     ),
     '@codinglm/core': path.resolve(__dirname, 'packages/core/index.ts'),
+    punycode: punycodeModule,
   },
 };
 

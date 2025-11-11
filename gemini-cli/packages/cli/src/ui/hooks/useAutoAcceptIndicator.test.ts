@@ -17,17 +17,17 @@ import { act } from 'react';
 import { renderHook } from '../../test-utils/render.js';
 import { useAutoAcceptIndicator } from './useAutoAcceptIndicator.js';
 
-import { Config, ApprovalMode } from '@google/gemini-cli-core';
-import type { Config as ActualConfigType } from '@google/gemini-cli-core';
+import { Config, ApprovalMode } from '@codinglm/core';
+import type { Config as ActualConfigType } from '@codinglm/core';
 import type { Key } from './useKeypress.js';
 import { useKeypress } from './useKeypress.js';
 import { MessageType } from '../types.js';
 
 vi.mock('./useKeypress.js');
 
-vi.mock('@google/gemini-cli-core', async () => {
+vi.mock('@codinglm/core', async () => {
   const actualServerModule = (await vi.importActual(
-    '@google/gemini-cli-core',
+    '@codinglm/core',
   )) as Record<string, unknown>;
   return {
     ...actualServerModule,
@@ -51,7 +51,7 @@ interface MockConfigInstanceShape {
 
   getUserAgent: Mock<() => string>;
   getUserMemory: Mock<() => string>;
-  getGeminiMdFileCount: Mock<() => number>;
+  getContextFileCount: Mock<() => number>;
   getToolRegistry: Mock<() => { discoverTools: Mock<() => void> }>;
 }
 
@@ -101,7 +101,7 @@ describe('useAutoAcceptIndicator', () => {
           () => string
         >,
         getUserMemory: vi.fn().mockReturnValue('') as Mock<() => string>,
-        getGeminiMdFileCount: vi.fn().mockReturnValue(0) as Mock<() => number>,
+        getContextFileCount: vi.fn().mockReturnValue(0) as Mock<() => number>,
         getToolRegistry: vi
           .fn()
           .mockReturnValue({ discoverTools: vi.fn() }) as Mock<

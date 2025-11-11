@@ -18,7 +18,7 @@ import { validateCommand } from './extensions/validate.js';
 export const extensionsCommand: CommandModule = {
   command: 'extensions <command>',
   aliases: ['extension'],
-  describe: 'Manage CodingGLM extensions.',
+  describe: 'Manage CodinGLM extensions.',
   builder: (yargs) =>
     yargs
       .command(installCommand)

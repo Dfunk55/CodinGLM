@@ -7,7 +7,7 @@
 import type {
   Config,
   ToolRegistry,
-  ServerGeminiStreamEvent,
+  ServerLlmStreamEvent,
   SessionMetrics,
   AnyDeclarativeTool,
   AnyToolInvocation,
@@ -17,7 +17,7 @@ import {
   executeToolCall,
   ToolErrorType,
   shutdownTelemetry,
-  GeminiEventType,
+  LlmEventType,
   OutputFormat,
   uiTelemetryService,
   FatalInputError,
@@ -91,7 +91,7 @@ describe('runNonInteractive', () => {
   let consoleErrorSpy: MockInstance;
   let processStdoutSpy: MockInstance;
   let processStderrSpy: MockInstance;
-  let mockGeminiClient: {
+  let mockLlmClient: {
     sendMessageStream: Mock;
     getChatRecordingService: Mock;
   };
@@ -140,7 +140,7 @@ describe('runNonInteractive', () => {
       getFunctionDeclarations: vi.fn().mockReturnValue([]),
     } as unknown as ToolRegistry;
 
-    mockGeminiClient = {
+    mockLlmClient = {
       sendMessageStream: vi.fn(),
       getChatRecordingService: vi.fn(() => ({
         initialize: vi.fn(),
@@ -150,9 +150,12 @@ describe('runNonInteractive', () => {
       })),
     };
 
+    const mockLlmGetter = vi
+      .fn()
+      .mockReturnValue(mockLlmClient);
     mockConfig = {
       initialize: vi.fn().mockResolvedValue(undefined),
-      getGeminiClient: vi.fn().mockReturnValue(mockGeminiClient),
+      getLlmClient: mockLlmGetter,
       getToolRegistry: vi.fn().mockReturnValue(mockToolRegistry),
       getMaxSessionTurns: vi.fn().mockReturnValue(10),
       getSessionId: vi.fn().mockReturnValue('test-session-id'),
@@ -203,8 +206,8 @@ describe('runNonInteractive', () => {
   });
 
   async function* createStreamFromEvents(
-    events: ServerGeminiStreamEvent[],
-  ): AsyncGenerator<ServerGeminiStreamEvent> {
+    events: ServerLlmStreamEvent[],
+  ): AsyncGenerator<ServerLlmStreamEvent> {
     for (const event of events) {
       yield event;
     }
@@ -214,15 +217,15 @@ describe('runNonInteractive', () => {
     processStdoutSpy.mock.calls.map((c) => c[0]).join('');
 
   it('should process input and write text output', async () => {
-    const events: ServerGeminiStreamEvent[] = [
-      { type: GeminiEventType.Content, value: 'Hello' },
-      { type: GeminiEventType.Content, value: ' World' },
+    const events: ServerLlmStreamEvent[] = [
+      { type: LlmEventType.Content, value: 'Hello' },
+      { type: LlmEventType.Content, value: ' World' },
       {
-        type: GeminiEventType.Finished,
+        type: LlmEventType.Finished,
         value: { reason: undefined, usageMetadata: { totalTokenCount: 10 } },
       },
     ];
-    mockGeminiClient.sendMessageStream.mockReturnValue(
+    mockLlmClient.sendMessageStream.mockReturnValue(
       createStreamFromEvents(events),
     );
 
@@ -233,7 +236,7 @@ describe('runNonInteractive', () => {
       prompt_id: 'prompt-id-1',
     });
 
-    expect(mockGeminiClient.sendMessageStream).toHaveBeenCalledWith(
+    expect(mockLlmClient.sendMessageStream).toHaveBeenCalledWith(
       [{ text: 'Test input' }],
       expect.any(AbortSignal),
       'prompt-id-1',
@@ -243,8 +246,8 @@ describe('runNonInteractive', () => {
   });
 
   it('should handle a single tool call and respond', async () => {
-    const toolCallEvent: ServerGeminiStreamEvent = {
-      type: GeminiEventType.ToolCallRequest,
+    const toolCallEvent: ServerLlmStreamEvent = {
+      type: LlmEventType.ToolCallRequest,
       value: {
         callId: 'tool-1',
         name: 'testTool',
@@ -274,16 +277,16 @@ describe('runNonInteractive', () => {
       },
     });
 
-    const firstCallEvents: ServerGeminiStreamEvent[] = [toolCallEvent];
-    const secondCallEvents: ServerGeminiStreamEvent[] = [
-      { type: GeminiEventType.Content, value: 'Final answer' },
+    const firstCallEvents: ServerLlmStreamEvent[] = [toolCallEvent];
+    const secondCallEvents: ServerLlmStreamEvent[] = [
+      { type: LlmEventType.Content, value: 'Final answer' },
       {
-        type: GeminiEventType.Finished,
+        type: LlmEventType.Finished,
         value: { reason: undefined, usageMetadata: { totalTokenCount: 10 } },
       },
     ];
 
-    mockGeminiClient.sendMessageStream
+    mockLlmClient.sendMessageStream
       .mockReturnValueOnce(createStreamFromEvents(firstCallEvents))
       .mockReturnValueOnce(createStreamFromEvents(secondCallEvents));
 
@@ -294,13 +297,13 @@ describe('runNonInteractive', () => {
       prompt_id: 'prompt-id-2',
     });
 
-    expect(mockGeminiClient.sendMessageStream).toHaveBeenCalledTimes(2);
+    expect(mockLlmClient.sendMessageStream).toHaveBeenCalledTimes(2);
     expect(mockCoreExecuteToolCall).toHaveBeenCalledWith(
       mockConfig,
       expect.objectContaining({ name: 'testTool' }),
       expect.any(AbortSignal),
     );
-    expect(mockGeminiClient.sendMessageStream).toHaveBeenNthCalledWith(
+    expect(mockLlmClient.sendMessageStream).toHaveBeenNthCalledWith(
       2,
       [{ text: 'Tool response' }],
       expect.any(AbortSignal),
@@ -314,8 +317,8 @@ describe('runNonInteractive', () => {
     // is printed between each block of text output from the model.
 
     // 1. Define the tool requests that the model will ask the CLI to run.
-    const toolCallEvent: ServerGeminiStreamEvent = {
-      type: GeminiEventType.ToolCallRequest,
+    const toolCallEvent: ServerLlmStreamEvent = {
+      type: LlmEventType.ToolCallRequest,
       value: {
         callId: 'mock-tool',
         name: 'mockTool',
@@ -339,25 +342,25 @@ describe('runNonInteractive', () => {
 
     // 3. Define the sequence of events streamed from the mock model.
     // Turn 1: Model outputs text, then requests a tool call.
-    const modelTurn1: ServerGeminiStreamEvent[] = [
-      { type: GeminiEventType.Content, value: 'Use mock tool' },
+    const modelTurn1: ServerLlmStreamEvent[] = [
+      { type: LlmEventType.Content, value: 'Use mock tool' },
       toolCallEvent,
     ];
     // Turn 2: Model outputs more text, then requests another tool call.
-    const modelTurn2: ServerGeminiStreamEvent[] = [
-      { type: GeminiEventType.Content, value: 'Use mock tool again' },
+    const modelTurn2: ServerLlmStreamEvent[] = [
+      { type: LlmEventType.Content, value: 'Use mock tool again' },
       toolCallEvent,
     ];
     // Turn 3: Model outputs a final answer.
-    const modelTurn3: ServerGeminiStreamEvent[] = [
-      { type: GeminiEventType.Content, value: 'Finished.' },
+    const modelTurn3: ServerLlmStreamEvent[] = [
+      { type: LlmEventType.Content, value: 'Finished.' },
       {
-        type: GeminiEventType.Finished,
+        type: LlmEventType.Finished,
         value: { reason: undefined, usageMetadata: { totalTokenCount: 10 } },
       },
     ];
 
-    mockGeminiClient.sendMessageStream
+    mockLlmClient.sendMessageStream
       .mockReturnValueOnce(createStreamFromEvents(modelTurn1))
       .mockReturnValueOnce(createStreamFromEvents(modelTurn2))
       .mockReturnValueOnce(createStreamFromEvents(modelTurn3));
@@ -380,8 +383,8 @@ describe('runNonInteractive', () => {
   });
 
   it('should handle error during tool execution and should send error back to the model', async () => {
-    const toolCallEvent: ServerGeminiStreamEvent = {
-      type: GeminiEventType.ToolCallRequest,
+    const toolCallEvent: ServerLlmStreamEvent = {
+      type: LlmEventType.ToolCallRequest,
       value: {
         callId: 'tool-1',
         name: 'errorTool',
@@ -418,17 +421,17 @@ describe('runNonInteractive', () => {
         contentLength: undefined,
       },
     });
-    const finalResponse: ServerGeminiStreamEvent[] = [
+    const finalResponse: ServerLlmStreamEvent[] = [
       {
-        type: GeminiEventType.Content,
+        type: LlmEventType.Content,
         value: 'Sorry, let me try again.',
       },
       {
-        type: GeminiEventType.Finished,
+        type: LlmEventType.Finished,
         value: { reason: undefined, usageMetadata: { totalTokenCount: 10 } },
       },
     ];
-    mockGeminiClient.sendMessageStream
+    mockLlmClient.sendMessageStream
       .mockReturnValueOnce(createStreamFromEvents([toolCallEvent]))
       .mockReturnValueOnce(createStreamFromEvents(finalResponse));
 
@@ -443,8 +446,8 @@ describe('runNonInteractive', () => {
     expect(consoleErrorSpy).toHaveBeenCalledWith(
       'Error executing tool errorTool: Execution failed',
     );
-    expect(mockGeminiClient.sendMessageStream).toHaveBeenCalledTimes(2);
-    expect(mockGeminiClient.sendMessageStream).toHaveBeenNthCalledWith(
+    expect(mockLlmClient.sendMessageStream).toHaveBeenCalledTimes(2);
+    expect(mockLlmClient.sendMessageStream).toHaveBeenNthCalledWith(
       2,
       [
         {
@@ -464,7 +467,7 @@ describe('runNonInteractive', () => {
 
   it('should exit with error if sendMessageStream throws initially', async () => {
     const apiError = new Error('API connection failed');
-    mockGeminiClient.sendMessageStream.mockImplementation(() => {
+    mockLlmClient.sendMessageStream.mockImplementation(() => {
       throw apiError;
     });
 
@@ -479,8 +482,8 @@ describe('runNonInteractive', () => {
   });
 
   it('should not exit if a tool is not found, and should send error back to model', async () => {
-    const toolCallEvent: ServerGeminiStreamEvent = {
-      type: GeminiEventType.ToolCallRequest,
+    const toolCallEvent: ServerLlmStreamEvent = {
+      type: LlmEventType.ToolCallRequest,
       value: {
         callId: 'tool-1',
         name: 'nonexistentTool',
@@ -507,18 +510,18 @@ describe('runNonInteractive', () => {
         contentLength: undefined,
       },
     });
-    const finalResponse: ServerGeminiStreamEvent[] = [
+    const finalResponse: ServerLlmStreamEvent[] = [
       {
-        type: GeminiEventType.Content,
+        type: LlmEventType.Content,
         value: "Sorry, I can't find that tool.",
       },
       {
-        type: GeminiEventType.Finished,
+        type: LlmEventType.Finished,
         value: { reason: undefined, usageMetadata: { totalTokenCount: 10 } },
       },
     ];
 
-    mockGeminiClient.sendMessageStream
+    mockLlmClient.sendMessageStream
       .mockReturnValueOnce(createStreamFromEvents([toolCallEvent]))
       .mockReturnValueOnce(createStreamFromEvents(finalResponse));
 
@@ -533,7 +536,7 @@ describe('runNonInteractive', () => {
     expect(consoleErrorSpy).toHaveBeenCalledWith(
       'Error executing tool nonexistentTool: Tool "nonexistentTool" not found in registry.',
     );
-    expect(mockGeminiClient.sendMessageStream).toHaveBeenCalledTimes(2);
+    expect(mockLlmClient.sendMessageStream).toHaveBeenCalledTimes(2);
     expect(getWrittenOutput()).toBe("Sorry, I can't find that tool.\n");
   });
 
@@ -571,15 +574,15 @@ describe('runNonInteractive', () => {
       shouldProceed: true,
     });
 
-    // Mock a simple stream response from the Gemini client
-    const events: ServerGeminiStreamEvent[] = [
-      { type: GeminiEventType.Content, value: 'Summary complete.' },
+    // Mock a simple stream response from the CodinGLM client
+    const events: ServerLlmStreamEvent[] = [
+      { type: LlmEventType.Content, value: 'Summary complete.' },
       {
-        type: GeminiEventType.Finished,
+        type: LlmEventType.Finished,
         value: { reason: undefined, usageMetadata: { totalTokenCount: 10 } },
       },
     ];
-    mockGeminiClient.sendMessageStream.mockReturnValue(
+    mockLlmClient.sendMessageStream.mockReturnValue(
       createStreamFromEvents(events),
     );
 
@@ -592,7 +595,7 @@ describe('runNonInteractive', () => {
     });
 
     // 5. Assert that sendMessageStream was called with the PROCESSED parts, not the raw input
-    expect(mockGeminiClient.sendMessageStream).toHaveBeenCalledWith(
+    expect(mockLlmClient.sendMessageStream).toHaveBeenCalledWith(
       processedParts,
       expect.any(AbortSignal),
       'prompt-id-7',
@@ -603,14 +606,14 @@ describe('runNonInteractive', () => {
   });
 
   it('should process input and write JSON output with stats', async () => {
-    const events: ServerGeminiStreamEvent[] = [
-      { type: GeminiEventType.Content, value: 'Hello World' },
+    const events: ServerLlmStreamEvent[] = [
+      { type: LlmEventType.Content, value: 'Hello World' },
       {
-        type: GeminiEventType.Finished,
+        type: LlmEventType.Finished,
         value: { reason: undefined, usageMetadata: { totalTokenCount: 10 } },
       },
     ];
-    mockGeminiClient.sendMessageStream.mockReturnValue(
+    mockLlmClient.sendMessageStream.mockReturnValue(
       createStreamFromEvents(events),
     );
     vi.mocked(mockConfig.getOutputFormat).mockReturnValue(OutputFormat.JSON);
@@ -625,7 +628,7 @@ describe('runNonInteractive', () => {
       prompt_id: 'prompt-id-1',
     });
 
-    expect(mockGeminiClient.sendMessageStream).toHaveBeenCalledWith(
+    expect(mockLlmClient.sendMessageStream).toHaveBeenCalledWith(
       [{ text: 'Test input' }],
       expect.any(AbortSignal),
       'prompt-id-1',
@@ -642,8 +645,8 @@ describe('runNonInteractive', () => {
   it('should write JSON output with stats for tool-only commands (no text response)', async () => {
     // Test the scenario where a command completes successfully with only tool calls
     // but no text response - this would have caught the original bug
-    const toolCallEvent: ServerGeminiStreamEvent = {
-      type: GeminiEventType.ToolCallRequest,
+    const toolCallEvent: ServerLlmStreamEvent = {
+      type: LlmEventType.ToolCallRequest,
       value: {
         callId: 'tool-1',
         name: 'testTool',
@@ -674,23 +677,23 @@ describe('runNonInteractive', () => {
     });
 
     // First call returns only tool call, no content
-    const firstCallEvents: ServerGeminiStreamEvent[] = [
+    const firstCallEvents: ServerLlmStreamEvent[] = [
       toolCallEvent,
       {
-        type: GeminiEventType.Finished,
+        type: LlmEventType.Finished,
         value: { reason: undefined, usageMetadata: { totalTokenCount: 5 } },
       },
     ];
 
     // Second call returns no content (tool-only completion)
-    const secondCallEvents: ServerGeminiStreamEvent[] = [
+    const secondCallEvents: ServerLlmStreamEvent[] = [
       {
-        type: GeminiEventType.Finished,
+        type: LlmEventType.Finished,
         value: { reason: undefined, usageMetadata: { totalTokenCount: 3 } },
       },
     ];
 
-    mockGeminiClient.sendMessageStream
+    mockLlmClient.sendMessageStream
       .mockReturnValueOnce(createStreamFromEvents(firstCallEvents))
       .mockReturnValueOnce(createStreamFromEvents(secondCallEvents));
 
@@ -706,7 +709,7 @@ describe('runNonInteractive', () => {
       prompt_id: 'prompt-id-tool-only',
     });
 
-    expect(mockGeminiClient.sendMessageStream).toHaveBeenCalledTimes(2);
+    expect(mockLlmClient.sendMessageStream).toHaveBeenCalledTimes(2);
     expect(mockCoreExecuteToolCall).toHaveBeenCalledWith(
       mockConfig,
       expect.objectContaining({ name: 'testTool' }),
@@ -721,13 +724,13 @@ describe('runNonInteractive', () => {
 
   it('should write JSON output with stats for empty response commands', async () => {
     // Test the scenario where a command completes but produces no content at all
-    const events: ServerGeminiStreamEvent[] = [
+    const events: ServerLlmStreamEvent[] = [
       {
-        type: GeminiEventType.Finished,
+        type: LlmEventType.Finished,
         value: { reason: undefined, usageMetadata: { totalTokenCount: 1 } },
       },
     ];
-    mockGeminiClient.sendMessageStream.mockReturnValue(
+    mockLlmClient.sendMessageStream.mockReturnValue(
       createStreamFromEvents(events),
     );
     vi.mocked(mockConfig.getOutputFormat).mockReturnValue(OutputFormat.JSON);
@@ -742,7 +745,7 @@ describe('runNonInteractive', () => {
       prompt_id: 'prompt-id-empty',
     });
 
-    expect(mockGeminiClient.sendMessageStream).toHaveBeenCalledWith(
+    expect(mockLlmClient.sendMessageStream).toHaveBeenCalledWith(
       [{ text: 'Empty response test' }],
       expect.any(AbortSignal),
       'prompt-id-empty',
@@ -758,7 +761,7 @@ describe('runNonInteractive', () => {
     vi.mocked(mockConfig.getOutputFormat).mockReturnValue(OutputFormat.JSON);
     const testError = new Error('Invalid input provided');
 
-    mockGeminiClient.sendMessageStream.mockImplementation(() => {
+    mockLlmClient.sendMessageStream.mockImplementation(() => {
       throw testError;
     });
 
@@ -803,7 +806,7 @@ describe('runNonInteractive', () => {
     vi.mocked(mockConfig.getOutputFormat).mockReturnValue(OutputFormat.JSON);
     const fatalError = new FatalInputError('Invalid command syntax provided');
 
-    mockGeminiClient.sendMessageStream.mockImplementation(() => {
+    mockLlmClient.sendMessageStream.mockImplementation(() => {
       throw fatalError;
     });
 
@@ -855,14 +858,14 @@ describe('runNonInteractive', () => {
     };
     mockGetCommands.mockReturnValue([mockCommand]);
 
-    const events: ServerGeminiStreamEvent[] = [
-      { type: GeminiEventType.Content, value: 'Response from command' },
+    const events: ServerLlmStreamEvent[] = [
+      { type: LlmEventType.Content, value: 'Response from command' },
       {
-        type: GeminiEventType.Finished,
+        type: LlmEventType.Finished,
         value: { reason: undefined, usageMetadata: { totalTokenCount: 5 } },
       },
     ];
-    mockGeminiClient.sendMessageStream.mockReturnValue(
+    mockLlmClient.sendMessageStream.mockReturnValue(
       createStreamFromEvents(events),
     );
 
@@ -874,7 +877,7 @@ describe('runNonInteractive', () => {
     });
 
     // Ensure the prompt sent to the model is from the command, not the raw input
-    expect(mockGeminiClient.sendMessageStream).toHaveBeenCalledWith(
+    expect(mockLlmClient.sendMessageStream).toHaveBeenCalledWith(
       [{ text: 'Prompt from command' }],
       expect.any(AbortSignal),
       'prompt-id-slash',
@@ -910,14 +913,14 @@ describe('runNonInteractive', () => {
     // No commands are mocked, so any slash command is "unknown"
     mockGetCommands.mockReturnValue([]);
 
-    const events: ServerGeminiStreamEvent[] = [
-      { type: GeminiEventType.Content, value: 'Response to unknown' },
+    const events: ServerLlmStreamEvent[] = [
+      { type: LlmEventType.Content, value: 'Response to unknown' },
       {
-        type: GeminiEventType.Finished,
+        type: LlmEventType.Finished,
         value: { reason: undefined, usageMetadata: { totalTokenCount: 5 } },
       },
     ];
-    mockGeminiClient.sendMessageStream.mockReturnValue(
+    mockLlmClient.sendMessageStream.mockReturnValue(
       createStreamFromEvents(events),
     );
 
@@ -929,7 +932,7 @@ describe('runNonInteractive', () => {
     });
 
     // Ensure the raw input is sent to the model
-    expect(mockGeminiClient.sendMessageStream).toHaveBeenCalledWith(
+    expect(mockLlmClient.sendMessageStream).toHaveBeenCalledWith(
       [{ text: '/unknowncommand' }],
       expect.any(AbortSignal),
       'prompt-id-unknown',
@@ -972,14 +975,14 @@ describe('runNonInteractive', () => {
     };
     mockGetCommands.mockReturnValue([mockCommand]);
 
-    const events: ServerGeminiStreamEvent[] = [
-      { type: GeminiEventType.Content, value: 'Acknowledged' },
+    const events: ServerLlmStreamEvent[] = [
+      { type: LlmEventType.Content, value: 'Acknowledged' },
       {
-        type: GeminiEventType.Finished,
+        type: LlmEventType.Finished,
         value: { reason: undefined, usageMetadata: { totalTokenCount: 1 } },
       },
     ];
-    mockGeminiClient.sendMessageStream.mockReturnValue(
+    mockLlmClient.sendMessageStream.mockReturnValue(
       createStreamFromEvents(events),
     );
 
@@ -1003,14 +1006,14 @@ describe('runNonInteractive', () => {
     const { McpPromptLoader } = await import('./services/McpPromptLoader.js');
 
     mockGetCommands.mockReturnValue([]); // No commands found, so it will fall through
-    const events: ServerGeminiStreamEvent[] = [
-      { type: GeminiEventType.Content, value: 'Acknowledged' },
+    const events: ServerLlmStreamEvent[] = [
+      { type: LlmEventType.Content, value: 'Acknowledged' },
       {
-        type: GeminiEventType.Finished,
+        type: LlmEventType.Finished,
         value: { reason: undefined, usageMetadata: { totalTokenCount: 1 } },
       },
     ];
-    mockGeminiClient.sendMessageStream.mockReturnValue(
+    mockLlmClient.sendMessageStream.mockReturnValue(
       createStreamFromEvents(events),
     );
 
@@ -1047,8 +1050,8 @@ describe('runNonInteractive', () => {
       getFunctionDeclarations: vi.fn().mockReturnValue([{ name: 'ShellTool' }]),
     } as unknown as ToolRegistry);
 
-    const toolCallEvent: ServerGeminiStreamEvent = {
-      type: GeminiEventType.ToolCallRequest,
+    const toolCallEvent: ServerLlmStreamEvent = {
+      type: LlmEventType.ToolCallRequest,
       value: {
         callId: 'tool-shell-1',
         name: 'ShellTool',
@@ -1078,16 +1081,16 @@ describe('runNonInteractive', () => {
       },
     });
 
-    const firstCallEvents: ServerGeminiStreamEvent[] = [toolCallEvent];
-    const secondCallEvents: ServerGeminiStreamEvent[] = [
-      { type: GeminiEventType.Content, value: 'file.txt' },
+    const firstCallEvents: ServerLlmStreamEvent[] = [toolCallEvent];
+    const secondCallEvents: ServerLlmStreamEvent[] = [
+      { type: LlmEventType.Content, value: 'file.txt' },
       {
-        type: GeminiEventType.Finished,
+        type: LlmEventType.Finished,
         value: { reason: undefined, usageMetadata: { totalTokenCount: 10 } },
       },
     ];
 
-    mockGeminiClient.sendMessageStream
+    mockLlmClient.sendMessageStream
       .mockReturnValueOnce(createStreamFromEvents(firstCallEvents))
       .mockReturnValueOnce(createStreamFromEvents(secondCallEvents));
 
@@ -1108,13 +1111,13 @@ describe('runNonInteractive', () => {
 
   describe('CoreEvents Integration', () => {
     it('subscribes to UserFeedback and drains backlog on start', async () => {
-      const events: ServerGeminiStreamEvent[] = [
+      const events: ServerLlmStreamEvent[] = [
         {
-          type: GeminiEventType.Finished,
+          type: LlmEventType.Finished,
           value: { reason: undefined, usageMetadata: { totalTokenCount: 0 } },
         },
       ];
-      mockGeminiClient.sendMessageStream.mockReturnValue(
+      mockLlmClient.sendMessageStream.mockReturnValue(
         createStreamFromEvents(events),
       );
 
@@ -1133,13 +1136,13 @@ describe('runNonInteractive', () => {
     });
 
     it('unsubscribes from UserFeedback on finish', async () => {
-      const events: ServerGeminiStreamEvent[] = [
+      const events: ServerLlmStreamEvent[] = [
         {
-          type: GeminiEventType.Finished,
+          type: LlmEventType.Finished,
           value: { reason: undefined, usageMetadata: { totalTokenCount: 0 } },
         },
       ];
-      mockGeminiClient.sendMessageStream.mockReturnValue(
+      mockLlmClient.sendMessageStream.mockReturnValue(
         createStreamFromEvents(events),
       );
 
@@ -1157,13 +1160,13 @@ describe('runNonInteractive', () => {
     });
 
     it('logs to process.stderr when UserFeedback event is received', async () => {
-      const events: ServerGeminiStreamEvent[] = [
+      const events: ServerLlmStreamEvent[] = [
         {
-          type: GeminiEventType.Finished,
+          type: LlmEventType.Finished,
           value: { reason: undefined, usageMetadata: { totalTokenCount: 0 } },
         },
       ];
-      mockGeminiClient.sendMessageStream.mockReturnValue(
+      mockLlmClient.sendMessageStream.mockReturnValue(
         createStreamFromEvents(events),
       );
 
@@ -1194,13 +1197,13 @@ describe('runNonInteractive', () => {
 
     it('logs optional error object to process.stderr in debug mode', async () => {
       vi.mocked(mockConfig.getDebugMode).mockReturnValue(true);
-      const events: ServerGeminiStreamEvent[] = [
+      const events: ServerLlmStreamEvent[] = [
         {
-          type: GeminiEventType.Finished,
+          type: LlmEventType.Finished,
           value: { reason: undefined, usageMetadata: { totalTokenCount: 0 } },
         },
       ];
-      mockGeminiClient.sendMessageStream.mockReturnValue(
+      mockLlmClient.sendMessageStream.mockReturnValue(
         createStreamFromEvents(events),
       );
 
@@ -1238,14 +1241,14 @@ describe('runNonInteractive', () => {
   });
 
   it('should display a deprecation warning if hasDeprecatedPromptArg is true', async () => {
-    const events: ServerGeminiStreamEvent[] = [
-      { type: GeminiEventType.Content, value: 'Final Answer' },
+    const events: ServerLlmStreamEvent[] = [
+      { type: LlmEventType.Content, value: 'Final Answer' },
       {
-        type: GeminiEventType.Finished,
+        type: LlmEventType.Finished,
         value: { reason: undefined, usageMetadata: { totalTokenCount: 10 } },
       },
     ];
-    mockGeminiClient.sendMessageStream.mockReturnValue(
+    mockLlmClient.sendMessageStream.mockReturnValue(
       createStreamFromEvents(events),
     );
 
@@ -1258,20 +1261,20 @@ describe('runNonInteractive', () => {
     });
 
     expect(processStderrSpy).toHaveBeenCalledWith(
-      'The --prompt (-p) flag has been deprecated and will be removed in a future version. Please use a positional argument for your prompt. See gemini --help for more information.\n',
+      'The --prompt (-p) flag has been deprecated and will be removed in a future version. Please use a positional argument for your prompt. See codinglm --help for more information.\n',
     );
     expect(processStdoutSpy).toHaveBeenCalledWith('Final Answer');
   });
 
   it('should display a deprecation warning for JSON format', async () => {
-    const events: ServerGeminiStreamEvent[] = [
-      { type: GeminiEventType.Content, value: 'Final Answer' },
+    const events: ServerLlmStreamEvent[] = [
+      { type: LlmEventType.Content, value: 'Final Answer' },
       {
-        type: GeminiEventType.Finished,
+        type: LlmEventType.Finished,
         value: { reason: undefined, usageMetadata: { totalTokenCount: 10 } },
       },
     ];
-    mockGeminiClient.sendMessageStream.mockReturnValue(
+    mockLlmClient.sendMessageStream.mockReturnValue(
       createStreamFromEvents(events),
     );
     vi.mocked(mockConfig.getOutputFormat).mockReturnValue(OutputFormat.JSON);
@@ -1285,7 +1288,7 @@ describe('runNonInteractive', () => {
     });
 
     const deprecateText =
-      'The --prompt (-p) flag has been deprecated and will be removed in a future version. Please use a positional argument for your prompt. See gemini --help for more information.\n';
+      'The --prompt (-p) flag has been deprecated and will be removed in a future version. Please use a positional argument for your prompt. See codinglm --help for more information.\n';
     expect(processStderrSpy).toHaveBeenCalledWith(deprecateText);
   });
 });

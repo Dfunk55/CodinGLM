@@ -48,7 +48,7 @@ describe('ReadFileTool', () => {
       getWorkspaceContext: () => createMockWorkspaceContext(tempRootDir),
       getFileFilteringOptions: () => ({
         respectGitIgnore: true,
-        respectGeminiIgnore: true,
+        respectContextIgnore: true,
       }),
       storage: {
         getProjectTempDir: () => path.join(tempRootDir, '.temp'),
@@ -346,12 +346,14 @@ describe('ReadFileTool', () => {
       >;
 
       const result = await invocation.execute(abortSignal);
-      expect(result.llmContent).toEqual({
-        inlineData: {
-          data: pngHeader.toString('base64'),
-          mimeType: 'image/png',
+      expect(result.llmContent).toEqual([
+        {
+          inlineData: {
+            data: pngHeader.toString('base64'),
+            mimeType: 'image/png',
+          },
         },
-      });
+      ]);
       expect(result.returnDisplay).toBe('Read image file: image.png');
     });
 
@@ -367,12 +369,14 @@ describe('ReadFileTool', () => {
       >;
 
       const result = await invocation.execute(abortSignal);
-      expect(result.llmContent).toEqual({
-        inlineData: {
-          data: pdfHeader.toString('base64'),
-          mimeType: 'application/pdf',
+      expect(result.llmContent).toEqual([
+        {
+          inlineData: {
+            data: pdfHeader.toString('base64'),
+            mimeType: 'application/pdf',
+          },
         },
-      });
+      ]);
       expect(result.returnDisplay).toBe('Read pdf file: document.pdf');
     });
 

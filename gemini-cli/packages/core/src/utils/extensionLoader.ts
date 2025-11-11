@@ -5,7 +5,7 @@
  */
 
 import type { EventEmitter } from 'node:events';
-import type { Config, GeminiCLIExtension } from '../config/config.js';
+import type { Config, CodinGLMExtension } from '../config/config.js';
 
 export abstract class ExtensionLoader {
   // Assigned in `start`.
@@ -23,13 +23,13 @@ export abstract class ExtensionLoader {
   /**
    * All currently known extensions, both active and inactive.
    */
-  abstract getExtensions(): GeminiCLIExtension[];
+  abstract getExtensions(): CodinGLMExtension[];
 
   /**
    * Fully initializes all active extensions.
    *
    * Called within `Config.initialize`, which must already have an
-   * McpClientManager, PromptRegistry, and GeminiChat set up.
+   * McpClientManager, PromptRegistry, and ChatSession set up.
    */
   async start(config: Config): Promise<void> {
     if (!this.config) {
@@ -53,7 +53,7 @@ export abstract class ExtensionLoader {
    * go through `maybeStartExtension` which will only start the extension if
    * extension reloading is enabled and the `config` object is initialized.
    */
-  protected async startExtension(extension: GeminiCLIExtension) {
+  protected async startExtension(extension: CodinGLMExtension) {
     if (!this.config) {
       throw new Error('Cannot call `startExtension` prior to calling `start`.');
     }
@@ -88,7 +88,7 @@ export abstract class ExtensionLoader {
    * program.
    */
   protected maybeStartExtension(
-    extension: GeminiCLIExtension,
+    extension: CodinGLMExtension,
   ): Promise<void> | undefined {
     if (this.config && this.config.getEnableExtensionReloading()) {
       return this.startExtension(extension);
@@ -105,7 +105,7 @@ export abstract class ExtensionLoader {
    * extension if extension reloading is enabled and the `config` object is
    * initialized.
    */
-  protected async stopExtension(extension: GeminiCLIExtension) {
+  protected async stopExtension(extension: CodinGLMExtension) {
     if (!this.config) {
       throw new Error('Cannot call `stopExtension` prior to calling `start`.');
     }
@@ -141,7 +141,7 @@ export abstract class ExtensionLoader {
    * features from the rest of the system.
    */
   protected maybeStopExtension(
-    extension: GeminiCLIExtension,
+    extension: CodinGLMExtension,
   ): Promise<void> | undefined {
     if (this.config && this.config.getEnableExtensionReloading()) {
       return this.stopExtension(extension);
@@ -167,13 +167,13 @@ export interface ExtensionsStoppingEvent {
 
 export class SimpleExtensionLoader extends ExtensionLoader {
   constructor(
-    protected readonly extensions: GeminiCLIExtension[],
+    protected readonly extensions: CodinGLMExtension[],
     eventEmitter?: EventEmitter<ExtensionEvents>,
   ) {
     super(eventEmitter);
   }
 
-  getExtensions(): GeminiCLIExtension[] {
+  getExtensions(): CodinGLMExtension[] {
     return this.extensions;
   }
 
@@ -181,7 +181,7 @@ export class SimpleExtensionLoader extends ExtensionLoader {
   /// `maybeStartExtension`.
   ///
   /// This is intended for dynamic loading of extensions after calling `start`.
-  async loadExtension(extension: GeminiCLIExtension) {
+  async loadExtension(extension: CodinGLMExtension) {
     this.extensions.push(extension);
     await this.maybeStartExtension(extension);
   }
@@ -190,7 +190,7 @@ export class SimpleExtensionLoader extends ExtensionLoader {
   // `maybeStopExtension` if it was found.
   ///
   /// This is intended for dynamic unloading of extensions after calling `start`.
-  async unloadExtension(extension: GeminiCLIExtension) {
+  async unloadExtension(extension: CodinGLMExtension) {
     const index = this.extensions.indexOf(extension);
     if (index === -1) return;
     this.extensions.splice(index, 1);

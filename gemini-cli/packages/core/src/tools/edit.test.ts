@@ -22,11 +22,15 @@ vi.mock('../utils/editCorrector.js', () => ({
   ensureCorrectEdit: mockEnsureCorrectEdit,
 }));
 
-vi.mock('../core/client.js', () => ({
-  GeminiClient: vi.fn().mockImplementation(() => ({
+vi.mock('../core/client.js', () => {
+  const MockClient = vi.fn().mockImplementation(() => ({
     generateJson: mockGenerateJson,
-  })),
-}));
+  }));
+  return {
+    LlmClient: MockClient,
+    LlmClient: MockClient,
+  };
+});
 
 vi.mock('../utils/editor.js', () => ({
   openDiff: mockOpenDiff,
@@ -65,7 +69,7 @@ describe('EditTool', () => {
   let tempDir: string;
   let rootDir: string;
   let mockConfig: Config;
-  let geminiClient: any;
+  let llmClient: any;
   let baseLlmClient: any;
 
   beforeEach(() => {
@@ -74,7 +78,7 @@ describe('EditTool', () => {
     rootDir = path.join(tempDir, 'root');
     fs.mkdirSync(rootDir);
 
-    geminiClient = {
+    llmClient = {
       generateJson: mockGenerateJson, // mockGenerateJson is already defined and hoisted
     };
 
@@ -83,7 +87,7 @@ describe('EditTool', () => {
     };
 
     mockConfig = {
-      getGeminiClient: vi.fn().mockReturnValue(geminiClient),
+      getLlmClient: vi.fn().mockReturnValue(llmClient),
       getBaseLlmClient: vi.fn().mockReturnValue(baseLlmClient),
       getTargetDir: () => rootDir,
       getApprovalMode: vi.fn(),
@@ -91,7 +95,7 @@ describe('EditTool', () => {
       getWorkspaceContext: () => createMockWorkspaceContext(rootDir),
       getFileSystemService: () => new StandardFileSystemService(),
       getIdeMode: () => false,
-      // getGeminiConfig: () => ({ apiKey: 'test-api-key' }), // This was not a real Config method
+      // getCodinGLMConfig: () => ({ apiKey: 'test-api-key' }), // This was not a real Config method
       // Add other properties/methods of Config if EditTool uses them
       // Minimal other methods to satisfy Config type if needed by EditTool constructor or other direct uses:
       getApiKey: () => 'test-api-key',
@@ -107,8 +111,8 @@ describe('EditTool', () => {
       getUserAgent: () => 'test-agent',
       getUserMemory: () => '',
       setUserMemory: vi.fn(),
-      getGeminiMdFileCount: () => 0,
-      setGeminiMdFileCount: vi.fn(),
+      getContextFileCount: () => 0,
+      setContextFileCount: vi.fn(),
       getToolRegistry: () => ({}) as any, // Minimal mock for ToolRegistry
     } as unknown as Config;
 
@@ -442,7 +446,7 @@ describe('EditTool', () => {
           mockCalled = true;
           expect(content).toBe(originalContent);
           expect(p).toBe(params);
-          expect(client).toBe(geminiClient);
+          expect(client).toBe(llmClient);
           expect(baseClient).toBe(baseLlmClient);
           return {
             params: {

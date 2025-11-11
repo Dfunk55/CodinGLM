@@ -63,7 +63,7 @@ Component Tree (100+ components)
    - Integrates 20+ custom hooks
    - Handles global keyboard shortcuts
 
-2. **useGeminiStream.ts** (1000+ lines)
+2. **useCodinGLMStream.ts** (1000+ lines)
    - API streaming and response handling
    - Tool execution orchestration
    - Approval mode management
@@ -139,16 +139,16 @@ Component Tree (100+ components)
 - Entry Point: `/src/gemini.tsx`
 - State Hub: `/src/ui/AppContainer.tsx`
 - Input: `/src/ui/contexts/KeypressContext.tsx`
-- API: `/src/ui/hooks/useGeminiStream.ts`
+- API: `/src/ui/hooks/useCodinGLMStream.ts`
 - Layout: `/src/ui/layouts/DefaultAppLayout.tsx`
 - Messages: `/src/ui/components/HistoryItemDisplay.tsx`
 
 **Hook Files (80+ total)**:
-- Most important: useGeminiStream, useHistory, useKeypress, useTextBuffer
+- Most important: useCodinGLMStream, useHistory, useKeypress, useTextBuffer
 
 **Component Files (100+ total)**:
 - Core: Composer, InputPrompt, MainContent, HistoryItemDisplay
-- Messages: GeminiMessage, UserMessage, ToolGroupMessage, etc.
+- Messages: CodinGLMMessage, UserMessage, ToolGroupMessage, etc.
 - Dialogs: AuthDialog, ThemeDialog, SettingsDialog, etc.
 
 ## Interesting Technical Insights

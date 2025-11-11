@@ -11,7 +11,7 @@ import { act } from 'react';
 import type { SessionMetrics } from './SessionContext.js';
 import { SessionStatsProvider, useSessionStats } from './SessionContext.js';
 import { describe, it, expect, vi } from 'vitest';
-import { uiTelemetryService } from '@google/gemini-cli-core';
+import { uiTelemetryService } from '@codinglm/core';
 
 class ErrorBoundary extends Component<
   { children: ReactNode; onError: (error: Error) => void },
@@ -85,7 +85,7 @@ describe('SessionStatsContext', () => {
 
     const newMetrics: SessionMetrics = {
       models: {
-        'gemini-pro': {
+        'glm-4.6': {
           api: {
             totalRequests: 1,
             totalErrors: 0,
@@ -168,7 +168,7 @@ describe('SessionStatsContext', () => {
 
     const metrics: SessionMetrics = {
       models: {
-        'gemini-pro': {
+        'glm-4.6': {
           api: { totalRequests: 1, totalErrors: 0, totalLatencyMs: 100 },
           tokens: {
             prompt: 10,
@@ -209,7 +209,7 @@ describe('SessionStatsContext', () => {
     const newMetrics = {
       ...metrics,
       models: {
-        'gemini-pro': {
+        'glm-4.6': {
           api: { totalRequests: 2, totalErrors: 0, totalLatencyMs: 200 },
           tokens: {
             prompt: 20,

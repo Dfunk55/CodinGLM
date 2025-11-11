@@ -5,7 +5,7 @@
  */
 
 import type { Content } from '../llm/types.js';
-import { DEFAULT_GEMINI_FLASH_MODEL } from '../config/models.js';
+import { DEFAULT_GLM_FLASH_MODEL } from '../config/models.js';
 import type { BaseLlmClient } from '../core/baseLlmClient.js';
 import type { ChatSession } from '../core/chatSession.js';
 import { isFunctionResponse } from './messageInspectors.js';
@@ -113,7 +113,7 @@ export async function checkNextSpeaker(
     const parsedResponse = (await baseLlmClient.generateJson({
       contents,
       schema: RESPONSE_SCHEMA,
-      model: DEFAULT_GEMINI_FLASH_MODEL,
+      model: DEFAULT_GLM_FLASH_MODEL,
       abortSignal,
       promptId,
     })) as unknown as NextSpeakerResponse;
@@ -128,7 +128,7 @@ export async function checkNextSpeaker(
     return null;
   } catch (error) {
     debugLogger.warn(
-      'Failed to talk to Gemini endpoint when seeing if conversation should continue.',
+      'Failed to talk to CodinGLM endpoint when seeing if conversation should continue.',
       error,
     );
     return null;

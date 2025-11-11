@@ -6,8 +6,8 @@
 
 import type { Content } from '../llm/types.js';
 import { createHash } from 'node:crypto';
-import type { ServerGeminiStreamEvent } from '../core/turn.js';
-import { GeminiEventType } from '../core/turn.js';
+import type { ServerLlmStreamEvent } from '../core/turn.js';
+import { LlmEventType } from '../core/turn.js';
 import {
   logLoopDetected,
   logLoopDetectionDisabled,
@@ -18,7 +18,7 @@ import {
   LoopType,
 } from '../telemetry/types.js';
 import type { Config } from '../config/config.js';
-import { DEFAULT_GEMINI_FLASH_MODEL } from '../config/config.js';
+import { DEFAULT_GLM_FLASH_MODEL } from '../config/config.js';
 import {
   isFunctionCall,
   isFunctionResponse,
@@ -122,7 +122,7 @@ export class LoopDetectionService {
    * @param event - The stream event to process
    * @returns true if a loop is detected, false otherwise
    */
-  addAndCheck(event: ServerGeminiStreamEvent): boolean {
+  addAndCheck(event: ServerLlmStreamEvent): boolean {
     if (this.disabledForSession) {
       return false;
     }
@@ -132,13 +132,13 @@ export class LoopDetectionService {
     }
 
     switch (event.type) {
-      case GeminiEventType.ToolCallRequest:
+      case LlmEventType.ToolCallRequest:
         // content chanting only happens in one single stream, reset if there
         // is a tool call in between
         this.resetContentTracking();
         this.loopDetected = this.checkToolCallLoop(event.value);
         break;
-      case GeminiEventType.Content:
+      case LlmEventType.Content:
         this.loopDetected = this.checkContentLoop(event.value);
         break;
       default:
@@ -438,7 +438,7 @@ export class LoopDetectionService {
       result = await this.config.getBaseLlmClient().generateJson({
         contents,
         schema,
-        model: DEFAULT_GEMINI_FLASH_MODEL,
+        model: DEFAULT_GLM_FLASH_MODEL,
         systemInstruction: LOOP_DETECTION_SYSTEM_PROMPT,
         abortSignal: signal,
         promptId: this.promptId,

@@ -9,12 +9,12 @@ import * as fs from 'node:fs';
 import * as os from 'node:os';
 import * as path from 'node:path';
 import {
-  type GeminiCLIExtension,
+  type CodinGLMExtension,
   ExtensionUninstallEvent,
   ExtensionDisableEvent,
   ExtensionEnableEvent,
   KeychainTokenStorage,
-} from '@google/gemini-cli-core';
+} from '@codinglm/core';
 import { loadSettings, SettingScope } from './settings.js';
 import {
   isWorkspaceTrusted,
@@ -86,9 +86,9 @@ const mockLogExtensionInstallEvent = vi.hoisted(() => vi.fn());
 const mockLogExtensionUninstall = vi.hoisted(() => vi.fn());
 const mockLogExtensionUpdateEvent = vi.hoisted(() => vi.fn());
 const mockLogExtensionDisable = vi.hoisted(() => vi.fn());
-vi.mock('@google/gemini-cli-core', async (importOriginal) => {
+vi.mock('@codinglm/core', async (importOriginal) => {
   const actual =
-    await importOriginal<typeof import('@google/gemini-cli-core')>();
+    await importOriginal<typeof import('@codinglm/core')>();
   return {
     ...actual,
     logExtensionEnable: mockLogExtensionEnable,
@@ -100,6 +100,7 @@ vi.mock('@google/gemini-cli-core', async (importOriginal) => {
     ExtensionInstallEvent: vi.fn(),
     ExtensionUninstallEvent: vi.fn(),
     ExtensionDisableEvent: vi.fn(),
+    ExtensionUpdateEvent: vi.fn(),
     KeychainTokenStorage: vi.fn().mockImplementation(() => ({
       getSecret: vi.fn(),
       setSecret: vi.fn(),
@@ -211,7 +212,7 @@ describe('extension tests', () => {
       expect(extensions[0].name).toBe('test-extension');
     });
 
-    it('should load context file path when GEMINI.md is present', async () => {
+    it('should load context file path when CODINGLM.md is present', async () => {
       createExtension({
         extensionsDir: userExtensionsDir,
         name: 'ext1',
@@ -230,7 +231,7 @@ describe('extension tests', () => {
       const ext1 = extensions.find((e) => e.name === 'ext1');
       const ext2 = extensions.find((e) => e.name === 'ext2');
       expect(ext1?.contextFiles).toEqual([
-        path.join(userExtensionsDir, 'ext1', 'GEMINI.md'),
+        path.join(userExtensionsDir, 'ext1', 'CODINGLM.md'),
       ]);
       expect(ext2?.contextFiles).toEqual([]);
     });
@@ -1766,7 +1767,7 @@ This extension will run the following MCP servers:
       vi.restoreAllMocks();
     });
 
-    const getActiveExtensions = (): GeminiCLIExtension[] => {
+    const getActiveExtensions = (): CodinGLMExtension[] => {
       const extensions = extensionManager.getExtensions();
       return extensions.filter((e) => e.isActive);
     };

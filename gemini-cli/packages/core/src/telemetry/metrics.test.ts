@@ -274,18 +274,18 @@ describe('Telemetry Metrics', () => {
 
     it('should not record metrics if not initialized', () => {
       recordTokenUsageMetricsModule(mockConfig, 100, {
-        model: 'gemini-pro',
+        model: 'glm-4.6',
         type: 'input',
       });
       expect(mockCounterAddFn).not.toHaveBeenCalled();
     });
 
     it.each([
-      { type: 'input', tokens: 100, model: 'gemini-pro' },
-      { type: 'output', tokens: 50, model: 'gemini-pro' },
-      { type: 'thought', tokens: 25, model: 'gemini-pro' },
-      { type: 'cache', tokens: 75, model: 'gemini-pro' },
-      { type: 'tool', tokens: 125, model: 'gemini-pro' },
+      { type: 'input', tokens: 100, model: 'glm-4.6' },
+      { type: 'output', tokens: 50, model: 'glm-4.6' },
+      { type: 'thought', tokens: 25, model: 'glm-4.6' },
+      { type: 'cache', tokens: 75, model: 'glm-4.6' },
+      { type: 'tool', tokens: 125, model: 'glm-4.6' },
       { type: 'input', tokens: 200, model: 'gemini-different-model' },
     ])(
       'should record token usage for $type type with $tokens tokens for model $model',
@@ -448,7 +448,7 @@ describe('Telemetry Metrics', () => {
 
     it('should not record metrics if not initialized', () => {
       const event = new ModelRoutingEvent(
-        'gemini-pro',
+        'glm-4.6',
         'default',
         100,
         'test-reason',
@@ -463,7 +463,7 @@ describe('Telemetry Metrics', () => {
     it('should record latency for a successful routing decision', () => {
       initializeMetricsModule(mockConfig);
       const event = new ModelRoutingEvent(
-        'gemini-pro',
+        'glm-4.6',
         'default',
         150,
         'test-reason',
@@ -476,7 +476,7 @@ describe('Telemetry Metrics', () => {
         'session.id': 'test-session-id',
         'installation.id': 'test-installation-id',
         'user.email': 'test@example.com',
-        'routing.decision_model': 'gemini-pro',
+        'routing.decision_model': 'glm-4.6',
         'routing.decision_source': 'default',
       });
       // The session counter is called once on init
@@ -486,7 +486,7 @@ describe('Telemetry Metrics', () => {
     it('should record latency and failure for a failed routing decision', () => {
       initializeMetricsModule(mockConfig);
       const event = new ModelRoutingEvent(
-        'gemini-pro',
+        'glm-4.6',
         'classifier',
         200,
         'test-reason',
@@ -499,7 +499,7 @@ describe('Telemetry Metrics', () => {
         'session.id': 'test-session-id',
         'installation.id': 'test-installation-id',
         'user.email': 'test@example.com',
-        'routing.decision_model': 'gemini-pro',
+        'routing.decision_model': 'glm-4.6',
         'routing.decision_source': 'classifier',
       });
 
@@ -623,7 +623,7 @@ describe('Telemetry Metrics', () => {
           'gen_ai.operation.name': 'generate_content',
           'gen_ai.provider.name': 'gcp.vertex_ai',
           'gen_ai.token.type': 'output',
-          'gen_ai.request.model': 'gemini-pro',
+          'gen_ai.request.model': 'glm-4.6',
         });
 
         expect(mockHistogramRecordFn).toHaveBeenCalledWith(75, {
@@ -633,7 +633,7 @@ describe('Telemetry Metrics', () => {
           'gen_ai.operation.name': 'generate_content',
           'gen_ai.provider.name': 'gcp.vertex_ai',
           'gen_ai.token.type': 'output',
-          'gen_ai.request.model': 'gemini-pro',
+          'gen_ai.request.model': 'glm-4.6',
         });
       });
 
@@ -703,7 +703,7 @@ describe('Telemetry Metrics', () => {
         recordGenAiClientOperationDurationModule(mockConfig, 3.75, {
           'gen_ai.operation.name': 'generate_content',
           'gen_ai.provider.name': 'gcp.vertex_ai',
-          'gen_ai.request.model': 'gemini-pro',
+          'gen_ai.request.model': 'glm-4.6',
           'error.type': 'quota_exceeded',
         });
 
@@ -713,7 +713,7 @@ describe('Telemetry Metrics', () => {
           'user.email': 'test@example.com',
           'gen_ai.operation.name': 'generate_content',
           'gen_ai.provider.name': 'gcp.vertex_ai',
-          'gen_ai.request.model': 'gemini-pro',
+          'gen_ai.request.model': 'glm-4.6',
           'error.type': 'quota_exceeded',
         });
       });
@@ -1040,7 +1040,7 @@ describe('Telemetry Metrics', () => {
         mockHistogramRecordFn.mockClear();
 
         recordTokenEfficiencyModule(mockConfig, 0.85, {
-          model: 'gemini-pro',
+          model: 'glm-4.6',
           metric: 'cache_hit_rate',
           context: 'api_request',
         });
@@ -1049,7 +1049,7 @@ describe('Telemetry Metrics', () => {
           'session.id': 'test-session-id',
           'installation.id': 'test-installation-id',
           'user.email': 'test@example.com',
-          model: 'gemini-pro',
+          model: 'glm-4.6',
           metric: 'cache_hit_rate',
           context: 'api_request',
         });
@@ -1060,7 +1060,7 @@ describe('Telemetry Metrics', () => {
         mockHistogramRecordFn.mockClear();
 
         recordTokenEfficiencyModule(mockConfig, 125.5, {
-          model: 'gemini-pro',
+          model: 'glm-4.6',
           metric: 'tokens_per_operation',
         });
 
@@ -1068,7 +1068,7 @@ describe('Telemetry Metrics', () => {
           'session.id': 'test-session-id',
           'installation.id': 'test-installation-id',
           'user.email': 'test@example.com',
-          model: 'gemini-pro',
+          model: 'glm-4.6',
           metric: 'tokens_per_operation',
         });
       });
@@ -1080,7 +1080,7 @@ describe('Telemetry Metrics', () => {
         mockHistogramRecordFn.mockClear();
 
         recordApiRequestBreakdownModule(mockConfig, 15, {
-          model: 'gemini-pro',
+          model: 'glm-4.6',
           phase: ApiRequestPhase.REQUEST_PREPARATION,
         });
 
@@ -1088,7 +1088,7 @@ describe('Telemetry Metrics', () => {
           'session.id': 'test-session-id',
           'installation.id': 'test-installation-id',
           'user.email': 'test@example.com',
-          model: 'gemini-pro',
+          model: 'glm-4.6',
           phase: 'request_preparation',
         });
       });
@@ -1098,15 +1098,15 @@ describe('Telemetry Metrics', () => {
         mockHistogramRecordFn.mockClear();
 
         recordApiRequestBreakdownModule(mockConfig, 250, {
-          model: 'gemini-pro',
+          model: 'glm-4.6',
           phase: ApiRequestPhase.NETWORK_LATENCY,
         });
         recordApiRequestBreakdownModule(mockConfig, 100, {
-          model: 'gemini-pro',
+          model: 'glm-4.6',
           phase: ApiRequestPhase.RESPONSE_PROCESSING,
         });
         recordApiRequestBreakdownModule(mockConfig, 50, {
-          model: 'gemini-pro',
+          model: 'glm-4.6',
           phase: ApiRequestPhase.TOKEN_PROCESSING,
         });
 
@@ -1115,21 +1115,21 @@ describe('Telemetry Metrics', () => {
           'session.id': 'test-session-id',
           'installation.id': 'test-installation-id',
           'user.email': 'test@example.com',
-          model: 'gemini-pro',
+          model: 'glm-4.6',
           phase: 'network_latency',
         });
         expect(mockHistogramRecordFn).toHaveBeenNthCalledWith(2, 100, {
           'session.id': 'test-session-id',
           'installation.id': 'test-installation-id',
           'user.email': 'test@example.com',
-          model: 'gemini-pro',
+          model: 'glm-4.6',
           phase: 'response_processing',
         });
         expect(mockHistogramRecordFn).toHaveBeenNthCalledWith(3, 50, {
           'session.id': 'test-session-id',
           'installation.id': 'test-installation-id',
           'user.email': 'test@example.com',
-          model: 'gemini-pro',
+          model: 'glm-4.6',
           phase: 'token_processing',
         });
       });

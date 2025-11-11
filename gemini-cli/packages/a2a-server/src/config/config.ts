@@ -18,8 +18,8 @@ import {
   ApprovalMode,
   loadServerHierarchicalMemory,
   GEMINI_DIR,
-  DEFAULT_GEMINI_EMBEDDING_MODEL,
-  DEFAULT_GEMINI_MODEL,
+  DEFAULT_GLM_EMBEDDING_MODEL,
+  DEFAULT_GLM_MODEL,
   type ExtensionLoader,
 } from '@codinglm/core';
 
@@ -37,8 +37,8 @@ export async function loadConfig(
 
   const configParams: ConfigParameters = {
     sessionId: taskId,
-    model: DEFAULT_GEMINI_MODEL,
-    embeddingModel: DEFAULT_GEMINI_EMBEDDING_MODEL,
+    model: DEFAULT_GLM_MODEL,
+    embeddingModel: DEFAULT_GLM_EMBEDDING_MODEL,
     sandbox: undefined, // Sandbox might not be relevant for a server-side agent
     targetDir: workspaceDir, // Or a specific directory the agent operates on
     debugMode: process.env['DEBUG'] === 'true' || false,
@@ -82,7 +82,7 @@ export async function loadConfig(
     settings.folderTrust === true,
   );
   configParams.userMemory = memoryContent;
-  configParams.geminiMdFileCount = fileCount;
+  configParams.contextFileCount = fileCount;
   const config = new Config({
     ...configParams,
   });
@@ -104,14 +104,28 @@ export async function loadConfig(
     logger.info(
       `[Config] GOOGLE_CLOUD_PROJECT: ${process.env['GOOGLE_CLOUD_PROJECT']}`,
     );
-  } else if (process.env['GEMINI_API_KEY']) {
-    logger.info('[Config] Using Gemini API Key');
-    await config.refreshAuth(AuthType.USE_GEMINI);
   } else {
-    const errorMessage =
-      '[Config] Unable to set GeneratorConfig. Please provide a GEMINI_API_KEY or set USE_CCPA.';
-    logger.error(errorMessage);
-    throw new Error(errorMessage);
+    const zaiApiKey =
+      process.env['Z_AI_API_KEY'] || process.env['ZAI_API_KEY'] || undefined;
+    const legacyApiKey =
+      process.env['GEMINI_API_KEY'] || process.env['LEGACY_GEMINI_API_KEY'];
+
+    if (zaiApiKey) {
+      logger.info('[Config] Using Z.AI API key');
+      process.env['Z_AI_API_KEY'] = zaiApiKey;
+      await config.refreshAuth(AuthType.USE_Z_AI);
+    } else if (legacyApiKey) {
+      logger.warn(
+        '[Config] Using legacy GEMINI_API_KEY for compatibility; prefer Z_AI_API_KEY instead.',
+      );
+      process.env['Z_AI_API_KEY'] = legacyApiKey;
+      await config.refreshAuth(AuthType.USE_Z_AI);
+    } else {
+      const errorMessage =
+        '[Config] Unable to set GeneratorConfig. Please provide a Z_AI_API_KEY (or legacy GEMINI_API_KEY) or set USE_CCPA.';
+      logger.error(errorMessage);
+      throw new Error(errorMessage);
+    }
   }
 
   return config;
@@ -167,9 +181,9 @@ function findEnvFile(startDir: string): string | null {
     const parentDir = path.dirname(currentDir);
     if (parentDir === currentDir || !parentDir) {
       // check .env under home as fallback, again preferring gemini-specific .env
-      const homeGeminiEnvPath = path.join(process.cwd(), GEMINI_DIR, '.env');
-      if (fs.existsSync(homeGeminiEnvPath)) {
-        return homeGeminiEnvPath;
+      const homeAgentEnvPath = path.join(process.cwd(), GEMINI_DIR, '.env');
+      if (fs.existsSync(homeAgentEnvPath)) {
+        return homeAgentEnvPath;
       }
       const homeEnvPath = path.join(homedir(), '.env');
       if (fs.existsSync(homeEnvPath)) {

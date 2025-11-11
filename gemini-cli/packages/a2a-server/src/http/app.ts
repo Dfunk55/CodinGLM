@@ -23,13 +23,13 @@ import { commandRegistry } from '../commands/command-registry.js';
 import { SimpleExtensionLoader } from '@codinglm/core';
 
 const coderAgentCard: AgentCard = {
-  name: 'Gemini SDLC Agent',
+  name: 'CodinGLM SDLC Agent',
   description:
     'An agent that generates code based on natural language instructions and streams file outputs.',
   url: 'http://localhost:41242/',
   provider: {
-    organization: 'Google',
-    url: 'https://google.com',
+    organization: 'Z.AI',
+    url: 'https://www.zhipuai.cn',
   },
   protocolVersion: '0.3.0',
   version: '0.0.2', // Incremented version

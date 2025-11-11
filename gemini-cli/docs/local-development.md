@@ -13,7 +13,7 @@ Dev traces are verbose and are specifically meant for understanding agent
 behaviour and debugging issues. They are disabled by default.
 
 To enable dev traces, set the `GEMINI_DEV_TRACING=true` environment variable
-when running Gemini CLI.
+when running CodinGLM CLI.
 
 ### Viewing Dev Traces
 
@@ -37,9 +37,9 @@ Genkit provides a web-based UI for viewing traces and other telemetry data.
     Genkit Developer UI: http://localhost:4000
     ```
 
-2.  **Run Gemini CLI with Dev Tracing:**
+2.  **Run CodinGLM CLI with Dev Tracing:**
 
-    In a separate terminal, run your Gemini CLI command with the
+    In a separate terminal, run your CodinGLM CLI command with the
     `GEMINI_DEV_TRACING` environment variable:
 
     ```bash
@@ -67,9 +67,9 @@ You can view dev traces in the Jaeger UI. To get started, follow these steps:
     This command also configures your workspace for local telemetry and provides
     a link to the Jaeger UI (usually `http://localhost:16686`).
 
-2.  **Run Gemini CLI with dev tracing:**
+2.  **Run CodinGLM CLI with dev tracing:**
 
-    In a separate terminal, run your Gemini CLI command with the
+    In a separate terminal, run your CodinGLM CLI command with the
     `GEMINI_DEV_TRACING` environment variable:
 
     ```bash
@@ -95,7 +95,7 @@ span.
 Here is a basic example:
 
 ```typescript
-import { runInDevTraceSpan } from '@google/gemini-cli-core';
+import { runInDevTraceSpan } from '@codinglm/core';
 
 await runInDevTraceSpan({ name: 'my-custom-span' }, async ({ metadata }) => {
   // The `metadata` object allows you to record the input and output of the

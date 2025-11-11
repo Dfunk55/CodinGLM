@@ -1,7 +1,7 @@
 # Trusted Folders
 
 The Trusted Folders feature is a security setting that gives you control over
-which projects can use the full capabilities of the Gemini CLI. It prevents
+which projects can use the full capabilities of the CodinGLM CLI. It prevents
 potentially malicious code from running by asking you to approve a folder before
 the CLI loads any project-specific configurations from it.
 
@@ -24,7 +24,7 @@ Add the following to your user `settings.json` file:
 
 ## How It Works: The Trust Dialog
 
-Once the feature is enabled, the first time you run the Gemini CLI from a
+Once the feature is enabled, the first time you run the CodinGLM CLI from a
 folder, a dialog will automatically appear, prompting you to make a choice:
 
 - **Trust folder**: Grants full trust to the current folder (e.g.,
@@ -40,7 +40,7 @@ will only be asked once per folder.
 
 ## Why Trust Matters: The Impact of an Untrusted Workspace
 
-When a folder is **untrusted**, the Gemini CLI runs in a restricted "safe mode"
+When a folder is **untrusted**, the CodinGLM CLI runs in a restricted "safe mode"
 to protect you. In this mode, the following features are disabled:
 
 1.  **Workspace Settings are Ignored**: The CLI will **not** load the
@@ -66,7 +66,7 @@ to protect you. In this mode, the following features are disabled:
     commands from .toml files, including both project-specific and global user
     commands.
 
-Granting trust to a folder unlocks the full functionality of the Gemini CLI for
+Granting trust to a folder unlocks the full functionality of the CodinGLM CLI for
 that workspace.
 
 ## Managing Your Trust Settings

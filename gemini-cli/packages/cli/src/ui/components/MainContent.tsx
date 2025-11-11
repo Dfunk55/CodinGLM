@@ -13,11 +13,11 @@ import { useAppContext } from '../contexts/AppContext.js';
 import { AppHeader } from './AppHeader.js';
 import { useSettings } from '../contexts/SettingsContext.js';
 
-// Limit Gemini messages to a very high number of lines to mitigate performance
-// issues in the worst case if we somehow get an enormous response from Gemini.
+// Limit CodinGLM messages to a very high number of lines to mitigate performance
+// issues in the worst case if we somehow get an enormous response from CodinGLM.
 // This threshold is arbitrary but should be high enough to never impact normal
 // usage.
-const MAX_GEMINI_MESSAGE_LINES = 65536;
+const MAX_MODEL_MESSAGE_LINES = 65536;
 
 export const MainContent = () => {
   const { version } = useAppContext();
@@ -38,7 +38,7 @@ export const MainContent = () => {
       <HistoryItemDisplay
         terminalWidth={mainAreaWidth}
         availableTerminalHeight={staticAreaMaxItemHeight}
-        availableTerminalHeightCodinGLM={MAX_GEMINI_MESSAGE_LINES}
+        availableTerminalHeightCodinGLM={MAX_MODEL_MESSAGE_LINES}
         key={h.id}
         item={h}
         isPending={false}

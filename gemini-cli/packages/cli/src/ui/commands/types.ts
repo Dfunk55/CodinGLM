@@ -11,7 +11,7 @@ import type {
   HistoryItem,
   ConfirmationRequest,
 } from '../types.js';
-import type { Config, GitService, Logger } from '@google/gemini-cli-core';
+import type { Config, GitService, Logger } from '@codinglm/core';
 import type { LoadedSettings } from '../../config/settings.js';
 import type { UseHistoryManagerReturn } from '../hooks/useHistoryManager.js';
 import type { SessionStatsState } from '../contexts/SessionContext.js';
@@ -68,7 +68,7 @@ export interface CommandContext {
     toggleCorgiMode: () => void;
     toggleDebugProfiler: () => void;
     toggleVimEnabled: () => Promise<boolean>;
-    setGeminiMdFileCount: (count: number) => void;
+    setContextFileCount: (count: number) => void;
     reloadCommands: () => void;
     extensionsUpdateState: Map<string, ExtensionUpdateStatus>;
     dispatchExtensionStateUpdate: (action: ExtensionUpdateAction) => void;
@@ -138,7 +138,7 @@ export interface LoadHistoryActionReturn {
 
 /**
  * The return type for a command action that should immediately submit
- * content as a prompt to the Gemini model.
+ * content as a prompt to the GLM model.
  */
 export interface SubmitPromptActionReturn {
   type: 'submit_prompt';

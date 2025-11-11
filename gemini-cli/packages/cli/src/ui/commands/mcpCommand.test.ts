@@ -13,15 +13,15 @@ import {
   getMCPServerStatus,
   getMCPDiscoveryState,
   DiscoveredMCPTool,
-} from '@google/gemini-cli-core';
+} from '@codinglm/core';
 
 import type { CallableTool } from '@codinglm/core';
 import { Type } from '@codinglm/core/llm/schema';
 import { MessageType } from '../types.js';
 
-vi.mock('@google/gemini-cli-core', async (importOriginal) => {
+vi.mock('@codinglm/core', async (importOriginal) => {
   const actual =
-    await importOriginal<typeof import('@google/gemini-cli-core')>();
+    await importOriginal<typeof import('@codinglm/core')>();
   const mockAuthenticate = vi.fn();
   return {
     ...actual,
@@ -61,7 +61,7 @@ describe('mcpCommand', () => {
     getMcpServers: ReturnType<typeof vi.fn>;
     getBlockedMcpServers: ReturnType<typeof vi.fn>;
     getPromptRegistry: ReturnType<typeof vi.fn>;
-    getGeminiClient: ReturnType<typeof vi.fn>;
+    getLlmClient: ReturnType<typeof vi.fn>;
     getMcpClientManager: ReturnType<typeof vi.fn>;
   };
 
@@ -88,7 +88,7 @@ describe('mcpCommand', () => {
         getAllPrompts: vi.fn().mockReturnValue([]),
         getPromptsByServer: vi.fn().mockReturnValue([]),
       }),
-      getGeminiClient: vi.fn(),
+      getLlmClient: vi.fn(),
       getMcpClientManager: vi.fn().mockImplementation(() => ({
         getBlockedMcpServers: vi.fn(),
         getMcpServers: vi.fn(),

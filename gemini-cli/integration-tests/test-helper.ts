@@ -10,7 +10,7 @@ import { mkdirSync, writeFileSync, readFileSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { env } from 'node:process';
-import { DEFAULT_GEMINI_MODEL } from '../packages/core/src/config/models.js';
+import { DEFAULT_GLM_MODEL } from '../packages/core/src/config/models.js';
 import fs from 'node:fs';
 import * as pty from '@lydell/node-pty';
 import stripAnsi from 'strip-ansi';
@@ -315,7 +315,7 @@ export class TestRig {
           selectedType: 'gemini-api-key',
         },
       },
-      model: DEFAULT_GEMINI_MODEL,
+      model: DEFAULT_GLM_MODEL,
       sandbox:
         env['GEMINI_SANDBOX'] !== 'false' ? env['GEMINI_SANDBOX'] : false,
       // Don't show the IDE connection dialog when running from VsCode
@@ -344,7 +344,7 @@ export class TestRig {
   }
 
   /**
-   * The command and args to use to invoke Gemini CLI. Allows us to switch
+   * The command and args to use to invoke CodinGLM CLI. Allows us to switch
    * between using the bundled gemini.js (the default) and using the installed
    * 'gemini' (used to verify npm bundles).
    */

@@ -6,11 +6,11 @@
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import type {
-  ServerGeminiToolCallRequestEvent,
-  ServerGeminiErrorEvent,
+  ServerLlmToolCallRequestEvent,
+  ServerLlmErrorEvent,
 } from './turn.js';
-import { Turn, GeminiEventType } from './turn.js';
-import type { GenerateContentResponse, Part, Content } from '@google/genai';
+import { Turn, LlmEventType } from './turn.js';
+import type { GenerateContentResponse, Part, Content } from '@codinglm/genai';
 import { reportError } from '../utils/errorReporting.js';
 import type { ChatSession } from './chatSession.js';
 import { InvalidStreamError, StreamEventType } from './chatSession.js';
@@ -19,8 +19,8 @@ const mockSendMessageStream = vi.fn();
 const mockGetHistory = vi.fn();
 const mockMaybeIncludeSchemaDepthContext = vi.fn();
 
-vi.mock('@google/genai', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('@google/genai')>();
+vi.mock('@codinglm/genai', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@codinglm/genai')>();
   const MockChat = vi.fn().mockImplementation(() => ({
     sendMessageStream: mockSendMessageStream,
     getHistory: mockGetHistory,
@@ -114,8 +114,8 @@ describe('Turn', () => {
       );
 
       expect(events).toEqual([
-        { type: GeminiEventType.Content, value: 'Hello' },
-        { type: GeminiEventType.Content, value: ' world' },
+        { type: LlmEventType.Content, value: 'Hello' },
+        { type: LlmEventType.Content, value: ' world' },
       ]);
       expect(turn.getDebugResponses().length).toBe(2);
     });
@@ -154,8 +154,8 @@ describe('Turn', () => {
       }
 
       expect(events.length).toBe(2);
-      const event1 = events[0] as ServerGeminiToolCallRequestEvent;
-      expect(event1.type).toBe(GeminiEventType.ToolCallRequest);
+      const event1 = events[0] as ServerLlmToolCallRequestEvent;
+      expect(event1.type).toBe(LlmEventType.ToolCallRequest);
       expect(event1.value).toEqual(
         expect.objectContaining({
           callId: 'fc1',
@@ -166,8 +166,8 @@ describe('Turn', () => {
       );
       expect(turn.pendingToolCalls[0]).toEqual(event1.value);
 
-      const event2 = events[1] as ServerGeminiToolCallRequestEvent;
-      expect(event2.type).toBe(GeminiEventType.ToolCallRequest);
+      const event2 = events[1] as ServerLlmToolCallRequestEvent;
+      expect(event2.type).toBe(LlmEventType.ToolCallRequest);
       expect(event2.value).toEqual(
         expect.objectContaining({
           name: 'tool2',
@@ -217,8 +217,8 @@ describe('Turn', () => {
         events.push(event);
       }
       expect(events).toEqual([
-        { type: GeminiEventType.Content, value: 'First part' },
-        { type: GeminiEventType.UserCancelled },
+        { type: LlmEventType.Content, value: 'First part' },
+        { type: LlmEventType.UserCancelled },
       ]);
       expect(turn.getDebugResponses().length).toBe(1);
     });
@@ -240,13 +240,13 @@ describe('Turn', () => {
         events.push(event);
       }
 
-      if (events.length === 1 && (events[0] as any).type === GeminiEventType.InvalidStream) {
-        expect(events).toEqual([{ type: GeminiEventType.InvalidStream }]);
+      if (events.length === 1 && (events[0] as any).type === LlmEventType.InvalidStream) {
+        expect(events).toEqual([{ type: LlmEventType.InvalidStream }]);
       } else {
-        expect(events).toEqual([{ type: GeminiEventType.Error, value: { error: { message: 'Test invalid stream', status: undefined } } }]);
+        expect(events).toEqual([{ type: LlmEventType.Error, value: { error: { message: 'Test invalid stream', status: undefined } } }]);
       }
       expect(turn.getDebugResponses().length).toBe(0);
-      if ((events[0] as any).type === GeminiEventType.InvalidStream) {
+      if ((events[0] as any).type === LlmEventType.InvalidStream) {
         expect(reportError).not.toHaveBeenCalled();
       }
     });
@@ -270,15 +270,15 @@ describe('Turn', () => {
       }
 
       expect(events.length).toBe(1);
-      const errorEvent = events[0] as ServerGeminiErrorEvent;
-      expect(errorEvent.type).toBe(GeminiEventType.Error);
+      const errorEvent = events[0] as ServerLlmErrorEvent;
+      expect(errorEvent.type).toBe(LlmEventType.Error);
       expect(errorEvent.value).toEqual({
         error: { message: 'API Error', status: undefined },
       });
       expect(turn.getDebugResponses().length).toBe(0);
       expect(reportError).toHaveBeenCalledWith(
         error,
-        'Error when talking to Gemini API',
+        'Error when talking to CodinGLM API',
         [...historyContent, { role: 'user', parts: reqParts }],
         'Turn.run-sendMessageStream',
       );
@@ -313,21 +313,21 @@ describe('Turn', () => {
       expect(events.length).toBe(3);
 
       // Assertions for each specific tool call event
-      const event1 = events[0] as ServerGeminiToolCallRequestEvent;
+      const event1 = events[0] as ServerLlmToolCallRequestEvent;
       expect(event1.value).toMatchObject({
         callId: 'fc1',
         name: 'undefined_tool_name',
         args: { arg1: 'val1' },
       });
 
-      const event2 = events[1] as ServerGeminiToolCallRequestEvent;
+      const event2 = events[1] as ServerLlmToolCallRequestEvent;
       expect(event2.value).toMatchObject({
         callId: 'fc2',
         name: 'tool2',
         args: {},
       });
 
-      const event3 = events[2] as ServerGeminiToolCallRequestEvent;
+      const event3 = events[2] as ServerLlmToolCallRequestEvent;
       expect(event3.value).toMatchObject({
         callId: 'fc3',
         name: 'undefined_tool_name',
@@ -368,9 +368,9 @@ describe('Turn', () => {
       }
 
       expect(events).toEqual([
-        { type: GeminiEventType.Content, value: 'Partial response' },
+        { type: LlmEventType.Content, value: 'Partial response' },
         {
-          type: GeminiEventType.Finished,
+          type: LlmEventType.Finished,
           value: {
             reason: 'STOP',
             usageMetadata: {
@@ -417,11 +417,11 @@ describe('Turn', () => {
 
       expect(events).toEqual([
         {
-          type: GeminiEventType.Content,
+          type: LlmEventType.Content,
           value: 'This is a long response that was cut off...',
         },
         {
-          type: GeminiEventType.Finished,
+          type: LlmEventType.Finished,
           value: { reason: 'MAX_TOKENS', usageMetadata: undefined },
         },
       ]);
@@ -454,9 +454,9 @@ describe('Turn', () => {
       }
 
       expect(events).toEqual([
-        { type: GeminiEventType.Content, value: 'Content blocked' },
+        { type: LlmEventType.Content, value: 'Content blocked' },
         {
-          type: GeminiEventType.Finished,
+          type: LlmEventType.Finished,
           value: { reason: 'SAFETY', usageMetadata: undefined },
         },
       ]);
@@ -492,7 +492,7 @@ describe('Turn', () => {
 
       expect(events).toEqual([
         {
-          type: GeminiEventType.Content,
+          type: LlmEventType.Content,
           value: 'Response without finish reason',
         },
       ]);
@@ -536,10 +536,10 @@ describe('Turn', () => {
       }
 
       expect(events).toEqual([
-        { type: GeminiEventType.Content, value: 'First part' },
-        { type: GeminiEventType.Content, value: 'Second part' },
+        { type: LlmEventType.Content, value: 'First part' },
+        { type: LlmEventType.Content, value: 'Second part' },
         {
-          type: GeminiEventType.Finished,
+          type: LlmEventType.Finished,
           value: { reason: 'OTHER', usageMetadata: undefined },
         },
       ]);
@@ -579,13 +579,13 @@ describe('Turn', () => {
       }
 
       expect(events).toEqual([
-        { type: GeminiEventType.Content, value: 'Some text.' },
+        { type: LlmEventType.Content, value: 'Some text.' },
         {
-          type: GeminiEventType.Citation,
+          type: LlmEventType.Citation,
           value: 'Citations:\n(Source 1 Title) https://example.com/source1',
         },
         {
-          type: GeminiEventType.Finished,
+          type: LlmEventType.Finished,
           value: { reason: 'STOP', usageMetadata: undefined },
         },
       ]);
@@ -629,14 +629,14 @@ describe('Turn', () => {
       }
 
       expect(events).toEqual([
-        { type: GeminiEventType.Content, value: 'Some text.' },
+        { type: LlmEventType.Content, value: 'Some text.' },
         {
-          type: GeminiEventType.Citation,
+          type: LlmEventType.Citation,
           value:
             'Citations:\n(Title1) https://example.com/source1\n(Title2) https://example.com/source2',
         },
         {
-          type: GeminiEventType.Finished,
+          type: LlmEventType.Finished,
           value: { reason: 'STOP', usageMetadata: undefined },
         },
       ]);
@@ -676,10 +676,10 @@ describe('Turn', () => {
       }
 
       expect(events).toEqual([
-        { type: GeminiEventType.Content, value: 'Some text.' },
+        { type: LlmEventType.Content, value: 'Some text.' },
       ]);
       // No Citation event (but we do get a Finished event with undefined reason)
-      expect(events.some((e) => e.type === GeminiEventType.Citation)).toBe(
+      expect(events.some((e) => e.type === LlmEventType.Citation)).toBe(
         false,
       );
     });
@@ -722,13 +722,13 @@ describe('Turn', () => {
       }
 
       expect(events).toEqual([
-        { type: GeminiEventType.Content, value: 'Some text.' },
+        { type: LlmEventType.Content, value: 'Some text.' },
         {
-          type: GeminiEventType.Citation,
+          type: LlmEventType.Citation,
           value: 'Citations:\n(Good Source) https://example.com/source1',
         },
         {
-          type: GeminiEventType.Finished,
+          type: LlmEventType.Finished,
           value: { reason: 'STOP', usageMetadata: undefined },
         },
       ]);
@@ -759,7 +759,7 @@ describe('Turn', () => {
         events.push(event);
       }
 
-      expect(events).toEqual([{ type: GeminiEventType.UserCancelled }]);
+      expect(events).toEqual([{ type: LlmEventType.UserCancelled }]);
 
       expect(reportError).not.toHaveBeenCalled();
     });
@@ -786,8 +786,8 @@ describe('Turn', () => {
       }
 
       expect(events).toEqual([
-        { type: GeminiEventType.Retry },
-        { type: GeminiEventType.Content, value: 'Success' },
+        { type: LlmEventType.Retry },
+        { type: LlmEventType.Content, value: 'Success' },
       ]);
     });
 
@@ -813,7 +813,7 @@ describe('Turn', () => {
       }
 
       expect(events).toEqual([
-        { type: GeminiEventType.Content, value: 'Hello', traceId: 'trace-123' },
+        { type: LlmEventType.Content, value: 'Hello', traceId: 'trace-123' },
       ]);
     });
 
@@ -846,7 +846,7 @@ describe('Turn', () => {
 
       expect(events).toEqual([
         {
-          type: GeminiEventType.Thought,
+          type: LlmEventType.Thought,
           value: { subject: '', description: '[Thought: thinking]' },
           traceId: 'trace-456',
         },

@@ -4,9 +4,9 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { getErrorMessage } from '@google/gemini-cli-core';
+import { getErrorMessage } from '@codinglm/core';
 import { MessageType } from '../types.js';
-import { loadHierarchicalGeminiMemory } from '../../config/config.js';
+import { loadHierarchicalContextMemory } from '../../config/config.js';
 import type { SlashCommand, SlashCommandActionReturn } from './types.js';
 import { CommandKind } from './types.js';
 
@@ -21,7 +21,7 @@ export const memoryCommand: SlashCommand = {
       kind: CommandKind.BUILT_IN,
       action: async (context) => {
         const memoryContent = context.services.config?.getUserMemory() || '';
-        const fileCount = context.services.config?.getGeminiMdFileCount() || 0;
+        const fileCount = context.services.config?.getContextFileCount() || 0;
 
         const messageContent =
           memoryContent.length > 0
@@ -83,7 +83,7 @@ export const memoryCommand: SlashCommand = {
           const settings = context.services.settings;
           if (config) {
             const { memoryContent, fileCount, filePaths } =
-              await loadHierarchicalGeminiMemory(
+              await loadHierarchicalContextMemory(
                 config.getWorkingDir(),
                 config.shouldLoadMemoryFromIncludeDirectories()
                   ? config.getWorkspaceContext().getDirectories()
@@ -97,9 +97,9 @@ export const memoryCommand: SlashCommand = {
                 config.getFileFilteringOptions(),
               );
             config.setUserMemory(memoryContent);
-            config.setGeminiMdFileCount(fileCount);
-            config.setGeminiMdFilePaths(filePaths);
-            context.ui.setGeminiMdFileCount(fileCount);
+            config.setContextFileCount(fileCount);
+            config.setContextFilePaths(filePaths);
+            context.ui.setContextFileCount(fileCount);
 
             const successMessage =
               memoryContent.length > 0
@@ -128,16 +128,16 @@ export const memoryCommand: SlashCommand = {
     },
     {
       name: 'list',
-      description: 'Lists the paths of the GEMINI.md files in use',
+      description: 'Lists the paths of the CODINGLM.md files in use',
       kind: CommandKind.BUILT_IN,
       action: async (context) => {
-        const filePaths = context.services.config?.getGeminiMdFilePaths() || [];
+        const filePaths = context.services.config?.getContextFilePaths() || [];
         const fileCount = filePaths.length;
 
         const messageContent =
           fileCount > 0
-            ? `There are ${fileCount} GEMINI.md file(s) in use:\n\n${filePaths.join('\n')}`
-            : 'No GEMINI.md files in use.';
+            ? `There are ${fileCount} CODINGLM.md file(s) in use:\n\n${filePaths.join('\n')}`
+            : 'No CODINGLM.md files in use.';
 
         context.ui.addItem(
           {

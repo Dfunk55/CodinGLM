@@ -5,7 +5,7 @@
  */
 
 import { isApiError, isStructuredError } from './quotaErrorDetection.js';
-import { DEFAULT_GEMINI_FLASH_MODEL } from '../config/models.js';
+import { DEFAULT_GLM_FLASH_MODEL } from '../config/models.js';
 import type { UserTierId } from '../code_assist/types.js';
 import { AuthType } from '../core/contentGenerator.js';
 
@@ -16,7 +16,7 @@ const RATE_LIMIT_ERROR_MESSAGE_VERTEX =
 const RATE_LIMIT_ERROR_MESSAGE_Z_AI =
   '\nPlease wait and try again later. Check your Z.AI usage limits or contact support if the issue persists.';
 const getRateLimitErrorMessageDefault = (
-  fallbackModel: string = DEFAULT_GEMINI_FLASH_MODEL,
+  fallbackModel: string = DEFAULT_GLM_FLASH_MODEL,
 ) =>
   `\nPossible quota limitations in place or slow response times detected. Switching to the ${fallbackModel} model for the rest of this session.`;
 

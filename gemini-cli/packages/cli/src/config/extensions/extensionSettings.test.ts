@@ -17,7 +17,7 @@ import { ExtensionStorage } from './storage.js';
 import prompts from 'prompts';
 import * as fsPromises from 'node:fs/promises';
 import * as fs from 'node:fs';
-import { KeychainTokenStorage } from '@google/gemini-cli-core';
+import { KeychainTokenStorage } from '@codinglm/core';
 
 vi.mock('prompts');
 vi.mock('os', async (importOriginal) => {
@@ -28,9 +28,9 @@ vi.mock('os', async (importOriginal) => {
   };
 });
 
-vi.mock('@google/gemini-cli-core', async (importOriginal) => {
+vi.mock('@codinglm/core', async (importOriginal) => {
   const actual =
-    await importOriginal<typeof import('@google/gemini-cli-core')>();
+    await importOriginal<typeof import('@codinglm/core')>();
   return {
     ...actual,
     KeychainTokenStorage: vi.fn().mockImplementation(() => ({

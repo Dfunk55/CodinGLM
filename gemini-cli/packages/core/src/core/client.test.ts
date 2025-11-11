@@ -18,7 +18,7 @@ import type { Content, GenerateContentResponse, Part } from '../llm/types.js';
 import {
   isThinkingDefault,
   isThinkingSupported,
-  GeminiClient,
+  LlmClient,
 } from './client.js';
 import {
   AuthType,
@@ -29,12 +29,12 @@ import { type ChatSession } from './chatSession.js';
 import type { Config } from '../config/config.js';
 import {
   CompressionStatus,
-  GeminiEventType,
+  LlmEventType,
   Turn,
   type ChatCompressionInfo,
 } from './turn.js';
 import { getCoreSystemPrompt } from './prompts.js';
-import { DEFAULT_GEMINI_FLASH_MODEL } from '../config/models.js';
+import { DEFAULT_GLM_FLASH_MODEL } from '../config/models.js';
 import { FileDiscoveryService } from '../services/fileDiscoveryService.js';
 import { setSimulate429 } from '../utils/testUtils.js';
 import { tokenLimit } from './tokenLimits.js';
@@ -167,10 +167,10 @@ describe('isThinkingDefault', () => {
   });
 });
 
-describe('Gemini Client (client.ts)', () => {
+describe('CodinGLM Client (client.ts)', () => {
   let mockContentGenerator: ContentGenerator;
   let mockConfig: Config;
-  let client: GeminiClient;
+  let client: LlmClient;
   let mockGenerateContentFn: Mock;
   beforeEach(async () => {
     vi.resetAllMocks();
@@ -198,7 +198,7 @@ describe('Gemini Client (client.ts)', () => {
       batchEmbedContents: vi.fn(),
     } as unknown as ContentGenerator;
 
-    // Because the GeminiClient constructor kicks off an async process (startChat)
+    // Because the LlmClient constructor kicks off an async process (startChat)
     // that depends on a fully-formed Config object, we need to mock the
     // entire implementation of Config for these tests.
     const mockToolRegistry = {
@@ -238,7 +238,7 @@ describe('Gemini Client (client.ts)', () => {
       getWorkspaceContext: vi.fn().mockReturnValue({
         getDirectories: vi.fn().mockReturnValue(['/test/dir']),
       }),
-      getGeminiClient: vi.fn(),
+      getLlmClient: vi.fn(),
       getModelRouterService: vi.fn().mockReturnValue({
         route: vi.fn().mockResolvedValue({ model: 'default-routed-model' }),
       }),
@@ -262,9 +262,9 @@ describe('Gemini Client (client.ts)', () => {
       }),
     } as unknown as Config;
 
-    client = new GeminiClient(mockConfig);
+    client = new LlmClient(mockConfig);
     await client.initialize();
-    vi.mocked(mockConfig.getGeminiClient).mockReturnValue(client);
+    vi.mocked(mockConfig.getLlmClient).mockReturnValue(client);
 
     vi.mocked(uiTelemetryService.setLastPromptTokenCount).mockClear();
   });
@@ -568,7 +568,7 @@ describe('Gemini Client (client.ts)', () => {
 
       // Assert
       expect(events).toContainEqual({
-        type: GeminiEventType.ChatCompressed,
+        type: LlmEventType.ChatCompressed,
         value: compressionInfo,
       });
     });
@@ -609,7 +609,7 @@ describe('Gemini Client (client.ts)', () => {
 
         // Assert
         expect(events).not.toContainEqual({
-          type: GeminiEventType.ChatCompressed,
+          type: LlmEventType.ChatCompressed,
           value: expect.anything(),
         });
       },
@@ -1047,7 +1047,7 @@ ${JSON.stringify(
         events.push(event);
       }
 
-      expect(events).toEqual([{ type: GeminiEventType.MaxSessionTurns }]);
+      expect(events).toEqual([{ type: LlmEventType.MaxSessionTurns }]);
       expect(mockTurnRunFn).toHaveBeenCalledTimes(MAX_SESSION_TURNS);
     });
 
@@ -1165,7 +1165,7 @@ ${JSON.stringify(
 
       // Assert
       expect(events).toContainEqual({
-        type: GeminiEventType.ContextWindowWillOverflow,
+        type: LlmEventType.ContextWindowWillOverflow,
         value: {
           estimatedRequestTokenCount,
           remainingTokenCount,
@@ -1225,7 +1225,7 @@ ${JSON.stringify(
       // Assert
       // Should overflow based on the sticky model's limit
       expect(events).toContainEqual({
-        type: GeminiEventType.ContextWindowWillOverflow,
+        type: LlmEventType.ContextWindowWillOverflow,
         value: {
           estimatedRequestTokenCount,
           remainingTokenCount,
@@ -1354,7 +1354,7 @@ ${JSON.stringify(
       it('should use the fallback model and bypass routing when in fallback mode', async () => {
         vi.mocked(mockConfig.isInFallbackMode).mockReturnValue(true);
         mockRouterService.route.mockResolvedValue({
-          model: DEFAULT_GEMINI_FLASH_MODEL,
+          model: DEFAULT_GLM_FLASH_MODEL,
           reason: 'fallback',
         });
 
@@ -1366,7 +1366,7 @@ ${JSON.stringify(
         await fromAsync(stream);
 
         expect(mockTurnRunFn).toHaveBeenCalledWith(
-          DEFAULT_GEMINI_FLASH_MODEL,
+          DEFAULT_GLM_FLASH_MODEL,
           [{ text: 'Hi' }],
           expect.any(Object),
         );
@@ -1376,7 +1376,7 @@ ${JSON.stringify(
         // Start the sequence in fallback mode
         vi.mocked(mockConfig.isInFallbackMode).mockReturnValue(true);
         mockRouterService.route.mockResolvedValue({
-          model: DEFAULT_GEMINI_FLASH_MODEL,
+          model: DEFAULT_GLM_FLASH_MODEL,
           reason: 'fallback',
         });
         let stream = client.sendMessageStream(
@@ -1388,7 +1388,7 @@ ${JSON.stringify(
 
         // First call should use fallback model
         expect(mockTurnRunFn).toHaveBeenCalledWith(
-          DEFAULT_GEMINI_FLASH_MODEL,
+          DEFAULT_GLM_FLASH_MODEL,
           [{ text: 'Hi' }],
           expect.any(Object),
         );
@@ -1407,7 +1407,7 @@ ${JSON.stringify(
         // Router should still not be called, and it should stick to the fallback model
         expect(mockTurnRunFn).toHaveBeenCalledTimes(2); // Ensure it was called again
         expect(mockTurnRunFn).toHaveBeenLastCalledWith(
-          DEFAULT_GEMINI_FLASH_MODEL, // Still the fallback model
+          DEFAULT_GLM_FLASH_MODEL, // Still the fallback model
           [{ text: 'Continue' }],
           expect.any(Object),
         );
@@ -1420,10 +1420,10 @@ ${JSON.stringify(
       );
       // Arrange
       const mockStream1 = (async function* () {
-        yield { type: GeminiEventType.InvalidStream };
+        yield { type: LlmEventType.InvalidStream };
       })();
       const mockStream2 = (async function* () {
-        yield { type: GeminiEventType.Content, value: 'Continued content' };
+        yield { type: LlmEventType.Content, value: 'Continued content' };
       })();
 
       mockTurnRunFn
@@ -1447,8 +1447,8 @@ ${JSON.stringify(
 
       // Assert
       expect(events).toEqual([
-        { type: GeminiEventType.InvalidStream },
-        { type: GeminiEventType.Content, value: 'Continued content' },
+        { type: LlmEventType.InvalidStream },
+        { type: LlmEventType.Content, value: 'Continued content' },
       ]);
 
       // Verify that turn.run was called twice
@@ -1477,7 +1477,7 @@ ${JSON.stringify(
       );
       // Arrange
       const mockStream1 = (async function* () {
-        yield { type: GeminiEventType.InvalidStream };
+        yield { type: LlmEventType.InvalidStream };
       })();
 
       mockTurnRunFn.mockReturnValueOnce(mockStream1);
@@ -1498,7 +1498,7 @@ ${JSON.stringify(
       const events = await fromAsync(stream);
 
       // Assert
-      expect(events).toEqual([{ type: GeminiEventType.InvalidStream }]);
+      expect(events).toEqual([{ type: LlmEventType.InvalidStream }]);
 
       // Verify that turn.run was called only once
       expect(mockTurnRunFn).toHaveBeenCalledTimes(1);
@@ -1512,7 +1512,7 @@ ${JSON.stringify(
       // Always return a new invalid stream
       mockTurnRunFn.mockImplementation(() =>
         (async function* () {
-          yield { type: GeminiEventType.InvalidStream };
+          yield { type: LlmEventType.InvalidStream };
         })(),
       );
 
@@ -1535,7 +1535,7 @@ ${JSON.stringify(
       // We expect 2 InvalidStream events (original + 1 retry)
       expect(events.length).toBe(2);
       expect(
-        events.every((e) => e.type === GeminiEventType.InvalidStream),
+        events.every((e) => e.type === LlmEventType.InvalidStream),
       ).toBe(true);
 
       // Verify that turn.run was called twice
@@ -2157,7 +2157,7 @@ ${JSON.stringify(
 
       const mockStream = (async function* () {
         yield {
-          type: GeminiEventType.Error,
+          type: LlmEventType.Error,
           value: { error: { message: 'test error' } },
         };
       })();
@@ -2192,9 +2192,9 @@ ${JSON.stringify(
       const mockCheckNextSpeaker = vi.mocked(checkNextSpeaker);
 
       const mockStream = (async function* () {
-        yield { type: GeminiEventType.Content, value: 'some content' };
+        yield { type: LlmEventType.Content, value: 'some content' };
         yield {
-          type: GeminiEventType.Error,
+          type: LlmEventType.Error,
           value: { error: { message: 'test error' } },
         };
       })();
@@ -2257,7 +2257,7 @@ ${JSON.stringify(
       }
 
       // Assert
-      expect(events).toContainEqual({ type: GeminiEventType.LoopDetected });
+      expect(events).toContainEqual({ type: LlmEventType.LoopDetected });
       expect(capturedSignal!.aborted).toBe(true);
     });
   });
@@ -2272,12 +2272,12 @@ ${JSON.stringify(
         contents,
         generationConfig,
         abortSignal,
-        DEFAULT_GEMINI_FLASH_MODEL,
+        DEFAULT_GLM_FLASH_MODEL,
       );
 
       expect(mockContentGenerator.generateContent).toHaveBeenCalledWith(
         {
-          model: DEFAULT_GEMINI_FLASH_MODEL,
+          model: DEFAULT_GLM_FLASH_MODEL,
           config: {
             abortSignal,
             systemInstruction: getCoreSystemPrompt({} as unknown as Config, ''),
@@ -2301,7 +2301,7 @@ ${JSON.stringify(
         contents,
         {},
         new AbortController().signal,
-        DEFAULT_GEMINI_FLASH_MODEL,
+        DEFAULT_GLM_FLASH_MODEL,
       );
 
       expect(mockContentGenerator.generateContent).not.toHaveBeenCalledWith({
@@ -2311,7 +2311,7 @@ ${JSON.stringify(
       });
       expect(mockContentGenerator.generateContent).toHaveBeenCalledWith(
         {
-          model: DEFAULT_GEMINI_FLASH_MODEL,
+          model: DEFAULT_GLM_FLASH_MODEL,
           config: expect.any(Object),
           contents,
         },
@@ -2337,7 +2337,7 @@ ${JSON.stringify(
 
       expect(mockGenerateContentFn).toHaveBeenCalledWith(
         expect.objectContaining({
-          model: DEFAULT_GEMINI_FLASH_MODEL,
+          model: DEFAULT_GLM_FLASH_MODEL,
         }),
         'test-session-id',
       );

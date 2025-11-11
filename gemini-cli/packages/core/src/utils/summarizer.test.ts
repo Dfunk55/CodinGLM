@@ -6,7 +6,7 @@
 
 import type { Mock } from 'vitest';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { GeminiClient } from '../core/client.js';
+import { LlmClient } from '../core/client.js';
 import { Config } from '../config/config.js';
 import {
   summarizeToolOutput,
@@ -15,12 +15,12 @@ import {
 } from './summarizer.js';
 import type { ToolResult } from '../tools/tools.js';
 
-// Mock GeminiClient and Config constructor
+// Mock LlmClient and Config constructor
 vi.mock('../core/client.js');
 vi.mock('../config/config.js');
 
 describe('summarizers', () => {
-  let mockGeminiClient: GeminiClient;
+  let mockLlmClient: LlmClient;
   let MockConfig: Mock;
   const abortSignal = new AbortController().signal;
 
@@ -28,7 +28,7 @@ describe('summarizers', () => {
     MockConfig = vi.mocked(Config);
     const mockConfigInstance = new MockConfig(
       'test-api-key',
-      'gemini-pro',
+      'glm-4.6',
       false,
       '.',
       false,
@@ -39,8 +39,8 @@ describe('summarizers', () => {
       undefined,
     );
 
-    mockGeminiClient = new GeminiClient(mockConfigInstance);
-    (mockGeminiClient.generateContent as Mock) = vi.fn();
+    mockLlmClient = new LlmClient(mockConfigInstance);
+    (mockLlmClient.generateContent as Mock) = vi.fn();
 
     vi.spyOn(console, 'error').mockImplementation(() => {});
   });
@@ -55,68 +55,68 @@ describe('summarizers', () => {
       const shortText = 'This is a short text.';
       const result = await summarizeToolOutput(
         shortText,
-        mockGeminiClient,
+        mockLlmClient,
         abortSignal,
         2000,
       );
       expect(result).toBe(shortText);
-      expect(mockGeminiClient.generateContent).not.toHaveBeenCalled();
+      expect(mockLlmClient.generateContent).not.toHaveBeenCalled();
     });
 
     it('should return original text if it is empty', async () => {
       const emptyText = '';
       const result = await summarizeToolOutput(
         emptyText,
-        mockGeminiClient,
+        mockLlmClient,
         abortSignal,
         2000,
       );
       expect(result).toBe(emptyText);
-      expect(mockGeminiClient.generateContent).not.toHaveBeenCalled();
+      expect(mockLlmClient.generateContent).not.toHaveBeenCalled();
     });
 
     it('should call generateContent if text is longer than maxLength', async () => {
       const longText = 'This is a very long text.'.repeat(200);
       const summary = 'This is a summary.';
-      (mockGeminiClient.generateContent as Mock).mockResolvedValue({
+      (mockLlmClient.generateContent as Mock).mockResolvedValue({
         candidates: [{ content: { parts: [{ text: summary }] } }],
       });
 
       const result = await summarizeToolOutput(
         longText,
-        mockGeminiClient,
+        mockLlmClient,
         abortSignal,
         2000,
       );
 
-      expect(mockGeminiClient.generateContent).toHaveBeenCalledTimes(1);
+      expect(mockLlmClient.generateContent).toHaveBeenCalledTimes(1);
       expect(result).toBe(summary);
     });
 
     it('should return original text if generateContent throws an error', async () => {
       const longText = 'This is a very long text.'.repeat(200);
       const error = new Error('API Error');
-      (mockGeminiClient.generateContent as Mock).mockRejectedValue(error);
+      (mockLlmClient.generateContent as Mock).mockRejectedValue(error);
 
       const result = await summarizeToolOutput(
         longText,
-        mockGeminiClient,
+        mockLlmClient,
         abortSignal,
         2000,
       );
 
-      expect(mockGeminiClient.generateContent).toHaveBeenCalledTimes(1);
+      expect(mockLlmClient.generateContent).toHaveBeenCalledTimes(1);
       expect(result).toBe(longText);
     });
 
     it('should construct the correct prompt for summarization', async () => {
       const longText = 'This is a very long text.'.repeat(200);
       const summary = 'This is a summary.';
-      (mockGeminiClient.generateContent as Mock).mockResolvedValue({
+      (mockLlmClient.generateContent as Mock).mockResolvedValue({
         candidates: [{ content: { parts: [{ text: summary }] } }],
       });
 
-      await summarizeToolOutput(longText, mockGeminiClient, abortSignal, 1000);
+      await summarizeToolOutput(longText, mockLlmClient, abortSignal, 1000);
 
       const expectedPrompt = `Summarize the following tool output to be a maximum of 1000 tokens. The summary should be concise and capture the main points of the tool output.
 
@@ -131,7 +131,7 @@ Text to summarize:
 
 Return the summary string which should first contain an overall summarization of text followed by the full stack trace of errors and warnings in the tool output.
 `;
-      const calledWith = (mockGeminiClient.generateContent as Mock).mock
+      const calledWith = (mockLlmClient.generateContent as Mock).mock
         .calls[0];
       const contents = calledWith[0];
       expect(contents[0].parts[0].text).toBe(expectedPrompt);
@@ -145,17 +145,17 @@ Return the summary string which should first contain an overall summarization of
         returnDisplay: '',
       };
       const summary = 'This is a summary.';
-      (mockGeminiClient.generateContent as Mock).mockResolvedValue({
+      (mockLlmClient.generateContent as Mock).mockResolvedValue({
         candidates: [{ content: { parts: [{ text: summary }] } }],
       });
 
       const result = await llmSummarizer(
         toolResult,
-        mockGeminiClient,
+        mockLlmClient,
         abortSignal,
       );
 
-      expect(mockGeminiClient.generateContent).toHaveBeenCalledTimes(1);
+      expect(mockLlmClient.generateContent).toHaveBeenCalledTimes(1);
       expect(result).toBe(summary);
     });
 
@@ -166,18 +166,18 @@ Return the summary string which should first contain an overall summarization of
         returnDisplay: '',
       };
       const summary = 'This is a summary.';
-      (mockGeminiClient.generateContent as Mock).mockResolvedValue({
+      (mockLlmClient.generateContent as Mock).mockResolvedValue({
         candidates: [{ content: { parts: [{ text: summary }] } }],
       });
 
       const result = await llmSummarizer(
         toolResult,
-        mockGeminiClient,
+        mockLlmClient,
         abortSignal,
       );
 
-      expect(mockGeminiClient.generateContent).toHaveBeenCalledTimes(1);
-      const calledWith = (mockGeminiClient.generateContent as Mock).mock
+      expect(mockLlmClient.generateContent).toHaveBeenCalledTimes(1);
+      const calledWith = (mockLlmClient.generateContent as Mock).mock
         .calls[0];
       const contents = calledWith[0];
       expect(contents[0].parts[0].text).toContain(`"${longText}"`);
@@ -194,12 +194,12 @@ Return the summary string which should first contain an overall summarization of
 
       const result = await defaultSummarizer(
         toolResult,
-        mockGeminiClient,
+        mockLlmClient,
         abortSignal,
       );
 
       expect(result).toBe(JSON.stringify({ text: 'some data' }));
-      expect(mockGeminiClient.generateContent).not.toHaveBeenCalled();
+      expect(mockLlmClient.generateContent).not.toHaveBeenCalled();
     });
   });
 });

@@ -15,9 +15,9 @@ import {
   getDirectoryContextString,
   getInitialChatHistory,
 } from '../utils/environmentContext.js';
-import type { ServerGeminiStreamEvent, ChatCompressionInfo } from './turn.js';
+import type { ServerLlmStreamEvent, ChatCompressionInfo } from './turn.js';
 import { CompressionStatus } from './turn.js';
-import { Turn, GeminiEventType } from './turn.js';
+import { Turn, LlmEventType } from './turn.js';
 import type { Config } from '../config/config.js';
 import { getCoreSystemPrompt } from './prompts.js';
 import { checkNextSpeaker } from '../utils/nextSpeakerChecker.js';
@@ -29,9 +29,9 @@ import { tokenLimit } from './tokenLimits.js';
 import type { ChatRecordingService } from '../services/chatRecordingService.js';
 import type { ContentGenerator } from './contentGenerator.js';
 import {
-  DEFAULT_GEMINI_FLASH_MODEL,
-  DEFAULT_GEMINI_MODEL,
-  DEFAULT_GEMINI_MODEL_AUTO,
+  DEFAULT_GLM_FLASH_MODEL,
+  DEFAULT_GLM_MODEL,
+  DEFAULT_GLM_MODEL_AUTO,
   DEFAULT_THINKING_MODE,
   getEffectiveModel,
 } from '../config/models.js';
@@ -53,14 +53,14 @@ import type { RoutingContext } from '../routing/routingStrategy.js';
 import { debugLogger } from '../utils/debugLogger.js';
 
 export function isThinkingSupported(model: string) {
-  return model.startsWith('gemini-2.5') || model === DEFAULT_GEMINI_MODEL_AUTO;
+  return model.startsWith('gemini-2.5') || model === DEFAULT_GLM_MODEL_AUTO;
 }
 
 export function isThinkingDefault(model: string) {
   if (model.startsWith('gemini-2.5-flash-lite')) {
     return false;
   }
-  return model.startsWith('gemini-2.5') || model === DEFAULT_GEMINI_MODEL_AUTO;
+  return model.startsWith('gemini-2.5') || model === DEFAULT_GLM_MODEL_AUTO;
 }
 
 const MAX_TURNS = 100;
@@ -211,7 +211,7 @@ export class LlmClient {
     } catch (error) {
       await reportError(
         error,
-        'Error initializing Gemini chat session.',
+        'Error initializing CodinGLM chat session.',
         history,
         'startChat',
       );
@@ -394,8 +394,8 @@ export class LlmClient {
 
     const configModel = this.config.getModel();
     const model: string =
-      configModel === DEFAULT_GEMINI_MODEL_AUTO
-        ? DEFAULT_GEMINI_MODEL
+      configModel === DEFAULT_GLM_MODEL_AUTO
+        ? DEFAULT_GLM_MODEL
         : configModel;
     return getEffectiveModel(this.config.isInFallbackMode(), model);
   }
@@ -406,7 +406,7 @@ export class LlmClient {
     prompt_id: string,
     turns: number = MAX_TURNS,
     isInvalidStreamRetry: boolean = false,
-  ): AsyncGenerator<ServerGeminiStreamEvent, Turn> {
+  ): AsyncGenerator<ServerLlmStreamEvent, Turn> {
     if (this.lastPromptId !== prompt_id) {
       this.loopDetector.reset(prompt_id);
       this.lastPromptId = prompt_id;
@@ -417,7 +417,7 @@ export class LlmClient {
       this.config.getMaxSessionTurns() > 0 &&
       this.sessionTurnCount > this.config.getMaxSessionTurns()
     ) {
-      yield { type: GeminiEventType.MaxSessionTurns };
+      yield { type: LlmEventType.MaxSessionTurns };
       return new Turn(this.getChat(), prompt_id);
     }
     // Ensure turns never exceeds MAX_TURNS to prevent infinite loops
@@ -438,7 +438,7 @@ export class LlmClient {
 
     if (estimatedRequestTokenCount > remainingTokenCount * 0.95) {
       yield {
-        type: GeminiEventType.ContextWindowWillOverflow,
+        type: LlmEventType.ContextWindowWillOverflow,
         value: { estimatedRequestTokenCount, remainingTokenCount },
       };
       return new Turn(this.getChat(), prompt_id);
@@ -447,11 +447,11 @@ export class LlmClient {
     const compressed = await this.tryCompressChat(prompt_id, false);
 
     if (compressed.compressionStatus === CompressionStatus.COMPRESSED) {
-      yield { type: GeminiEventType.ChatCompressed, value: compressed };
+      yield { type: LlmEventType.ChatCompressed, value: compressed };
     }
 
     // Prevent context updates from being sent while a tool call is
-    // waiting for a response. The Gemini API requires that a functionResponse
+    // waiting for a response. The CodinGLM API requires that a functionResponse
     // part from the user immediately follows a functionCall part from the model
     // in the conversation history . The IDE context is not discarded; it will
     // be included in the next regular message sent to the model.
@@ -484,7 +484,7 @@ export class LlmClient {
 
     const loopDetected = await this.loopDetector.turnStarted(signal);
     if (loopDetected) {
-      yield { type: GeminiEventType.LoopDetected };
+      yield { type: LlmEventType.LoopDetected };
       return turn;
     }
 
@@ -510,7 +510,7 @@ export class LlmClient {
     const resultStream = turn.run(modelToUse, request, linkedSignal);
     for await (const event of resultStream) {
       if (this.loopDetector.addAndCheck(event)) {
-        yield { type: GeminiEventType.LoopDetected };
+        yield { type: LlmEventType.LoopDetected };
         controller.abort();
         return turn;
       }
@@ -518,7 +518,7 @@ export class LlmClient {
 
       this.updateTelemetryTokenCount();
 
-      if (event.type === GeminiEventType.InvalidStream) {
+      if (event.type === LlmEventType.InvalidStream) {
         if (this.config.getContinueOnFailedApiCall()) {
           if (isInvalidStreamRetry) {
             // We already retried once, so stop here.
@@ -543,7 +543,7 @@ export class LlmClient {
           return turn;
         }
       }
-      if (event.type === GeminiEventType.Error) {
+      if (event.type === LlmEventType.Error) {
         return turn;
       }
     }
@@ -612,7 +612,7 @@ export class LlmClient {
 
       const apiCall = () => {
         const modelToUse = this.config.isInFallbackMode()
-          ? DEFAULT_GEMINI_FLASH_MODEL
+          ? DEFAULT_GLM_FLASH_MODEL
           : model;
         currentAttemptModel = modelToUse;
 

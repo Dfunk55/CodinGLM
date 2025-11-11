@@ -8,10 +8,13 @@ import type React from 'react';
 import { useCallback, useContext, useMemo } from 'react';
 import { Box, Text } from 'ink';
 import {
-  DEFAULT_GEMINI_MODEL_AUTO,
+  DEFAULT_GLM_MODEL_AUTO,
+  DEFAULT_GLM_MODEL,
+  DEFAULT_GLM_FLASH_MODEL,
+  DEFAULT_GLM_FLASH_LITE_MODEL,
   ModelSlashCommandEvent,
   logModelSlashCommand,
-} from '@google/gemini-cli-core';
+} from '@codinglm/core';
 import { useKeypress } from '../hooks/useKeypress.js';
 import { theme } from '../semantic-colors.js';
 import { DescriptiveRadioButtonSelect } from './shared/DescriptiveRadioButtonSelect.js';
@@ -23,36 +26,32 @@ interface ModelDialogProps {
 
 // Z.AI GLM model options shown in the selector.
 // Model IDs follow Z.AI API naming (lowercase, dashed).
-const GLM_46 = 'glm-4.6';
-const GLM_45_AIR = 'glm-4.5-air';
-const GLM_4_FLASH = 'glm-4-flash';
-
 const MODEL_OPTIONS = [
   {
-    value: DEFAULT_GEMINI_MODEL_AUTO, // 'auto'
+    value: DEFAULT_GLM_MODEL_AUTO, // 'auto'
     title: 'Auto (recommended)',
     description:
       'Let CodinGLM choose between GLM‑4.6, 4.5‑Air, and 4‑Flash',
-    key: DEFAULT_GEMINI_MODEL_AUTO,
+    key: DEFAULT_GLM_MODEL_AUTO,
   },
   {
-    value: GLM_46,
+    value: DEFAULT_GLM_MODEL,
     title: 'GLM‑4.6',
     description:
       'Best for complex reasoning, debugging, and multi‑file refactors',
-    key: GLM_46,
+    key: DEFAULT_GLM_MODEL,
   },
   {
-    value: GLM_45_AIR,
+    value: DEFAULT_GLM_FLASH_LITE_MODEL,
     title: 'GLM‑4.5‑Air',
     description: 'Fast and balanced; great for everyday coding tasks',
-    key: GLM_45_AIR,
+    key: DEFAULT_GLM_FLASH_LITE_MODEL,
   },
   {
-    value: GLM_4_FLASH,
+    value: DEFAULT_GLM_FLASH_MODEL,
     title: 'GLM‑4‑Flash',
     description: 'Lowest latency for simple edits and quick queries',
-    key: GLM_4_FLASH,
+    key: DEFAULT_GLM_FLASH_MODEL,
   },
 ];
 
@@ -60,7 +59,7 @@ export function ModelDialog({ onClose }: ModelDialogProps): React.JSX.Element {
   const config = useContext(ConfigContext);
 
   // Determine the Preferred Model (read once when the dialog opens).
-  const preferredModel = config?.getModel() || DEFAULT_GEMINI_MODEL_AUTO;
+  const preferredModel = config?.getModel() || DEFAULT_GLM_MODEL_AUTO;
 
   useKeypress(
     (key) => {

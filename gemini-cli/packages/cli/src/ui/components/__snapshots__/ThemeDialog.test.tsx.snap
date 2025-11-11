@@ -29,7 +29,7 @@ exports[`ThemeDialog Snapshots > should render correctly in theme selection mode
 │    9. Ayu Light Light                        │ 1 - print("Hello, " + name)                     │ │
 │   10. Default Light Light                    │ 1 + print(f"Hello, {name}!")                    │ │
 │   11. GitHub Light Light                     │                                                 │ │
-│   12. Google Code Light                      └─────────────────────────────────────────────────┘ │
+│   12. Xcode Light                            └─────────────────────────────────────────────────┘ │
 │ ▼                                                                                                │
 │                                                                                                  │
 │ (Use Enter to select, Tab to configure scope, Esc to close)                                      │

@@ -16,7 +16,7 @@ import {
   WRITE_FILE_TOOL_NAME,
 } from '../tools/tool-names.js';
 import { LruCache } from './LruCache.js';
-import { DEFAULT_GEMINI_FLASH_LITE_MODEL } from '../config/models.js';
+import { DEFAULT_GLM_FLASH_LITE_MODEL } from '../config/models.js';
 import {
   isFunctionResponse,
   isFunctionCall,
@@ -24,7 +24,7 @@ import {
 import * as fs from 'node:fs';
 import { promptIdContext } from './promptIdContext.js';
 
-const EDIT_MODEL = DEFAULT_GEMINI_FLASH_LITE_MODEL;
+const EDIT_MODEL = DEFAULT_GLM_FLASH_LITE_MODEL;
 const EDIT_CONFIG: GenerateContentConfig = {
   thinkingConfig: {
     thinkingBudget: 0,
@@ -167,7 +167,7 @@ async function findLastEditTimestamp(
  *
  * @param currentContent The current content of the file.
  * @param originalParams The original EditToolParams
- * @param client The GeminiClient for LLM calls.
+ * @param client The LlmClient for LLM calls.
  * @returns A promise resolving to an object containing the (potentially corrected)
  *          EditToolParams (as CorrectedEditParams) and the final occurrences count.
  */
@@ -175,7 +175,7 @@ export async function ensureCorrectEdit(
   filePath: string,
   currentContent: string,
   originalParams: EditToolParams, // This is the EditToolParams from edit.ts, without \'corrected\'
-  geminiClient: LlmClient,
+  llmClient: LlmClient,
   baseLlmClient: BaseLlmClient,
   abortSignal: AbortSignal,
 ): Promise<CorrectedEditResult> {
@@ -187,7 +187,7 @@ export async function ensureCorrectEdit(
 
   let finalNewString = originalParams.new_string;
   const newStringPotentiallyEscaped =
-    unescapeStringForGeminiBug(originalParams.new_string) !==
+    unescapeStringForLegacyLlmBug(originalParams.new_string) !==
     originalParams.new_string;
 
   const expectedReplacements = originalParams.expected_replacements ?? 1;
@@ -236,7 +236,7 @@ export async function ensureCorrectEdit(
     return result;
   } else {
     // occurrences is 0 or some other unexpected state initially
-    const unescapedOldStringAttempt = unescapeStringForGeminiBug(
+    const unescapedOldStringAttempt = unescapeStringForLegacyLlmBug(
       originalParams.old_string,
     );
     occurrences = countOccurrences(currentContent, unescapedOldStringAttempt);
@@ -259,7 +259,7 @@ export async function ensureCorrectEdit(
         // our system has done
         const lastEditedByUsTime = await findLastEditTimestamp(
           filePath,
-          geminiClient,
+          llmClient,
         );
 
         // Add a 1-second buffer to account for timing inaccuracies. If the file
@@ -297,7 +297,7 @@ export async function ensureCorrectEdit(
         occurrences = llmOldOccurrences;
 
         if (newStringPotentiallyEscaped) {
-          const baseNewStringForLLMCorrection = unescapeStringForGeminiBug(
+          const baseNewStringForLLMCorrection = unescapeStringForLegacyLlmBug(
             originalParams.new_string,
           );
           finalNewString = await correctNewString(
@@ -361,7 +361,7 @@ export async function ensureCorrectFileContent(
   }
 
   const contentPotentiallyEscaped =
-    unescapeStringForGeminiBug(content) !== content;
+    unescapeStringForLegacyLlmBug(content) !== content;
   if (!contentPotentiallyEscaped) {
     fileContentCorrectionCache.set(content, content);
     return content;
@@ -711,7 +711,7 @@ function trimPairIfPossible(
 /**
  * Unescapes a string that might have been overly escaped by an LLM.
  */
-export function unescapeStringForGeminiBug(inputString: string): string {
+export function unescapeStringForLegacyLlmBug(inputString: string): string {
   // Regex explanation:
   // \\ : Matches exactly one literal backslash character.
   // (n|t|r|'|"|`|\\|\n) : This is a capturing group. It matches one of the following:

@@ -149,7 +149,7 @@ export type AllToolCallsCompleteHandler = (
 export type ToolCallsUpdateHandler = (toolCalls: ToolCall[]) => void;
 
 /**
- * Formats tool output for a Gemini FunctionResponse.
+ * Formats tool output for a CodinGLM FunctionResponse.
  */
 function createFunctionResponsePart(
   callId: string,

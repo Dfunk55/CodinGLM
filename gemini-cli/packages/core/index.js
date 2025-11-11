@@ -5,7 +5,7 @@
  */
 export * from './src/index.js';
 export { Storage } from './src/config/storage.js';
-export { DEFAULT_GEMINI_MODEL, DEFAULT_GEMINI_MODEL_AUTO, DEFAULT_GEMINI_FLASH_MODEL, DEFAULT_GEMINI_FLASH_LITE_MODEL, DEFAULT_GEMINI_EMBEDDING_MODEL, } from './src/config/models.js';
+export { DEFAULT_GLM_MODEL, DEFAULT_GLM_MODEL_AUTO, DEFAULT_GLM_FLASH_MODEL, DEFAULT_GLM_FLASH_LITE_MODEL, DEFAULT_GLM_EMBEDDING_MODEL, } from './src/config/models.js';
 export { serializeTerminalToObject, } from './src/utils/terminalSerializer.js';
 export { DEFAULT_TRUNCATE_TOOL_OUTPUT_LINES, DEFAULT_TRUNCATE_TOOL_OUTPUT_THRESHOLD, } from './src/config/config.js';
 export { detectIdeFromEnv } from './src/ide/detect-ide.js';

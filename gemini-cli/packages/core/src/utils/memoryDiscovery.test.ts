@@ -15,12 +15,12 @@ import {
   loadJitSubdirectoryMemory,
 } from './memoryDiscovery.js';
 import {
-  setGeminiMdFilename,
+  setContextFilename,
   DEFAULT_CONTEXT_FILENAME,
 } from '../tools/memoryTool.js';
 import { FileDiscoveryService } from '../services/fileDiscoveryService.js';
 import { GEMINI_DIR } from './paths.js';
-import type { GeminiCLIExtension } from '../config/config.js';
+import type { CodinGLMExtension } from '../config/config.js';
 import { SimpleExtensionLoader } from './extensionLoader.js';
 
 vi.mock('os', async (importOriginal) => {
@@ -68,7 +68,7 @@ describe('memoryDiscovery', () => {
   afterEach(async () => {
     vi.unstubAllEnvs();
     // Some tests set this to a different value.
-    setGeminiMdFilename(DEFAULT_CONTEXT_FILENAME);
+    setContextFilename(DEFAULT_CONTEXT_FILENAME);
     // Clean up the temporary directory to prevent resource leaks.
     // Use maxRetries option for robust cleanup without race conditions
     await fsPromises.rm(testRootDir, {
@@ -176,7 +176,7 @@ default context content
 
   it('should load only the global custom context file if present and filename is changed', async () => {
     const customFilename = 'CUSTOM_AGENTS.md';
-    setGeminiMdFilename(customFilename);
+    setContextFilename(customFilename);
 
     const customContextFile = await createTestFile(
       path.join(homedir, GEMINI_DIR, customFilename),
@@ -203,7 +203,7 @@ custom context content
 
   it('should load context files by upward traversal with custom filename', async () => {
     const customFilename = 'PROJECT_CONTEXT.md';
-    setGeminiMdFilename(customFilename);
+    setContextFilename(customFilename);
 
     const projectContextFile = await createTestFile(
       path.join(projectRoot, customFilename),
@@ -238,7 +238,7 @@ cwd context content
 
   it('should load context files by downward traversal with custom filename', async () => {
     const customFilename = 'LOCAL_CONTEXT.md';
-    setGeminiMdFilename(customFilename);
+    setContextFilename(customFilename);
 
     const subdirCustomFile = await createTestFile(
       path.join(cwd, 'subdir', customFilename),
@@ -272,11 +272,11 @@ Subdir custom memory
   });
 
   it('should load ORIGINAL_GEMINI_MD_FILENAME files by upward traversal from CWD to project root', async () => {
-    const projectRootGeminiFile = await createTestFile(
+    const projectRootContextFile = await createTestFile(
       path.join(projectRoot, DEFAULT_CONTEXT_FILENAME),
       'Project root memory',
     );
-    const srcGeminiFile = await createTestFile(
+    const srcContextFile = await createTestFile(
       path.join(cwd, DEFAULT_CONTEXT_FILENAME),
       'Src directory memory',
     );
@@ -291,24 +291,24 @@ Subdir custom memory
     );
 
     expect(result).toEqual({
-      memoryContent: `--- Context from: ${path.relative(cwd, projectRootGeminiFile)} ---
+      memoryContent: `--- Context from: ${path.relative(cwd, projectRootContextFile)} ---
 Project root memory
---- End of Context from: ${path.relative(cwd, projectRootGeminiFile)} ---
+--- End of Context from: ${path.relative(cwd, projectRootContextFile)} ---
 
---- Context from: ${path.relative(cwd, srcGeminiFile)} ---
+--- Context from: ${path.relative(cwd, srcContextFile)} ---
 Src directory memory
---- End of Context from: ${path.relative(cwd, srcGeminiFile)} ---`,
+--- End of Context from: ${path.relative(cwd, srcContextFile)} ---`,
       fileCount: 2,
-      filePaths: [projectRootGeminiFile, srcGeminiFile],
+      filePaths: [projectRootContextFile, srcContextFile],
     });
   });
 
   it('should load ORIGINAL_GEMINI_MD_FILENAME files by downward traversal from CWD', async () => {
-    const subDirGeminiFile = await createTestFile(
+    const subDirContextFile = await createTestFile(
       path.join(cwd, 'subdir', DEFAULT_CONTEXT_FILENAME),
       'Subdir memory',
     );
-    const cwdGeminiFile = await createTestFile(
+    const cwdContextFile = await createTestFile(
       path.join(cwd, DEFAULT_CONTEXT_FILENAME),
       'CWD memory',
     );
@@ -331,7 +331,7 @@ CWD memory
 Subdir memory
 --- End of Context from: ${path.join('subdir', DEFAULT_CONTEXT_FILENAME)} ---`,
       fileCount: 2,
-      filePaths: [cwdGeminiFile, subDirGeminiFile],
+      filePaths: [cwdContextFile, subDirContextFile],
     });
   });
 
@@ -340,19 +340,19 @@ Subdir memory
       path.join(homedir, GEMINI_DIR, DEFAULT_CONTEXT_FILENAME),
       'default context content',
     );
-    const rootGeminiFile = await createTestFile(
+    const rootContextFile = await createTestFile(
       path.join(testRootDir, DEFAULT_CONTEXT_FILENAME),
       'Project parent memory',
     );
-    const projectRootGeminiFile = await createTestFile(
+    const projectRootContextFile = await createTestFile(
       path.join(projectRoot, DEFAULT_CONTEXT_FILENAME),
       'Project root memory',
     );
-    const cwdGeminiFile = await createTestFile(
+    const cwdContextFile = await createTestFile(
       path.join(cwd, DEFAULT_CONTEXT_FILENAME),
       'CWD memory',
     );
-    const subDirGeminiFile = await createTestFile(
+    const subDirContextFile = await createTestFile(
       path.join(cwd, 'sub', DEFAULT_CONTEXT_FILENAME),
       'Subdir memory',
     );
@@ -371,28 +371,28 @@ Subdir memory
 default context content
 --- End of Context from: ${path.relative(cwd, defaultContextFile)} ---
 
---- Context from: ${path.relative(cwd, rootGeminiFile)} ---
+--- Context from: ${path.relative(cwd, rootContextFile)} ---
 Project parent memory
---- End of Context from: ${path.relative(cwd, rootGeminiFile)} ---
+--- End of Context from: ${path.relative(cwd, rootContextFile)} ---
 
---- Context from: ${path.relative(cwd, projectRootGeminiFile)} ---
+--- Context from: ${path.relative(cwd, projectRootContextFile)} ---
 Project root memory
---- End of Context from: ${path.relative(cwd, projectRootGeminiFile)} ---
+--- End of Context from: ${path.relative(cwd, projectRootContextFile)} ---
 
---- Context from: ${path.relative(cwd, cwdGeminiFile)} ---
+--- Context from: ${path.relative(cwd, cwdContextFile)} ---
 CWD memory
---- End of Context from: ${path.relative(cwd, cwdGeminiFile)} ---
+--- End of Context from: ${path.relative(cwd, cwdContextFile)} ---
 
---- Context from: ${path.relative(cwd, subDirGeminiFile)} ---
+--- Context from: ${path.relative(cwd, subDirContextFile)} ---
 Subdir memory
---- End of Context from: ${path.relative(cwd, subDirGeminiFile)} ---`,
+--- End of Context from: ${path.relative(cwd, subDirContextFile)} ---`,
       fileCount: 5,
       filePaths: [
         defaultContextFile,
-        rootGeminiFile,
-        projectRootGeminiFile,
-        cwdGeminiFile,
-        subDirGeminiFile,
+        rootContextFile,
+        projectRootContextFile,
+        cwdContextFile,
+        subDirContextFile,
       ],
     });
   });
@@ -405,7 +405,7 @@ Subdir memory
       path.join(cwd, 'node_modules', DEFAULT_CONTEXT_FILENAME),
       'Ignored memory',
     );
-    const regularSubDirGeminiFile = await createTestFile(
+    const regularSubDirContextFile = await createTestFile(
       path.join(cwd, 'my_code', DEFAULT_CONTEXT_FILENAME),
       'My code memory',
     );
@@ -420,17 +420,17 @@ Subdir memory
       'tree',
       {
         respectGitIgnore: true,
-        respectGeminiIgnore: true,
+        respectContextIgnore: true,
       },
       200, // maxDirs parameter
     );
 
     expect(result).toEqual({
-      memoryContent: `--- Context from: ${path.relative(cwd, regularSubDirGeminiFile)} ---
+      memoryContent: `--- Context from: ${path.relative(cwd, regularSubDirContextFile)} ---
 My code memory
---- End of Context from: ${path.relative(cwd, regularSubDirGeminiFile)} ---`,
+--- End of Context from: ${path.relative(cwd, regularSubDirContextFile)} ---`,
       fileCount: 1,
-      filePaths: [regularSubDirGeminiFile],
+      filePaths: [regularSubDirContextFile],
     });
   });
 
@@ -456,7 +456,7 @@ My code memory
       'tree', // importFormat
       {
         respectGitIgnore: true,
-        respectGeminiIgnore: true,
+        respectContextIgnore: true,
       },
       1, // maxDirs
     );
@@ -486,7 +486,7 @@ My code memory
 
   it('should load extension context file paths', async () => {
     const extensionFilePath = await createTestFile(
-      path.join(testRootDir, 'extensions/ext1/GEMINI.md'),
+      path.join(testRootDir, 'extensions/ext1/CODINGLM.md'),
       'Extension memory content',
     );
 
@@ -499,7 +499,7 @@ My code memory
         {
           contextFiles: [extensionFilePath],
           isActive: true,
-        } as GeminiCLIExtension,
+        } as CodinGLMExtension,
       ]),
       DEFAULT_FOLDER_TRUST,
     );
@@ -541,7 +541,7 @@ included directory memory
   });
 
   it('should handle multiple directories and files in parallel correctly', async () => {
-    // Create multiple test directories with GEMINI.md files
+    // Create multiple test directories with CODINGLM.md files
     const numDirs = 5;
     const createdFiles: string[] = [];
 
@@ -642,14 +642,14 @@ included directory memory
   describe('loadEnvironmentMemory', () => {
     it('should load extension memory', async () => {
       const extFile = await createTestFile(
-        path.join(testRootDir, 'ext', 'GEMINI.md'),
+        path.join(testRootDir, 'ext', 'CODINGLM.md'),
         'Extension content',
       );
       const mockExtensionLoader = new SimpleExtensionLoader([
         {
           isActive: true,
           contextFiles: [extFile],
-        } as GeminiCLIExtension,
+        } as CodinGLMExtension,
       ]);
 
       const result = await loadEnvironmentMemory([], mockExtensionLoader);
@@ -744,7 +744,7 @@ included directory memory
 
     it('should keep multiple memory files from the same directory adjacent and in order', async () => {
       // Configure multiple memory filenames
-      setGeminiMdFilename(['PRIMARY.md', 'SECONDARY.md']);
+      setContextFilename(['PRIMARY.md', 'SECONDARY.md']);
 
       const dir = await createEmptyDir(
         path.join(testRootDir, 'multi_file_dir'),

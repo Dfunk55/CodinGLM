@@ -6,7 +6,7 @@
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { directoryCommand, expandHomeDir } from './directoryCommand.js';
-import type { Config, WorkspaceContext } from '@google/gemini-cli-core';
+import type { Config, WorkspaceContext } from '@codinglm/core';
 import type { CommandContext } from './types.js';
 import { MessageType } from '../types.js';
 import * as os from 'node:os';
@@ -37,7 +37,7 @@ describe('directoryCommand', () => {
     mockConfig = {
       getWorkspaceContext: () => mockWorkspaceContext,
       isRestrictiveSandbox: vi.fn().mockReturnValue(false),
-      getGeminiClient: vi.fn().mockReturnValue({
+      getLlmClient: vi.fn().mockReturnValue({
         addDirectoryContext: vi.fn(),
       }),
       getWorkingDir: () => '/test/dir',
@@ -46,7 +46,7 @@ describe('directoryCommand', () => {
       getFileService: () => ({}),
       getFileFilteringOptions: () => ({ ignore: [], include: [] }),
       setUserMemory: vi.fn(),
-      setGeminiMdFileCount: vi.fn(),
+      setContextFileCount: vi.fn(),
     } as unknown as Config;
 
     mockContext = {

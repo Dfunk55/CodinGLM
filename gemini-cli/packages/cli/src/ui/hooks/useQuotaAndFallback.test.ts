@@ -110,7 +110,7 @@ describe('useQuotaAndFallback', () => {
     it('should return null and take no action if already in fallback mode', async () => {
       vi.spyOn(mockConfig, 'isInFallbackMode').mockReturnValue(true);
       const handler = getRegisteredHandler();
-      const result = await handler('gemini-pro', 'gemini-flash', new Error());
+      const result = await handler('glm-4.6', 'glm-4.6-mini', new Error());
 
       expect(result).toBeNull();
       expect(mockHistoryManager.addItem).not.toHaveBeenCalled();
@@ -123,7 +123,7 @@ describe('useQuotaAndFallback', () => {
       });
 
       const handler = getRegisteredHandler();
-      const result = await handler('gemini-pro', 'gemini-flash', new Error());
+      const result = await handler('glm-4.6', 'glm-4.6-mini', new Error());
 
       expect(result).toBeNull();
       expect(mockHistoryManager.addItem).not.toHaveBeenCalled();
@@ -231,15 +231,15 @@ describe('useQuotaAndFallback', () => {
         let promise: Promise<FallbackIntent | null>;
         await act(() => {
           promise = handler(
-            'gemini-pro',
-            'gemini-flash',
+            'glm-4.6',
+            'glm-4.6-mini',
             new TerminalQuotaError('pro quota', mockGoogleApiError),
           );
         });
 
         // The hook should now have a pending request for the UI to handle
         expect(result.current.proQuotaRequest).not.toBeNull();
-        expect(result.current.proQuotaRequest?.failedModel).toBe('gemini-pro');
+        expect(result.current.proQuotaRequest?.failedModel).toBe('glm-4.6');
 
         // Simulate the user choosing to continue with the fallback model
         await act(() => {
@@ -271,8 +271,8 @@ describe('useQuotaAndFallback', () => {
         let promise1: Promise<FallbackIntent | null>;
         await act(() => {
           promise1 = handler(
-            'gemini-pro',
-            'gemini-flash',
+            'glm-4.6',
+            'glm-4.6-mini',
             new TerminalQuotaError('pro quota 1', mockGoogleApiError),
           );
         });
@@ -283,8 +283,8 @@ describe('useQuotaAndFallback', () => {
         let result2: FallbackIntent | null;
         await act(async () => {
           result2 = await handler(
-            'gemini-pro',
-            'gemini-flash',
+            'glm-4.6',
+            'glm-4.6-mini',
             new TerminalQuotaError('pro quota 2', mockGoogleApiError),
           );
         });
@@ -340,8 +340,8 @@ describe('useQuotaAndFallback', () => {
       let promise: Promise<FallbackIntent | null>;
       await act(() => {
         promise = handler(
-          'gemini-pro',
-          'gemini-flash',
+          'glm-4.6',
+          'glm-4.6-mini',
           new TerminalQuotaError('pro quota', mockGoogleApiError),
         );
       });
@@ -373,8 +373,8 @@ describe('useQuotaAndFallback', () => {
       let promise: Promise<FallbackIntent | null>;
       await act(() => {
         promise = handler(
-          'gemini-pro',
-          'gemini-flash',
+          'glm-4.6',
+          'glm-4.6-mini',
           new TerminalQuotaError('pro quota', mockGoogleApiError),
         );
       });

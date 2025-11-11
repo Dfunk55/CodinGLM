@@ -29,7 +29,7 @@ import { Text } from 'ink';
 // Mocks
 vi.mock('@codinglm/core', async (importOriginal) => {
   const actual =
-    await importOriginal<typeof import('@google/gemini-cli-core')>();
+    await importOriginal<typeof import('@codinglm/core')>();
   return {
     ...actual,
     clearCachedCredentialFile: vi.fn(),
@@ -210,7 +210,7 @@ describe('AuthDialog', () => {
 
       expect(mockedRunExitCleanup).toHaveBeenCalled();
       expect(logSpy).toHaveBeenCalledWith(
-        expect.stringContaining('Please restart CodingGLM'),
+        expect.stringContaining('Please restart CodinGLM'),
       );
       expect(exitSpy).toHaveBeenCalledWith(0);
 

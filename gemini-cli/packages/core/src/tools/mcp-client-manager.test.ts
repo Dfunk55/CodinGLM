@@ -48,7 +48,7 @@ describe('McpClientManager', () => {
       getAllowedMcpServers: vi.fn().mockReturnValue([]),
       getBlockedMcpServers: vi.fn().mockReturnValue([]),
       getMcpServerCommand: vi.fn().mockReturnValue(''),
-      getGeminiClient: vi.fn().mockReturnValue({
+      getLlmClient: vi.fn().mockReturnValue({
         isInitialized: vi.fn(),
       }),
     } as unknown as Config);

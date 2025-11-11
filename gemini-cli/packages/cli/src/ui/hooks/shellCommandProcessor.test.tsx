@@ -19,9 +19,9 @@ import {
 
 const mockIsBinary = vi.hoisted(() => vi.fn());
 const mockShellExecutionService = vi.hoisted(() => vi.fn());
-vi.mock('@google/gemini-cli-core', async (importOriginal) => {
+vi.mock('@codinglm/core', async (importOriginal) => {
   const actual =
-    await importOriginal<typeof import('@google/gemini-cli-core')>();
+    await importOriginal<typeof import('@codinglm/core')>();
   return {
     ...actual,
     ShellExecutionService: { execute: mockShellExecutionService },
@@ -51,10 +51,10 @@ import {
 } from './shellCommandProcessor.js';
 import {
   type Config,
-  type GeminiClient,
+  type LlmClient,
   type ShellExecutionResult,
   type ShellOutputEvent,
-} from '@google/gemini-cli-core';
+} from '@codinglm/core';
 import * as fs from 'node:fs';
 import * as os from 'node:os';
 import * as path from 'node:path';
@@ -67,7 +67,7 @@ describe('useShellCommandProcessor', () => {
   let onExecMock: Mock;
   let onDebugMessageMock: Mock;
   let mockConfig: Config;
-  let mockGeminiClient: GeminiClient;
+  let mockLlmClient: LlmClient;
 
   let mockShellOutputCallback: (event: ShellOutputEvent) => void;
   let resolveExecutionPromise: (result: ShellExecutionResult) => void;
@@ -90,7 +90,7 @@ describe('useShellCommandProcessor', () => {
         terminalWidth: 80,
       }),
     } as Config;
-    mockGeminiClient = { addHistory: vi.fn() } as unknown as GeminiClient;
+    mockLlmClient = { addHistory: vi.fn() } as unknown as LlmClient;
 
     vi.mocked(os.platform).mockReturnValue('linux');
     vi.mocked(os.tmpdir).mockReturnValue('/tmp');
@@ -120,7 +120,7 @@ describe('useShellCommandProcessor', () => {
         onExecMock,
         onDebugMessageMock,
         mockConfig,
-        mockGeminiClient,
+        mockLlmClient,
         setShellInputFocusedMock,
       );
       return null;
@@ -210,7 +210,7 @@ describe('useShellCommandProcessor', () => {
         ],
       }),
     );
-    expect(mockGeminiClient.addHistory).toHaveBeenCalled();
+    expect(mockLlmClient.addHistory).toHaveBeenCalled();
     expect(setShellInputFocusedMock).toHaveBeenCalledWith(false);
   });
 

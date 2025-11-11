@@ -5,7 +5,7 @@
 
 ## Executive Summary
 
-CodinGLM is a **production-ready, feature-complete CLI tool** (95% readiness) based on Google's gemini-cli framework, customized for Zhipu AI's GLM-4.6 model. The project is well-documented, fully tested (555 test files), and actively maintained with a clean git repository.
+CodinGLM is a **production-ready, feature-complete CLI tool** (95% readiness) built on the upstream open-source gemini-cli framework, customized for Zhipu AI's GLM-4.6 model. The project is well-documented, fully tested (555 test files), and actively maintained with a clean git repository.
 
 **Status**: ✅ **PRODUCTION READY** - Ready for immediate use with Z.AI API key
 
@@ -59,7 +59,7 @@ CodinGLM/
 #### ✅ Global Command Installation
 - CLI command `codinglm` installed globally and accessible from any terminal
 - Points to `/Users/dustinpainter/Dev-Projects/CodinGLM/gemini-cli/bundle/codinglm.js` (19MB)
-- Also maintains `gemini` command for original Google gemini-cli
+- Also maintains `gemini` command for upstream gemini-cli compatibility
 
 #### ✅ Z.AI API Integration (100%)
 - **Base URL**: `https://api.z.ai/api/coding/paas/v4`
@@ -241,7 +241,7 @@ getCustomExcludes(): string[] {
 
 #### 3. OAuth Code Removed (Intentional)
 **Impact**: Low - CodinGLM uses Z.AI API keys exclusively
-**Details**: Google OAuth flows removed, replaced with simpler API key authentication
+**Details**: Legacy OAuth flows removed, replaced with simpler API key authentication
 **Reason**: Better suited for Z.AI's auth model
 
 ### B. Architectural TODOs
@@ -364,7 +364,7 @@ Found 20+ TODO comments in codebase (low priority):
 
 ### Key Dependencies (from package.json)
 ```
-"@google/genai": Latest (Google AI SDK)
+"@codinglm/genai": Shimmed GLM SDK bindings
 "react": "^19.2.0" (UI framework)
 "ink": "@jrichman/ink@6.4.0" (Terminal UI)
 "simple-git": "^3.28.0" (Git operations)
@@ -517,7 +517,7 @@ Found 20+ TODO comments in codebase (low priority):
 2. **Streaming First**: Built for real-time responses from day one
 3. **Type Safety**: Full TypeScript with strict mode
 4. **Testing Culture**: 555 test files across codebase
-5. **Google Foundation**: Based on proven gemini-cli architecture
+5. **Upstream Foundation**: Based on the proven gemini-cli architecture
 
 ---
 

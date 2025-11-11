@@ -1,12 +1,12 @@
 # Observability with OpenTelemetry
 
-Learn how to enable and setup OpenTelemetry for Gemini CLI.
+Learn how to enable and setup OpenTelemetry for CodinGLM CLI.
 
 - [Observability with OpenTelemetry](#observability-with-opentelemetry)
   - [Key Benefits](#key-benefits)
   - [OpenTelemetry Integration](#opentelemetry-integration)
   - [Configuration](#configuration)
-  - [Google Cloud Telemetry](#google-cloud-telemetry)
+  - [Remote OTLP Telemetry](#remote-otlp-telemetry)
     - [Prerequisites](#prerequisites)
     - [Direct Export (Recommended)](#direct-export-recommended)
     - [Collector-Based Export (Advanced)](#collector-based-export-advanced)
@@ -56,10 +56,10 @@ Learn how to enable and setup OpenTelemetry for Gemini CLI.
 ## OpenTelemetry Integration
 
 Built on **[OpenTelemetry]** — the vendor-neutral, industry-standard
-observability framework — Gemini CLI's observability system provides:
+observability framework — CodinGLM CLI's observability system provides:
 
-- **Universal Compatibility**: Export to any OpenTelemetry backend (Google
-  Cloud, Jaeger, Prometheus, Datadog, etc.)
+- **Universal Compatibility**: Export to any OpenTelemetry backend (Grafana,
+  Prometheus, Datadog, Elastic, etc.)
 - **Standardized Data**: Use consistent formats and collection methods across
   your toolchain
 - **Future-Proof Integration**: Connect with existing and future observability
@@ -91,71 +91,49 @@ Environment variables can be used to override the settings in the file.
 For detailed information about all configuration options, see the
 [Configuration Guide](../get-started/configuration.md).
 
-## Google Cloud Telemetry
+## Remote OTLP Telemetry
+
+CodinGLM CLI keeps the `telemetry.target` value of `gcp` for backwards
+compatibility. Setting `target` to `gcp` now simply means “ship telemetry to a
+remote OTLP endpoint.” Point it at any collector, whether that lives in Z.AI,
+Grafana, Datadog, Elastic, or your own observability stack.
 
 ### Prerequisites
 
-Before using either method below, complete these steps:
-
-1. Set your Google Cloud project ID:
-   - For telemetry in a separate project from inference:
-     ```bash
-     export OTLP_GOOGLE_CLOUD_PROJECT="your-telemetry-project-id"
-     ```
-   - For telemetry in the same project as inference:
-     ```bash
-     export GOOGLE_CLOUD_PROJECT="your-project-id"
-     ```
-
-2. Authenticate with Google Cloud:
-   - If using a user account:
-     ```bash
-     gcloud auth application-default login
-     ```
-   - If using a service account:
-     ```bash
-     export GOOGLE_APPLICATION_CREDENTIALS="/path/to/your/service-account.json"
-     ```
-3. Make sure your account or service account has these IAM roles:
-   - Cloud Trace Agent
-   - Monitoring Metric Writer
-   - Logs Writer
-
-4. Enable the required Google Cloud APIs (if not already enabled):
-   ```bash
-   gcloud services enable \
-     cloudtrace.googleapis.com \
-     monitoring.googleapis.com \
-     logging.googleapis.com \
-     --project="$OTLP_GOOGLE_CLOUD_PROJECT"
-   ```
+1. **OTLP endpoint** – URL (gRPC or HTTP) for your collector.
+2. **Credentials** – API key, mTLS certs, or IAM token required by that
+   collector. Configure them via environment variables or the collector itself.
+3. **Firewall & network access** – Make sure the machine running CodinGLM CLI
+   can reach the collector.
 
 ### Direct Export (Recommended)
 
-Sends telemetry directly to Google Cloud services. No collector needed.
+Sends telemetry from the CLI directly to your OTLP backend.
 
-1. Enable telemetry in your `.gemini/settings.json`:
+1. Enable telemetry in `.gemini/settings.json` and set the endpoint:
    ```json
    {
      "telemetry": {
        "enabled": true,
-       "target": "gcp"
+       "target": "gcp",
+       "otlpEndpoint": "https://telemetry.example.com/v1/traces",
+       "otlpProtocol": "http",
+       "logPrompts": false
      }
    }
    ```
-2. Run Gemini CLI and send prompts.
-3. View logs and metrics:
-   - Open the Google Cloud Console in your browser after sending prompts:
-     - Logs: https://console.cloud.google.com/logs/
-     - Metrics: https://console.cloud.google.com/monitoring/metrics-explorer
-     - Traces: https://console.cloud.google.com/traces/list
+2. Provide any headers or tokens required by your collector. For example:
+   ```bash
+   export OTEL_EXPORTER_OTLP_HEADERS="x-auth-token=my-secret"
+   ```
+3. Run CodinGLM CLI and send prompts. Verify that traces, logs, and metrics land
+   in your observability backend.
 
 ### Collector-Based Export (Advanced)
 
-For custom processing, filtering, or routing, use an OpenTelemetry collector to
-forward data to Google Cloud.
+If you prefer to run a local collector (for buffering, redaction, or fan-out):
 
-1. Configure your `.gemini/settings.json`:
+1. Configure telemetry to use the local collector:
    ```json
    {
      "telemetry": {
@@ -165,24 +143,13 @@ forward data to Google Cloud.
      }
    }
    ```
-2. Run the automation script:
-   ```bash
-   npm run telemetry -- --target=gcp
-   ```
-   This will:
-   - Start a local OTEL collector that forwards to Google Cloud
-   - Configure your workspace
-   - Provide links to view traces, metrics, and logs in Google Cloud Console
-   - Save collector logs to `~/.gemini/tmp/<projectHash>/otel/collector-gcp.log`
-   - Stop collector on exit (e.g. `Ctrl+C`)
-3. Run Gemini CLI and send prompts.
-4. View logs and metrics:
-   - Open the Google Cloud Console in your browser after sending prompts:
-     - Logs: https://console.cloud.google.com/logs/
-     - Metrics: https://console.cloud.google.com/monitoring/metrics-explorer
-     - Traces: https://console.cloud.google.com/traces/list
-   - Open `~/.gemini/tmp/<projectHash>/otel/collector-gcp.log` to view local
-     collector logs.
+2. Start your collector (for example, `otelcol-contrib`) with receivers on
+   `localhost:4317`/`4318` and exporters to your upstream backend. You can adapt
+   the sample configs under `scripts/`.
+3. Run CodinGLM CLI and send prompts.
+4. Inspect collector logs (default location:
+   `~/.gemini/tmp/<projectHash>/otel/collector.log`) and confirm data flows to
+   your backend.
 
 ## Local Telemetry
 
@@ -201,7 +168,7 @@ For local development and debugging, you can capture telemetry data locally:
      }
    }
    ```
-2. Run Gemini CLI and send prompts.
+2. Run CodinGLM CLI and send prompts.
 3. View logs and metrics in the specified file (e.g., `.gemini/telemetry.log`).
 
 ### Collector-Based Export (Advanced)
@@ -216,23 +183,23 @@ For local development and debugging, you can capture telemetry data locally:
    - Provide a Jaeger UI at http://localhost:16686
    - Save logs/metrics to `~/.gemini/tmp/<projectHash>/otel/collector.log`
    - Stop collector on exit (e.g. `Ctrl+C`)
-2. Run Gemini CLI and send prompts.
+2. Run CodinGLM CLI and send prompts.
 3. View traces at http://localhost:16686 and logs/metrics in the collector log
    file.
 
 ## Logs and Metrics
 
 The following section describes the structure of logs and metrics generated for
-Gemini CLI.
+CodinGLM CLI.
 
-The `session.id`, `installation.id`, and `user.email` (available only when
-authenticated with a Google account) are included as common attributes on all
+The `session.id`, `installation.id`, and `user.email` (available when the CLI is
+authenticated with a cloud account) are included as common attributes on all
 logs and metrics.
 
 ### Logs
 
 Logs are timestamped records of specific events. The following events are logged
-for Gemini CLI, grouped by category.
+for CodinGLM CLI, grouped by category.
 
 #### Sessions
 
@@ -339,15 +306,15 @@ Tracks file operations performed by tools.
 
 #### API
 
-Captures Gemini API requests, responses, and errors.
+Captures CodinGLM API requests, responses, and errors.
 
-- `gemini_cli.api_request`: Request sent to Gemini API.
+- `gemini_cli.api_request`: Request sent to CodinGLM API.
   - **Attributes**:
     - `model` (string)
     - `prompt_id` (string)
     - `request_text` (string, optional)
 
-- `gemini_cli.api_response`: Response received from Gemini API.
+- `gemini_cli.api_response`: Response received from CodinGLM API.
   - **Attributes**:
     - `model` (string)
     - `status_code` (int|string)

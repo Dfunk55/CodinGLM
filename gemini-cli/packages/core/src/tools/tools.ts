@@ -266,7 +266,7 @@ export interface ToolBuilder<
   kind: Kind;
 
   /**
-   * Function declaration schema from @google/genai.
+   * Function declaration schema from @codinglm/genai.
    */
   schema: FunctionDeclaration;
 

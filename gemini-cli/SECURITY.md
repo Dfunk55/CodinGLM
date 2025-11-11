@@ -1,9 +1,9 @@
 # Reporting Security Issues
 
-To report a security issue, please use [https://g.co/vulnz](https://g.co/vulnz).
-We use g.co/vulnz for our intake, and do coordination and disclosure here on
-GitHub (including using GitHub Security Advisory). The Google Security Team will
-respond within 5 working days of your report on g.co/vulnz.
+To report a security issue, please open a private report using the
+[GitHub Security Advisory](https://github.com/Dfunk55/CodinGLM/security/advisories/new)
+workflow. The CodinGLM maintainers will respond within 5 working days and
+coordinate disclosure directly in this repository.
 
 [GitHub Security Advisory]:
-  https://github.com/google-gemini/gemini-cli/security/advisories
+  https://github.com/Dfunk55/CodinGLM/security/advisories

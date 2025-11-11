@@ -1,7 +1,7 @@
 # CodinGLM CLI
 
 CodinGLM CLI is the terminal-native interface for the GLM-4.6 Coding Plan from
-Zhipu AI. It layers a lightweight workflow on top of the Gemini CLI runtime so
+Zhipu AI. It layers a lightweight workflow on top of the upstream open-source runtime so
 you can talk to the GLM-4.6 model with the defaults, tooling, and safeguards
 recommended in the [GLM-4.6 model card](../GLM-4.6_MODEL_CARD.md).
 
@@ -57,15 +57,15 @@ We publish tagged builds for CodinGLM. Use `npm info @codinglm/cli` to view avai
 
 - Automate operational tasks like querying pull requests or handling complex
   rebases
-- Use MCP servers to connect new capabilities, including
-  [media generation with Imagen, Veo or Lyria](https://github.com/GoogleCloudPlatform/vertex-ai-creative-studio/tree/main/experiments/mcp-genmedia)
+- Use MCP servers to connect new capabilities, including custom GLM automation
+  pipelines, internal tools, and SaaS workflows
 - Run non-interactively in scripts for workflow automation
 
 ### Advanced Capabilities
 
 - Optional web search grounding via MCP integrations
 - Conversation checkpointing to save and resume complex sessions
-- Custom context files (GEMINI.md) to tailor behavior for your projects
+- Custom context files (CODINGLM.md) to tailor behavior for your projects
 
 ### GitHub Integration
 
@@ -75,7 +75,7 @@ Integrate CodinGLM into CI/CD workflows or Actions for automated reviews and sum
   suggestions
 - **Issue Triage**: Automated labeling and prioritization of GitHub issues based
   on content analysis
-- **On-demand Assistance**: Mention `@gemini-cli` in issues and pull requests
+- **On-demand Assistance**: Mention `@codinglm` in issues and pull requests
   for help with debugging, explanations, or task delegation
 - **Custom Workflows**: Build automated, scheduled and on-demand workflows
   tailored to your team's needs
@@ -118,6 +118,25 @@ Get a simple text response:
 codinglm -p "Explain the architecture of this codebase"
 ```
 
+## ✅ Smoke Test (GLM wiring)
+
+Use the bundled smoke test to verify CodinGLM can talk to the GLM-4.6 endpoint
+before cutting a release or debugging auth issues.
+
+```bash
+npm run build --workspace @codinglm/cli
+Z_AI_API_KEY=sk-your-key npm run e2e:smoke
+```
+
+Environment variables:
+
+- `Z_AI_API_KEY` (required) – the key the CLI should use for the loopback test
+- `CODINGLM_SMOKE_MODEL` (optional) – override the default GLM model
+- `CODINGLM_SMOKE_PROMPT` (optional) – customizes the verification prompt
+
+The command exits non-zero if the CLI can’t connect or the model response
+doesn’t contain the expected sentinel (`SMOKE_OK` by default).
+
 For more advanced scripting, including how to parse JSON and handle errors, use
 the `--output-format json` flag to get structured output:
 
@@ -129,7 +148,7 @@ For real-time event streaming (useful for monitoring long-running operations),
 use `--output-format stream-json` to get newline-delimited JSON events:
 
 ```bash
-gemini -p "Run tests and deploy" --output-format stream-json
+codinglm -p "Run tests and deploy" --output-format stream-json
 ```
 
 ### Quick Examples
@@ -138,16 +157,16 @@ gemini -p "Run tests and deploy" --output-format stream-json
 
 ```bash
 cd new-project/
-gemini
+codinglm
 > Write me a Discord bot that answers questions using a FAQ.md file I will provide
 ```
 
 #### Analyze existing code
 
 ```bash
-git clone https://github.com/google-gemini/gemini-cli
-cd gemini-cli
-gemini
+git clone https://github.com/Dfunk55/CodinGLM
+cd CodinGLM
+codinglm
 > Give me a summary of all of the changes that went in yesterday
 ```
 
@@ -170,8 +189,8 @@ gemini
   (`/help`, `/chat`, etc).
 - [**Custom Commands**](./docs/cli/custom-commands.md) - Create your own
   reusable commands.
-- [**Context Files (GEMINI.md)**](./docs/cli/gemini-md.md) - Provide persistent
-  context to Gemini CLI.
+- [**Context Files (CODINGLM.md)**](./docs/cli/gemini-md.md) - Provide persistent
+  context to CodinGLM CLI.
 - [**Checkpointing**](./docs/cli/checkpointing.md) - Save and resume
   conversations.
 - [**Token Caching**](./docs/cli/token-caching.md) - Optimize token usage.
@@ -189,9 +208,9 @@ gemini
 
 ### Advanced Topics
 
-- [**Headless Mode (Scripting)**](./docs/cli/headless.md) - Use Gemini CLI in
+- [**Headless Mode (Scripting)**](./docs/cli/headless.md) - Use CodinGLM CLI in
   automated workflows.
-- [**Architecture Overview**](./docs/architecture.md) - How Gemini CLI works.
+- [**Architecture Overview**](./docs/architecture.md) - How CodinGLM CLI works.
 - [**IDE Integration**](./docs/ide-integration/index.md) - VS Code companion.
 - [**Sandboxing & Security**](./docs/cli/sandbox.md) - Safe execution
   environments.
@@ -213,7 +232,7 @@ gemini
 
 ### Using MCP Servers
 
-Configure MCP servers in `~/.gemini/settings.json` to extend Gemini CLI with
+Configure MCP servers in `~/.gemini/settings.json` to extend CodinGLM CLI with
 custom tools:
 
 ```text
@@ -227,7 +246,7 @@ instructions.
 
 ## 🤝 Contributing
 
-We welcome contributions! Gemini CLI is fully open source (Apache 2.0), and we
+We welcome contributions! CodinGLM CLI is fully open source (Apache 2.0), and we
 encourage the community to:
 
 - Report bugs and suggest features.
@@ -238,18 +257,17 @@ encourage the community to:
 See our [Contributing Guide](./CONTRIBUTING.md) for development setup, coding
 standards, and how to submit pull requests.
 
-Check our [Official Roadmap](https://github.com/orgs/google-gemini/projects/11)
-for planned features and priorities.
+Check our [Official Roadmap](./ROADMAP.md) for planned features and priorities.
 
 ## 📖 Resources
 
 - **[Official Roadmap](./ROADMAP.md)** - See what's coming next.
 - **[Changelog](./docs/changelogs/index.md)** - See recent notable updates.
-- **[NPM Package](https://www.npmjs.com/package/@google/gemini-cli)** - Package
+- **[NPM Package](https://www.npmjs.com/package/@codinglm/cli)** - Package
   registry.
-- **[GitHub Issues](https://github.com/google-gemini/gemini-cli/issues)** -
+- **[GitHub Issues](https://github.com/Dfunk55/CodinGLM/issues)** -
   Report bugs or request features.
-- **[Security Advisories](https://github.com/google-gemini/gemini-cli/security/advisories)** -
+- **[Security Advisories](https://github.com/Dfunk55/CodinGLM/security/advisories)** -
   Security updates.
 
 ### Uninstall
@@ -265,5 +283,5 @@ See the [Uninstall Guide](docs/cli/uninstall.md) for removal instructions.
 ---
 
 <p align="center">
-  Built with ❤️ by Google and the open source community
+  Built with ❤️ by the CodinGLM maintainers and the open source community
 </p>

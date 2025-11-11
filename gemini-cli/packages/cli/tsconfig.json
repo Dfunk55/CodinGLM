@@ -6,9 +6,7 @@
     "baseUrl": ".",
     "paths": {
       "@codinglm/core": ["../core/src/index.ts"],
-      "@codinglm/core/*": ["../core/src/*"],
-      "@google/gemini-cli-core": ["../core/src/index.ts"],
-      "@google/gemini-cli-core/*": ["../core/src/*"]
+      "@codinglm/core/*": ["../core/src/*"]
     },
     "jsx": "react-jsx",
     "lib": ["DOM", "DOM.Iterable", "ES2023"],

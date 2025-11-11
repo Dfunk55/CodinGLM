@@ -1,6 +1,6 @@
 # CLI Commands
 
-Gemini CLI supports several built-in commands to help you manage your session,
+CodinGLM CLI supports several built-in commands to help you manage your session,
 customize the interface, and control its behavior. These commands are prefixed
 with a forward slash (`/`), an at symbol (`@`), or an exclamation mark (`!`).
 
@@ -11,8 +11,8 @@ Slash commands provide meta-level control over the CLI itself.
 ### Built-in Commands
 
 - **`/bug`**
-  - **Description:** File an issue about Gemini CLI. By default, the issue is
-    filed within the GitHub repository for Gemini CLI. The string you enter
+  - **Description:** File an issue about CodinGLM CLI. By default, the issue is
+    filed within the GitHub repository for CodinGLM CLI. The string you enter
     after `/bug` will become the headline for the bug being filed. The default
     `/bug` behavior can be modified using the `advanced.bugCommand` setting in
     your `.gemini/settings.json` files.
@@ -64,7 +64,7 @@ Slash commands provide meta-level control over the CLI itself.
     has happened.
 
 - **`/copy`**
-  - **Description:** Copies the last output produced by Gemini CLI to your
+  - **Description:** Copies the last output produced by CodinGLM CLI to your
     clipboard, for easy sharing or reuse.
   - **Note:** This command requires platform-specific clipboard tools to be
     installed.
@@ -92,11 +92,11 @@ Slash commands provide meta-level control over the CLI itself.
   - **Description:** Open a dialog for selecting supported editors.
 
 - **`/extensions`**
-  - **Description:** Lists all active extensions in the current Gemini CLI
-    session. See [Gemini CLI Extensions](../extensions/index.md).
+  - **Description:** Lists all active extensions in the current CodinGLM CLI
+    session. See [CodinGLM CLI Extensions](../extensions/index.md).
 
 - **`/help`** (or **`/?`**)
-  - **Description:** Display help information about Gemini CLI, including
+  - **Description:** Display help information about CodinGLM CLI, including
     available commands and their usage.
 
 - **`/mcp`**
@@ -123,25 +123,25 @@ Slash commands provide meta-level control over the CLI itself.
 
 - **`/memory`**
   - **Description:** Manage the AI's instructional context (hierarchical memory
-    loaded from `GEMINI.md` files).
+    loaded from `CODINGLM.md` files).
   - **Sub-commands:**
     - **`add`**:
       - **Description:** Adds the following text to the AI's memory. Usage:
         `/memory add <text to remember>`
     - **`show`**:
       - **Description:** Display the full, concatenated content of the current
-        hierarchical memory that has been loaded from all `GEMINI.md` files.
+        hierarchical memory that has been loaded from all `CODINGLM.md` files.
         This lets you inspect the instructional context being provided to the
-        Gemini model.
+        GLM model.
     - **`refresh`**:
       - **Description:** Reload the hierarchical instructional memory from all
-        `GEMINI.md` files found in the configured locations (global,
+        `CODINGLM.md` files found in the configured locations (global,
         project/ancestors, and sub-directories). This command updates the model
-        with the latest `GEMINI.md` content.
+        with the latest `CODINGLM.md` content.
     - **`list`**:
-      - **Description:** Lists the paths of the GEMINI.md files in use for
+      - **Description:** Lists the paths of the CODINGLM.md files in use for
         hierarchical memory.
-    - **Note:** For more details on how `GEMINI.md` files contribute to
+    - **Note:** For more details on how `CODINGLM.md` files contribute to
       hierarchical memory, see the
       [CLI Configuration documentation](../get-started/configuration.md).
 
@@ -156,10 +156,10 @@ Slash commands provide meta-level control over the CLI itself.
     [Checkpointing documentation](../cli/checkpointing.md) for more details.
 
 - **`/settings`**
-  - **Description:** Open the settings editor to view and modify Gemini CLI
+  - **Description:** Open the settings editor to view and modify CodinGLM CLI
     settings.
   - **Details:** This command provides a user-friendly interface for changing
-    settings that control the behavior and appearance of Gemini CLI. It is
+    settings that control the behavior and appearance of CodinGLM CLI. It is
     equivalent to manually editing the `.gemini/settings.json` file, but with
     validation and guidance to prevent errors.
   - **Usage:** Simply run `/settings` and the editor will open. You can then
@@ -168,7 +168,7 @@ Slash commands provide meta-level control over the CLI itself.
     while others require a restart.
 
 - **`/stats`**
-  - **Description:** Display detailed statistics for the current Gemini CLI
+  - **Description:** Display detailed statistics for the current CodinGLM CLI
     session, including token usage, cached token savings (when available), and
     session duration. Note: Cached token information is only displayed when
     cached tokens are being used, which occurs with API key authentication but
@@ -176,7 +176,7 @@ Slash commands provide meta-level control over the CLI itself.
 
 - [**`/theme`**](./themes.md)
   - **Description:** Open a dialog that lets you change the visual theme of
-    Gemini CLI.
+    CodinGLM CLI.
 
 - **`/auth`**
   - **Description:** Open a dialog that lets you change the authentication
@@ -188,7 +188,7 @@ Slash commands provide meta-level control over the CLI itself.
 
 - [**`/tools`**](../tools/index.md)
   - **Description:** Display a list of tools that are currently available within
-    Gemini CLI.
+    CodinGLM CLI.
   - **Usage:** `/tools [desc]`
   - **Sub-commands:**
     - **`desc`** or **`descriptions`**:
@@ -203,7 +203,7 @@ Slash commands provide meta-level control over the CLI itself.
     purposes.
 
 - **`/quit`** (or **`/exit`**)
-  - **Description:** Exit Gemini CLI.
+  - **Description:** Exit CodinGLM CLI.
 
 - **`/vim`**
   - **Description:** Toggle vim mode on or off. When vim mode is enabled, the
@@ -224,10 +224,10 @@ Slash commands provide meta-level control over the CLI itself.
     footer
 
 - **`/init`**
-  - **Description:** To help users easily create a `GEMINI.md` file, this
+  - **Description:** To help users easily create a `CODINGLM.md` file, this
     command analyzes the current directory and generates a tailored context
     file, making it simpler for them to provide project-specific instructions to
-    the Gemini agent.
+    the CodinGLM agent.
 
 ### Custom Commands
 
@@ -250,7 +250,7 @@ These shortcuts apply directly to the input prompt for text manipulation.
 ## At commands (`@`)
 
 At commands are used to include the content of files or directories as part of
-your prompt to Gemini. These commands include git-aware filtering.
+your prompt to CodinGLM. These commands include git-aware filtering.
 
 - **`@<path_to_file_or_directory>`**
   - **Description:** Inject the content of the specified file or files into your
@@ -267,7 +267,7 @@ your prompt to Gemini. These commands include git-aware filtering.
     - Spaces in paths should be escaped with a backslash (e.g.,
       `@My\ Documents/file.txt`).
     - The command uses the `read_many_files` tool internally. The content is
-      fetched and then inserted into your query before being sent to the Gemini
+      fetched and then inserted into your query before being sent to the CodinGLM
       model.
     - **Git-aware filtering:** By default, git-ignored files (like
       `node_modules/`, `dist/`, `.env`, `.git/`) are excluded. This behavior can
@@ -282,13 +282,13 @@ your prompt to Gemini. These commands include git-aware filtering.
 
 - **`@` (Lone at symbol)**
   - **Description:** If you type a lone `@` symbol without a path, the query is
-    passed as-is to the Gemini model. This might be useful if you are
+    passed as-is to the GLM model. This might be useful if you are
     specifically talking _about_ the `@` symbol in your prompt.
 
 ### Error handling for `@` commands
 
 - If the path specified after `@` is not found or is invalid, an error message
-  will be displayed, and the query might not be sent to the Gemini model, or it
+  will be displayed, and the query might not be sent to the GLM model, or it
   will be sent without the file content.
 - If the `read_many_files` tool encounters an error (e.g., permission issues),
   this will also be reported.
@@ -296,7 +296,7 @@ your prompt to Gemini. These commands include git-aware filtering.
 ## Shell mode & passthrough commands (`!`)
 
 The `!` prefix lets you interact with your system's shell directly from within
-Gemini CLI.
+CodinGLM CLI.
 
 - **`!<shell_command>`**
   - **Description:** Execute the given `<shell_command>` using `bash` on
@@ -304,8 +304,8 @@ Gemini CLI.
     override `ComSpec`). Any output or errors from the command are displayed in
     the terminal.
   - **Examples:**
-    - `!ls -la` (executes `ls -la` and returns to Gemini CLI)
-    - `!git status` (executes `git status` and returns to Gemini CLI)
+    - `!ls -la` (executes `ls -la` and returns to CodinGLM CLI)
+    - `!git status` (executes `git status` and returns to CodinGLM CLI)
 
 - **`!` (Toggle shell mode)**
   - **Description:** Typing `!` on its own toggles shell mode.
@@ -315,7 +315,7 @@ Gemini CLI.
       - While in shell mode, text you type is interpreted directly as a shell
         command.
     - **Exiting shell mode:**
-      - When exited, the UI reverts to its standard appearance and normal Gemini
+      - When exited, the UI reverts to its standard appearance and normal CodinGLM
         CLI behavior resumes.
 
 - **Caution for all `!` usage:** Commands you execute in shell mode have the
@@ -324,4 +324,4 @@ Gemini CLI.
 - **Environment Variable:** When a command is executed via `!` or in shell mode,
   the `GEMINI_CLI=1` environment variable is set in the subprocess's
   environment. This allows scripts or tools to detect if they are being run from
-  within the Gemini CLI.
+  within the CodinGLM CLI.

@@ -7,14 +7,14 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { Content } from '../llm/types.js';
 import type { Config } from '../config/config.js';
-import type { GeminiClient } from '../core/client.js';
+import type { LlmClient } from '../core/client.js';
 import type { BaseLlmClient } from '../core/baseLlmClient.js';
 import type {
-  ServerGeminiContentEvent,
-  ServerGeminiStreamEvent,
-  ServerGeminiToolCallRequestEvent,
+  ServerLlmContentEvent,
+  ServerLlmStreamEvent,
+  ServerLlmToolCallRequestEvent,
 } from '../core/turn.js';
-import { GeminiEventType } from '../core/turn.js';
+import { LlmEventType } from '../core/turn.js';
 import * as loggers from '../telemetry/loggers.js';
 import { LoopType } from '../telemetry/types.js';
 import { LoopDetectionService } from './loopDetectionService.js';
@@ -43,8 +43,8 @@ describe('LoopDetectionService', () => {
   const createToolCallRequestEvent = (
     name: string,
     args: Record<string, unknown>,
-  ): ServerGeminiToolCallRequestEvent => ({
-    type: GeminiEventType.ToolCallRequest,
+  ): ServerLlmToolCallRequestEvent => ({
+    type: LlmEventType.ToolCallRequest,
     value: {
       name,
       args,
@@ -54,8 +54,8 @@ describe('LoopDetectionService', () => {
     },
   });
 
-  const createContentEvent = (content: string): ServerGeminiContentEvent => ({
-    type: GeminiEventType.Content,
+  const createContentEvent = (content: string): ServerLlmContentEvent => ({
+    type: LlmEventType.Content,
     value: content,
   });
 
@@ -119,7 +119,7 @@ describe('LoopDetectionService', () => {
       });
       const otherEvent = {
         type: 'thought',
-      } as unknown as ServerGeminiStreamEvent;
+      } as unknown as ServerLlmStreamEvent;
 
       // Send events just below the threshold
       for (let i = 0; i < TOOL_CALL_LOOP_THRESHOLD - 1; i++) {
@@ -707,7 +707,7 @@ describe('LoopDetectionService', () => {
     it('should return false for unhandled event types', () => {
       const otherEvent = {
         type: 'unhandled_event',
-      } as unknown as ServerGeminiStreamEvent;
+      } as unknown as ServerLlmStreamEvent;
       expect(service.addAndCheck(otherEvent)).toBe(false);
       expect(service.addAndCheck(otherEvent)).toBe(false);
     });
@@ -717,21 +717,21 @@ describe('LoopDetectionService', () => {
 describe('LoopDetectionService LLM Checks', () => {
   let service: LoopDetectionService;
   let mockConfig: Config;
-  let mockGeminiClient: GeminiClient;
+  let mockLlmClient: LlmClient;
   let mockBaseLlmClient: BaseLlmClient;
   let abortController: AbortController;
 
   beforeEach(() => {
-    mockGeminiClient = {
+    mockLlmClient = {
       getHistory: vi.fn().mockReturnValue([]),
-    } as unknown as GeminiClient;
+    } as unknown as LlmClient;
 
     mockBaseLlmClient = {
       generateJson: vi.fn(),
     } as unknown as BaseLlmClient;
 
     mockConfig = {
-      getGeminiClient: () => mockGeminiClient,
+      getLlmClient: () => mockLlmClient,
       getBaseLlmClient: () => mockBaseLlmClient,
       getDebugMode: () => false,
       getTelemetryEnabled: () => true,
@@ -859,7 +859,7 @@ describe('LoopDetectionService LLM Checks', () => {
         parts: [{ text: 'Some follow up text' }],
       },
     ];
-    vi.mocked(mockGeminiClient.getHistory).mockReturnValue(functionCallHistory);
+    vi.mocked(mockLlmClient.getHistory).mockReturnValue(functionCallHistory);
 
     mockBaseLlmClient.generateJson = vi
       .fn()

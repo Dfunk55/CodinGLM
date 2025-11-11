@@ -1,6 +1,6 @@
 # Shell Tool (`run_shell_command`)
 
-This document describes the `run_shell_command` tool for the Gemini CLI.
+This document describes the `run_shell_command` tool for the CodinGLM CLI.
 
 ## Description
 
@@ -25,7 +25,7 @@ they are executed with `bash -c`.
   in which to execute the command. If not provided, the command runs in the
   project root.
 
-## How to use `run_shell_command` with the Gemini CLI
+## How to use `run_shell_command` with the CodinGLM CLI
 
 When using `run_shell_command`, the command is executed as a subprocess.
 `run_shell_command` can start background processes using `&`. The tool returns
@@ -69,7 +69,7 @@ run_shell_command(command="npm run dev &", description="Start development server
 ## Configuration
 
 You can configure the behavior of the `run_shell_command` tool by modifying your
-`settings.json` file or by using the `/settings` command in the Gemini CLI.
+`settings.json` file or by using the `/settings` command in the CodinGLM CLI.
 
 ### Enabling Interactive Commands
 
@@ -134,7 +134,7 @@ pseudo-terminal (pty). This allows you to run commands that require real-time
 user input, such as text editors (`vim`, `nano`), terminal-based UIs (`htop`),
 and interactive version control operations (`git rebase -i`).
 
-When an interactive command is running, you can send input to it from the Gemini
+When an interactive command is running, you can send input to it from the CodinGLM
 CLI. To focus on the interactive shell, press `ctrl+f`. The terminal output,
 including complex TUIs, will be rendered correctly.
 
@@ -153,7 +153,7 @@ including complex TUIs, will be rendered correctly.
 
 When `run_shell_command` executes a command, it sets the `GEMINI_CLI=1`
 environment variable in the subprocess's environment. This allows scripts or
-tools to detect if they are being run from within the Gemini CLI.
+tools to detect if they are being run from within the CodinGLM CLI.
 
 ## Command Restrictions
 

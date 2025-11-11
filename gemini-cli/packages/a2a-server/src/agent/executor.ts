@@ -14,10 +14,10 @@ import type {
 } from '@a2a-js/sdk/server';
 import type {
   ToolCallRequestInfo,
-  ServerGeminiToolCallRequestEvent,
+  ServerLlmToolCallRequestEvent,
   Config,
 } from '@codinglm/core';
-import { GeminiEventType, SimpleExtensionLoader } from '@codinglm/core';
+import { LlmEventType, SimpleExtensionLoader } from '@codinglm/core';
 import { v4 as uuidv4 } from 'uuid';
 
 import { logger } from '../utils/logger.js';
@@ -130,7 +130,7 @@ export class CoderAgentExecutor implements AgentExecutor {
       eventBus,
     );
     runtimeTask.taskState = persistedState._taskState;
-    await runtimeTask.geminiClient.initialize();
+    await runtimeTask.llmClient.initialize();
 
     const wrapper = new TaskWrapper(runtimeTask, agentSettings);
     this.tasks.set(sdkTask.id, wrapper);
@@ -147,7 +147,7 @@ export class CoderAgentExecutor implements AgentExecutor {
     const agentSettings = agentSettingsInput || ({} as AgentSettings);
     const config = await this.getConfig(agentSettings, taskId);
     const runtimeTask = await Task.create(taskId, contextId, config, eventBus);
-    await runtimeTask.geminiClient.initialize();
+    await runtimeTask.llmClient.initialize();
 
     const wrapper = new TaskWrapper(runtimeTask, agentSettings);
     this.tasks.set(taskId, wrapper);
@@ -477,9 +477,9 @@ export class CoderAgentExecutor implements AgentExecutor {
             );
             throw new Error('Execution aborted');
           }
-          if (event.type === GeminiEventType.ToolCallRequest) {
+          if (event.type === LlmEventType.ToolCallRequest) {
             toolCallRequests.push(
-              (event as ServerGeminiToolCallRequestEvent).value,
+              (event as ServerLlmToolCallRequestEvent).value,
             );
             continue;
           }

@@ -15,7 +15,7 @@ import type {
   SlashCommandActionReturn,
 } from './types.js';
 import { CommandKind } from './types.js';
-import { decodeTagName } from '@google/gemini-cli-core';
+import { decodeTagName } from '@codinglm/core';
 import path from 'node:path';
 import type {
   HistoryItemWithoutId,
@@ -174,7 +174,7 @@ const resumeCommand: SlashCommand = {
 
     const rolemap: { [key: string]: MessageType } = {
       user: MessageType.USER,
-      model: MessageType.GEMINI,
+      model: MessageType.MODEL_RESPONSE,
     };
 
     const uiHistory: HistoryItemWithoutId[] = [];
@@ -196,7 +196,7 @@ const resumeCommand: SlashCommand = {
       }
       if (i > 2 || !hasSystemPrompt) {
         uiHistory.push({
-          type: (item.role && rolemap[item.role]) || MessageType.GEMINI,
+          type: (item.role && rolemap[item.role]) || MessageType.MODEL_RESPONSE,
           text,
         } as HistoryItemWithoutId);
       }

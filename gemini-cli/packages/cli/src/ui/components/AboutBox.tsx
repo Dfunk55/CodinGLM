@@ -36,7 +36,7 @@ export const AboutBox: React.FC<AboutBoxProps> = ({
   >
     <Box marginBottom={1}>
       <Text bold color={theme.text.accent}>
-        About CodingGLM
+        About CodinGLM
       </Text>
     </Box>
     <Box flexDirection="row">

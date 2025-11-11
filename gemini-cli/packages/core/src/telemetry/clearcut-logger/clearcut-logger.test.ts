@@ -622,7 +622,7 @@ describe('ClearcutLogger', () => {
     it('logs a successful routing event', () => {
       const { logger } = setup();
       const event = new ModelRoutingEvent(
-        'gemini-pro',
+        'glm-4.6',
         'default-strategy',
         123,
         'some reasoning',
@@ -637,7 +637,7 @@ describe('ClearcutLogger', () => {
       expect(events[0]).toHaveEventName(EventNames.MODEL_ROUTING);
       expect(events[0]).toHaveMetadataValue([
         EventMetadataKey.GEMINI_CLI_ROUTING_DECISION,
-        'gemini-pro',
+        'glm-4.6',
       ]);
       expect(events[0]).toHaveMetadataValue([
         EventMetadataKey.GEMINI_CLI_ROUTING_DECISION_SOURCE,
@@ -656,7 +656,7 @@ describe('ClearcutLogger', () => {
     it('logs a failed routing event with a reason', () => {
       const { logger } = setup();
       const event = new ModelRoutingEvent(
-        'gemini-pro',
+        'glm-4.6',
         'router-exception',
         234,
         'some reasoning',
@@ -671,7 +671,7 @@ describe('ClearcutLogger', () => {
       expect(events[0]).toHaveEventName(EventNames.MODEL_ROUTING);
       expect(events[0]).toHaveMetadataValue([
         EventMetadataKey.GEMINI_CLI_ROUTING_DECISION,
-        'gemini-pro',
+        'glm-4.6',
       ]);
       expect(events[0]).toHaveMetadataValue([
         EventMetadataKey.GEMINI_CLI_ROUTING_DECISION_SOURCE,

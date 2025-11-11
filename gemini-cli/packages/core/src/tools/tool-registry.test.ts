@@ -13,8 +13,8 @@ import { ApprovalMode } from '../policy/types.js';
 
 import { ToolRegistry, DiscoveredTool } from './tool-registry.js';
 import { DiscoveredMCPTool } from './mcp-tool.js';
-import type { FunctionDeclaration, CallableTool } from '@google/genai';
-import { mcpToTool } from '@google/genai';
+import type { FunctionDeclaration, CallableTool } from '@codinglm/genai';
+import { mcpToTool } from '@codinglm/genai';
 import { spawn } from 'node:child_process';
 
 import fs from 'node:fs';
@@ -66,10 +66,10 @@ vi.mock('@modelcontextprotocol/sdk/client/sse.js', () => {
   return { SSEClientTransport: MockSSEClientTransport };
 });
 
-// Mock @google/genai mcpToTool
-vi.mock('@google/genai', async () => {
+// Mock @codinglm/genai mcpToTool
+vi.mock('@codinglm/genai', async () => {
   const actualGenai =
-    await vi.importActual<typeof import('@google/genai')>('@google/genai');
+    await vi.importActual<typeof import('@codinglm/genai')>('@codinglm/genai');
   return {
     ...actualGenai,
     mcpToTool: vi.fn().mockImplementation(() => ({
@@ -95,7 +95,7 @@ const baseConfigParams: ConfigParameters = {
   targetDir: '/test/dir',
   debugMode: false,
   userMemory: '',
-  geminiMdFileCount: 0,
+  contextFileCount: 0,
   approvalMode: ApprovalMode.DEFAULT,
   sessionId: 'test-session-id',
 };

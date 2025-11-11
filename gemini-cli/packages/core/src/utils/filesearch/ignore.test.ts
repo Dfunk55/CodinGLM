@@ -6,7 +6,7 @@
 
 import { describe, it, expect, afterEach } from 'vitest';
 import { Ignore, loadIgnoreRules } from './ignore.js';
-import { createTmpDir, cleanupTmpDir } from '@google/gemini-cli-test-utils';
+import { createTmpDir, cleanupTmpDir } from '@codinglm/test-utils';
 
 describe('Ignore', () => {
   describe('getDirectoryFilter', () => {
@@ -81,7 +81,7 @@ describe('loadIgnoreRules', () => {
     const ignore = loadIgnoreRules({
       projectRoot: tmpDir,
       useGitignore: true,
-      useGeminiignore: false,
+      usecontextIgnore: false,
       ignoreDirs: [],
     });
     const fileFilter = ignore.getFileFilter();
@@ -96,7 +96,7 @@ describe('loadIgnoreRules', () => {
     const ignore = loadIgnoreRules({
       projectRoot: tmpDir,
       useGitignore: false,
-      useGeminiignore: true,
+      usecontextIgnore: true,
       ignoreDirs: [],
     });
     const fileFilter = ignore.getFileFilter();
@@ -112,7 +112,7 @@ describe('loadIgnoreRules', () => {
     const ignore = loadIgnoreRules({
       projectRoot: tmpDir,
       useGitignore: true,
-      useGeminiignore: true,
+      usecontextIgnore: true,
       ignoreDirs: [],
     });
     const fileFilter = ignore.getFileFilter();
@@ -126,7 +126,7 @@ describe('loadIgnoreRules', () => {
     const ignore = loadIgnoreRules({
       projectRoot: tmpDir,
       useGitignore: false,
-      useGeminiignore: false,
+      usecontextIgnore: false,
       ignoreDirs: ['logs/'],
     });
     const dirFilter = ignore.getDirectoryFilter();
@@ -139,7 +139,7 @@ describe('loadIgnoreRules', () => {
     const ignore = loadIgnoreRules({
       projectRoot: tmpDir,
       useGitignore: true,
-      useGeminiignore: true,
+      usecontextIgnore: true,
       ignoreDirs: [],
     });
     const fileFilter = ignore.getFileFilter();
@@ -151,7 +151,7 @@ describe('loadIgnoreRules', () => {
     const ignore = loadIgnoreRules({
       projectRoot: tmpDir,
       useGitignore: false,
-      useGeminiignore: false,
+      usecontextIgnore: false,
       ignoreDirs: [],
     });
     const dirFilter = ignore.getDirectoryFilter();

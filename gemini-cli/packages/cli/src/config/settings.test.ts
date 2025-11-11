@@ -66,7 +66,7 @@ import {
   saveSettings,
   type SettingsFile,
 } from './settings.js';
-import { FatalConfigError, GEMINI_DIR } from '@google/gemini-cli-core';
+import { FatalConfigError, GEMINI_DIR } from '@codinglm/core';
 import { ExtensionManager } from './extension-manager.js';
 import { updateSettingsFilePreservingFormat } from '../utils/commentJson.js';
 
@@ -102,9 +102,9 @@ const mockCoreEvents = vi.hoisted(() => ({
   emitFeedback: vi.fn(),
 }));
 
-vi.mock('@google/gemini-cli-core', async (importOriginal) => {
+vi.mock('@codinglm/core', async (importOriginal) => {
   const actual =
-    await importOriginal<typeof import('@google/gemini-cli-core')>();
+    await importOriginal<typeof import('@codinglm/core')>();
   return {
     ...actual,
     coreEvents: mockCoreEvents,
@@ -345,7 +345,7 @@ describe('Settings Loading and Merging', () => {
         theme: 'legacy-dark',
         vimMode: true,
         contextFileName: 'LEGACY_CONTEXT.md',
-        model: 'gemini-pro',
+        model: 'glm-4.6',
         mcpServers: {
           'legacy-server-1': {
             command: 'npm',
@@ -383,7 +383,7 @@ describe('Settings Loading and Merging', () => {
           fileName: 'LEGACY_CONTEXT.md',
         },
         model: {
-          name: 'gemini-pro',
+          name: 'glm-4.6',
         },
         mcpServers: {
           'legacy-server-1': {
@@ -1992,7 +1992,7 @@ describe('Settings Loading and Merging', () => {
           },
         },
         model: {
-          name: 'gemini-pro',
+          name: 'glm-4.6',
         },
         mcpServers: {
           'server-1': {
@@ -2010,7 +2010,7 @@ describe('Settings Loading and Merging', () => {
         customThemes: {
           myTheme: {},
         },
-        model: 'gemini-pro',
+        model: 'glm-4.6',
         mcpServers: {
           'server-1': {
             command: 'node server.js',
@@ -2049,7 +2049,7 @@ describe('Settings Loading and Merging', () => {
           usageStatisticsEnabled: false,
         },
         model: {
-          name: 'gemini-pro',
+          name: 'glm-4.6',
         },
         context: {
           fileName: 'CONTEXT.md',
@@ -2088,7 +2088,7 @@ describe('Settings Loading and Merging', () => {
         vimMode: true,
         theme: 'dark',
         usageStatisticsEnabled: false,
-        model: 'gemini-pro',
+        model: 'glm-4.6',
         contextFileName: 'CONTEXT.md',
         includeDirectories: ['/src'],
         sandbox: true,

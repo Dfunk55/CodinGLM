@@ -132,7 +132,7 @@ export function getSystemSettingsPath(): string {
     return process.env['GEMINI_CLI_SYSTEM_SETTINGS_PATH'];
   }
   if (platform() === 'darwin') {
-    return '/Library/Application Support/GeminiCli/settings.json';
+    return '/Library/Application Support/CodinGLMCli/settings.json';
   } else if (platform() === 'win32') {
     return 'C:\\ProgramData\\gemini-cli\\settings.json';
   } else {
@@ -475,9 +475,9 @@ function findEnvFile(startDir: string): string | null {
     const parentDir = path.dirname(currentDir);
     if (parentDir === currentDir || !parentDir) {
       // check .env under home as fallback, again preferring gemini-specific .env
-      const homeGeminiEnvPath = path.join(homedir(), GEMINI_DIR, '.env');
-      if (fs.existsSync(homeGeminiEnvPath)) {
-        return homeGeminiEnvPath;
+      const homeAgentEnvPath = path.join(homedir(), GEMINI_DIR, '.env');
+      if (fs.existsSync(homeAgentEnvPath)) {
+        return homeAgentEnvPath;
       }
       const homeEnvPath = path.join(homedir(), '.env');
       if (fs.existsSync(homeEnvPath)) {

@@ -5,14 +5,14 @@
  */
 
 // In CodinGLM, all defaults point to Z.AI GLM models.
-export const DEFAULT_GEMINI_MODEL = 'glm-4.6';
-export const DEFAULT_GEMINI_FLASH_MODEL = 'glm-4-flash';
-export const DEFAULT_GEMINI_FLASH_LITE_MODEL = 'glm-4.5-air';
+export const DEFAULT_GLM_MODEL = 'glm-4.6';
+export const DEFAULT_GLM_FLASH_MODEL = 'glm-4-flash';
+export const DEFAULT_GLM_FLASH_LITE_MODEL = 'glm-4.5-air';
 
-export const DEFAULT_GEMINI_MODEL_AUTO = 'auto';
+export const DEFAULT_GLM_MODEL_AUTO = 'auto';
 
 // Placeholder; embeddings not supported via ZaiContentGenerator.
-export const DEFAULT_GEMINI_EMBEDDING_MODEL = 'glm-embedding-001';
+export const DEFAULT_GLM_EMBEDDING_MODEL = 'glm-embedding-001';
 
 // Cap the thinking at 8192 to prevent run-away thinking loops.
 export const DEFAULT_THINKING_MODE = 8192;
@@ -49,5 +49,5 @@ export function getEffectiveModel(
   }
 
   // Default fallback for CodinGLM is GLM-4-Flash.
-  return DEFAULT_GEMINI_FLASH_MODEL;
+  return DEFAULT_GLM_FLASH_MODEL;
 }

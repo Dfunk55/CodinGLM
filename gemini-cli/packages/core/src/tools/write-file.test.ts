@@ -25,7 +25,7 @@ import type { ToolRegistry } from './tool-registry.js';
 import path from 'node:path';
 import fs from 'node:fs';
 import os from 'node:os';
-import { GeminiClient } from '../core/client.js';
+import { LlmClient } from '../core/client.js';
 import type { BaseLlmClient } from '../core/baseLlmClient.js';
 import type { CorrectedEditResult } from '../utils/editCorrector.js';
 import {
@@ -47,7 +47,7 @@ vi.mock('../ide/ide-client.js', () => ({
     getInstance: vi.fn(),
   },
 }));
-let mockGeminiClientInstance: Mocked<GeminiClient>;
+let mockLlmClientInstance: Mocked<LlmClient>;
 let mockBaseLlmClientInstance: Mocked<BaseLlmClient>;
 const mockEnsureCorrectEdit = vi.fn<typeof ensureCorrectEdit>();
 const mockEnsureCorrectFileContent = vi.fn<typeof ensureCorrectFileContent>();
@@ -71,7 +71,7 @@ const mockConfigInternal = {
   getTargetDir: () => rootDir,
   getApprovalMode: vi.fn(() => ApprovalMode.DEFAULT),
   setApprovalMode: vi.fn(),
-  getGeminiClient: vi.fn(), // Initialize as a plain mock function
+  getLlmClient: vi.fn(), // Initialize as a plain mock function
   getBaseLlmClient: vi.fn(), // Initialize as a plain mock function
   getFileSystemService: () => fsService,
   getIdeMode: vi.fn(() => false),
@@ -89,8 +89,8 @@ const mockConfigInternal = {
   getUserAgent: () => 'test-agent',
   getUserMemory: () => '',
   setUserMemory: vi.fn(),
-  getGeminiMdFileCount: () => 0,
-  setGeminiMdFileCount: vi.fn(),
+  getContextFileCount: () => 0,
+  setContextFileCount: vi.fn(),
   getToolRegistry: () =>
     ({
       registerTool: vi.fn(),
@@ -120,11 +120,11 @@ describe('WriteFileTool', () => {
       fs.mkdirSync(rootDir, { recursive: true });
     }
 
-    // Setup GeminiClient mock
-    mockGeminiClientInstance = new (vi.mocked(GeminiClient))(
+    // Setup LlmClient mock
+    mockLlmClientInstance = new (vi.mocked(LlmClient))(
       mockConfig,
-    ) as Mocked<GeminiClient>;
-    vi.mocked(GeminiClient).mockImplementation(() => mockGeminiClientInstance);
+    ) as Mocked<LlmClient>;
+    vi.mocked(LlmClient).mockImplementation(() => mockLlmClientInstance);
 
     // Setup BaseLlmClient mock
     mockBaseLlmClientInstance = {
@@ -137,8 +137,8 @@ describe('WriteFileTool', () => {
     );
 
     // Now that mock instances are initialized, set the mock implementations for config getters
-    mockConfigInternal.getGeminiClient.mockReturnValue(
-      mockGeminiClientInstance,
+    mockConfigInternal.getLlmClient.mockReturnValue(
+      mockLlmClientInstance,
     );
     mockConfigInternal.getBaseLlmClient.mockReturnValue(
       mockBaseLlmClientInstance,
@@ -158,7 +158,7 @@ describe('WriteFileTool', () => {
         filePath: string,
         _currentContent: string,
         params: EditToolParams,
-        _client: GeminiClient,
+        _client: LlmClient,
         _baseClient: BaseLlmClient,
         signal?: AbortSignal,
       ): Promise<CorrectedEditResult> => {
@@ -317,7 +317,7 @@ describe('WriteFileTool', () => {
           new_string: proposedContent,
           file_path: filePath,
         },
-        mockGeminiClientInstance,
+        mockLlmClientInstance,
         mockBaseLlmClientInstance,
         abortSignal,
       );
@@ -444,7 +444,7 @@ describe('WriteFileTool', () => {
           new_string: proposedContent,
           file_path: filePath,
         },
-        mockGeminiClientInstance,
+        mockLlmClientInstance,
         mockBaseLlmClientInstance,
         abortSignal,
       );
@@ -675,7 +675,7 @@ describe('WriteFileTool', () => {
           new_string: proposedContent,
           file_path: filePath,
         },
-        mockGeminiClientInstance,
+        mockLlmClientInstance,
         mockBaseLlmClientInstance,
         abortSignal,
       );

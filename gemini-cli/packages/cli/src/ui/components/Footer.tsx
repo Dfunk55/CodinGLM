@@ -7,7 +7,7 @@
 import type React from 'react';
 import { Box, Text } from 'ink';
 import { theme } from '../semantic-colors.js';
-import { shortenPath, tildeifyPath } from '@google/gemini-cli-core';
+import { shortenPath, tildeifyPath } from '@codinglm/core';
 import { ConsoleSummaryDisplay } from './ConsoleSummaryDisplay.js';
 import process from 'node:process';
 import Gradient from 'ink-gradient';
@@ -139,7 +139,7 @@ export const Footer: React.FC = () => {
         </Box>
       )}
 
-      {/* Right Section: Gemini Label and Console Summary */}
+      {/* Right Section: CodinGLM Label and Console Summary */}
       {!hideModelInfo && (
         <Box alignItems="center" justifyContent="flex-end">
           <Box alignItems="center">

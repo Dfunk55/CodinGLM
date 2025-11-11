@@ -6,7 +6,7 @@
 
 import type {
   ClientMetadata,
-  GeminiUserTier,
+  CodinGLMUserTier,
   LoadCodeAssistResponse,
   OnboardUserRequest,
 } from './types.js';
@@ -112,7 +112,7 @@ export async function setupUser(client: AuthClient): Promise<UserData> {
   };
 }
 
-function getOnboardTier(res: LoadCodeAssistResponse): GeminiUserTier {
+function getOnboardTier(res: LoadCodeAssistResponse): CodinGLMUserTier {
   for (const tier of res.allowedTiers || []) {
     if (tier.isDefault) {
       return tier;

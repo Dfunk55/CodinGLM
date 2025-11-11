@@ -16,7 +16,7 @@ import {
   clearCachedCredentialFile,
   debugLogger,
   type Config,
-} from '@google/gemini-cli-core';
+} from '@codinglm/core';
 import { useKeypress } from '../hooks/useKeypress.js';
 import { AuthState } from '../types.js';
 import { runExitCleanup } from '../../utils/cleanup.js';
@@ -62,7 +62,7 @@ export function AuthDialog({
             ]
           : []),
         {
-          label: 'Use Gemini API Key',
+          label: 'Use Z.AI API Key',
           value: AuthType.USE_GEMINI,
           key: AuthType.USE_GEMINI,
         },
@@ -140,7 +140,7 @@ export function AuthDialog({
           debugLogger.log(
             `
 ----------------------------------------------------------------
-Logging in with Google... Please restart CodingGLM to continue.
+Logging in with Google... Please restart CodinGLM to continue.
 ----------------------------------------------------------------
             `,
           );
@@ -188,7 +188,7 @@ Logging in with Google... Please restart CodingGLM to continue.
 
   const termsLink = isCodinGLM
     ? 'https://github.com/dustinpainter/CodinGLM/blob/main/docs/tos-privacy.md'
-    : 'https://github.com/google-gemini/gemini-cli/blob/main/docs/tos-privacy.md';
+    : 'https://github.com/Dfunk55/CodinGLM/blob/main/docs/tos-privacy.md';
 
   return (
     <Box

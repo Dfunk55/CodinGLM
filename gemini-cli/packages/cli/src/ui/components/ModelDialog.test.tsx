@@ -8,16 +8,16 @@ import { render } from '../../test-utils/render.js';
 import { cleanup } from 'ink-testing-library';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import {
-  DEFAULT_GEMINI_FLASH_LITE_MODEL,
-  DEFAULT_GEMINI_FLASH_MODEL,
-  DEFAULT_GEMINI_MODEL,
-  DEFAULT_GEMINI_MODEL_AUTO,
-} from '@google/gemini-cli-core';
+  DEFAULT_GLM_FLASH_LITE_MODEL,
+  DEFAULT_GLM_FLASH_MODEL,
+  DEFAULT_GLM_MODEL,
+  DEFAULT_GLM_MODEL_AUTO,
+} from '@codinglm/core';
 import { ModelDialog } from './ModelDialog.js';
 import { useKeypress } from '../hooks/useKeypress.js';
 import { DescriptiveRadioButtonSelect } from './shared/DescriptiveRadioButtonSelect.js';
 import { ConfigContext } from '../contexts/ConfigContext.js';
-import type { Config } from '@google/gemini-cli-core';
+import type { Config } from '@codinglm/core';
 
 vi.mock('../hooks/useKeypress.js', () => ({
   useKeypress: vi.fn(),
@@ -41,7 +41,7 @@ const renderComponent = (
   const mockConfig = contextValue
     ? ({
         // --- Functions used by ModelDialog ---
-        getModel: vi.fn(() => DEFAULT_GEMINI_MODEL_AUTO),
+        getModel: vi.fn(() => DEFAULT_GLM_MODEL_AUTO),
         setModel: vi.fn(),
 
         // --- Functions used by ClearcutLogger ---
@@ -82,10 +82,10 @@ describe('<ModelDialog />', () => {
 
   it('renders the title and help text', () => {
     const { lastFrame, unmount } = renderComponent();
-    expect(lastFrame()).toContain('Select Model');
+    expect(lastFrame()).toContain('Select GLM Model');
     expect(lastFrame()).toContain('(Press Esc to close)');
     expect(lastFrame()).toContain(
-      '> To use a specific Gemini model on startup, use the --model flag.',
+      '> To use a specific GLM model on startup, use the --model flag.',
     );
     unmount();
   });
@@ -96,25 +96,25 @@ describe('<ModelDialog />', () => {
 
     const props = mockedSelect.mock.calls[0][0];
     expect(props.items).toHaveLength(4);
-    expect(props.items[0].value).toBe(DEFAULT_GEMINI_MODEL_AUTO);
-    expect(props.items[1].value).toBe(DEFAULT_GEMINI_MODEL);
-    expect(props.items[2].value).toBe(DEFAULT_GEMINI_FLASH_MODEL);
-    expect(props.items[3].value).toBe(DEFAULT_GEMINI_FLASH_LITE_MODEL);
+    expect(props.items[0].value).toBe(DEFAULT_GLM_MODEL_AUTO);
+    expect(props.items[1].value).toBe(DEFAULT_GLM_MODEL);
+    expect(props.items[2].value).toBe(DEFAULT_GLM_FLASH_LITE_MODEL);
+    expect(props.items[3].value).toBe(DEFAULT_GLM_FLASH_MODEL);
     expect(props.showNumbers).toBe(true);
     unmount();
   });
 
   it('initializes with the model from ConfigContext', () => {
-    const mockGetModel = vi.fn(() => DEFAULT_GEMINI_FLASH_MODEL);
+    const mockGetModel = vi.fn(() => DEFAULT_GLM_FLASH_MODEL);
     const { unmount } = renderComponent({}, { getModel: mockGetModel });
 
     expect(mockGetModel).toHaveBeenCalled();
-    expect(mockedSelect).toHaveBeenCalledWith(
-      expect.objectContaining({
-        initialIndex: 2,
-      }),
-      undefined,
-    );
+      expect(mockedSelect).toHaveBeenCalledWith(
+        expect.objectContaining({
+          initialIndex: 3,
+        }),
+        undefined,
+      );
     unmount();
   });
 
@@ -138,7 +138,7 @@ describe('<ModelDialog />', () => {
 
     expect(mockGetModel).toHaveBeenCalled();
 
-    // When getModel returns undefined, preferredModel falls back to DEFAULT_GEMINI_MODEL_AUTO
+    // When getModel returns undefined, preferredModel falls back to DEFAULT_GLM_MODEL_AUTO
     // which has index 0, so initialIndex should be 0
     expect(mockedSelect).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -156,10 +156,10 @@ describe('<ModelDialog />', () => {
     const childOnSelect = mockedSelect.mock.calls[0][0].onSelect;
     expect(childOnSelect).toBeDefined();
 
-    childOnSelect(DEFAULT_GEMINI_MODEL);
+    childOnSelect(DEFAULT_GLM_MODEL);
 
     // Assert against the default mock provided by renderComponent
-    expect(mockConfig?.setModel).toHaveBeenCalledWith(DEFAULT_GEMINI_MODEL);
+    expect(mockConfig?.setModel).toHaveBeenCalledWith(DEFAULT_GLM_MODEL);
     expect(props.onClose).toHaveBeenCalledTimes(1);
     unmount();
   });
@@ -205,7 +205,7 @@ describe('<ModelDialog />', () => {
   });
 
   it('updates initialIndex when config context changes', () => {
-    const mockGetModel = vi.fn(() => DEFAULT_GEMINI_MODEL_AUTO);
+    const mockGetModel = vi.fn(() => DEFAULT_GLM_MODEL_AUTO);
     const { rerender, unmount } = render(
       <ConfigContext.Provider
         value={{ getModel: mockGetModel } as unknown as Config}
@@ -216,7 +216,7 @@ describe('<ModelDialog />', () => {
 
     expect(mockedSelect.mock.calls[0][0].initialIndex).toBe(0);
 
-    mockGetModel.mockReturnValue(DEFAULT_GEMINI_FLASH_LITE_MODEL);
+    mockGetModel.mockReturnValue(DEFAULT_GLM_FLASH_MODEL);
     const newMockConfig = { getModel: mockGetModel } as unknown as Config;
 
     rerender(

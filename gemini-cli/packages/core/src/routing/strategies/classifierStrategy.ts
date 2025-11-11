@@ -22,9 +22,9 @@ import {
 } from '../../utils/messageInspectors.js';
 import { debugLogger } from '../../utils/debugLogger.js';
 import {
-  DEFAULT_GEMINI_FLASH_LITE_MODEL,
-  DEFAULT_GEMINI_FLASH_MODEL,
-  DEFAULT_GEMINI_MODEL,
+  DEFAULT_GLM_FLASH_LITE_MODEL,
+  DEFAULT_GLM_FLASH_MODEL,
+  DEFAULT_GLM_MODEL,
 } from '../../config/models.js';
 
 const CLASSIFIER_GENERATION_CONFIG: GenerateContentConfig = {
@@ -182,7 +182,7 @@ export class ClassifierStrategy implements RoutingStrategy {
         contents: [...finalHistory, createUserContent(context.request)],
         schema: RESPONSE_SCHEMA,
         // Use the lowest-cost classifier-capable model to keep routing cheap
-        model: DEFAULT_GEMINI_FLASH_LITE_MODEL,
+        model: DEFAULT_GLM_FLASH_LITE_MODEL,
         systemInstruction: CLASSIFIER_SYSTEM_PROMPT,
         config: CLASSIFIER_GENERATION_CONFIG,
         abortSignal: context.signal,
@@ -196,8 +196,8 @@ export class ClassifierStrategy implements RoutingStrategy {
 
       const targetModel =
         routerResponse.model_choice === FLASH_MODEL
-          ? DEFAULT_GEMINI_FLASH_MODEL
-          : DEFAULT_GEMINI_MODEL;
+          ? DEFAULT_GLM_FLASH_MODEL
+          : DEFAULT_GLM_MODEL;
 
       return {
         model: targetModel,

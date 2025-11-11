@@ -20,7 +20,7 @@ import {
   type Part,
   type GenerateContentResponse,
   type GenerateContentConfig,
-} from '@google/genai';
+} from '@codinglm/genai';
 import type { Config } from '../config/config.js';
 import { MockTool } from '../test-utils/mock-tool.js';
 import { getDirectoryContextString } from '../utils/environmentContext.js';
@@ -51,7 +51,7 @@ const { mockSendMessageStream, mockExecuteToolCall } = vi.hoisted(() => ({
 }));
 
 vi.mock('../core/chatSession.js', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('../core/geminiChat.js')>();
+  const actual = await importOriginal<typeof import('../core/chatSession.js')>();
   return {
     ...actual,
     ChatSession: vi.fn().mockImplementation(() => ({

@@ -321,7 +321,7 @@ describe('AppContainer State Management', () => {
       themeError: null,
       authError: null,
       shouldOpenAuthDialog: false,
-      geminiMdFileCount: 0,
+      contextFileCount: 0,
     } as InitializationResult;
   });
 
@@ -618,8 +618,8 @@ describe('AppContainer State Management', () => {
     it('passes a valid proQuotaRequest to UIStateContext when provided by the hook', async () => {
       // Arrange: Create a mock request object that a UI dialog would receive
       const mockRequest = {
-        failedModel: 'gemini-pro',
-        fallbackModel: 'gemini-flash',
+        failedModel: 'glm-4.6',
+        fallbackModel: 'glm-4.6-mini',
         resolve: vi.fn(),
       };
       mockedUseQuotaAndFallback.mockReturnValue({

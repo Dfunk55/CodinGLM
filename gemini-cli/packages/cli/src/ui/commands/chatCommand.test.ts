@@ -10,7 +10,7 @@ import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 import type { SlashCommand, CommandContext } from './types.js';
 import { createMockCommandContext } from '../../test-utils/mockCommandContext.js';
 import type { Content } from '@codinglm/core/llm/types';
-import type { GeminiClient } from '@google/gemini-cli-core';
+import type { LlmClient } from '@codinglm/core';
 
 import * as fsPromises from 'node:fs/promises';
 import { chatCommand, serializeHistoryToMarkdown } from './chatCommand.js';
@@ -59,10 +59,10 @@ describe('chatCommand', () => {
       services: {
         config: {
           getProjectRoot: () => '/project/root',
-          getGeminiClient: () =>
+          getLlmClient: () =>
             ({
               getChat: mockGetChat,
-            }) as unknown as GeminiClient,
+            }) as unknown as LlmClient,
           storage: {
             getProjectTempDir: () => '/project/root/.gemini/tmp/mockhash',
           },
@@ -268,7 +268,7 @@ describe('chatCommand', () => {
         type: 'load_history',
         history: [
           { type: 'user', text: 'hello gemini' },
-          { type: 'gemini', text: 'hello world' },
+          { type: 'model', text: 'hello world' },
         ] as HistoryItemWithoutId[],
         clientHistory: conversation,
       });

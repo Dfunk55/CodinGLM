@@ -8,17 +8,17 @@ import { useState, useRef, useCallback, useEffect, useMemo } from 'react';
 import type {
   Config,
   EditorType,
-  GeminiClient,
-  ServerGeminiChatCompressedEvent,
-  ServerGeminiContentEvent as ContentEvent,
-  ServerGeminiFinishedEvent,
-  ServerGeminiStreamEvent as GeminiEvent,
+  LlmClient,
+  ServerLlmChatCompressedEvent,
+  ServerLlmContentEvent as ContentEvent,
+  ServerLlmFinishedEvent,
+  ServerLlmStreamEvent,
   ThoughtSummary,
   ToolCallRequestInfo,
-  GeminiErrorEventValue,
-} from '@google/gemini-cli-core';
+  LlmErrorEventValue,
+} from '@codinglm/core';
 import {
-  GeminiEventType as ServerGeminiEventType,
+  LlmEventType,
   getErrorMessage,
   isNodeError,
   MessageSenderType,
@@ -26,7 +26,7 @@ import {
   GitService,
   UnauthorizedError,
   UserPromptEvent,
-  DEFAULT_GEMINI_FLASH_MODEL,
+  DEFAULT_GLM_FLASH_MODEL,
   logConversationFinishedEvent,
   ConversationFinishedEvent,
   ApprovalMode,
@@ -37,7 +37,7 @@ import {
   tokenLimit,
   debugLogger,
   runInDevTraceSpan,
-} from '@google/gemini-cli-core';
+} from '@codinglm/core';
 import { type Part, type PartListUnion, FinishReason } from '@codinglm/core/llm/types';
 import type {
   HistoryItem,
@@ -88,7 +88,7 @@ function showCitations(settings: LoadedSettings): boolean {
  * API interaction, and tool call lifecycle.
  */
 export const useCodinGLMStream = (
-  geminiClient: GeminiClient,
+  llmClient: LlmClient,
   history: HistoryItem[],
   addItem: UseHistoryManagerReturn['addItem'],
   config: Config,
@@ -217,7 +217,7 @@ export const useCodinGLMStream = (
     onExec,
     onDebugMessage,
     config,
-    geminiClient,
+    llmClient,
     setShellInputFocused,
     terminalWidth,
     terminalHeight,
@@ -246,7 +246,7 @@ export const useCodinGLMStream = (
             tc.status === 'error' ||
             tc.status === 'cancelled') &&
             !(tc as TrackedCompletedToolCall | TrackedCancelledToolCall)
-              .responseSubmittedToGemini),
+              .responseSubmittedToModel),
       )
     ) {
       return StreamingState.Responding;
@@ -349,7 +349,7 @@ export const useCodinGLMStream = (
     },
   );
 
-  const prepareQueryForGemini = useCallback(
+  const prepareQueryForLlm = useCallback(
     async (
       query: PartListUnion,
       userMessageTimestamp: number,
@@ -366,7 +366,7 @@ export const useCodinGLMStream = (
         return { queryToSend: null, shouldProceed: false };
       }
 
-      let localQueryToSendToGemini: PartListUnion | null = null;
+      let localQueryToSendToModel: PartListUnion | null = null;
 
       if (typeof query === 'string') {
         const trimmedQuery = query.trim();
@@ -394,10 +394,10 @@ export const useCodinGLMStream = (
                 return { queryToSend: null, shouldProceed: false };
               }
               case 'submit_prompt': {
-                localQueryToSendToGemini = slashCommandResult.content;
+                localQueryToSendToModel = slashCommandResult.content;
 
                 return {
-                  queryToSend: localQueryToSendToGemini,
+                  queryToSend: localQueryToSendToModel,
                   shouldProceed: true,
                 };
               }
@@ -438,27 +438,27 @@ export const useCodinGLMStream = (
           if (!atCommandResult.shouldProceed) {
             return { queryToSend: null, shouldProceed: false };
           }
-          localQueryToSendToGemini = atCommandResult.processedQuery;
+          localQueryToSendToModel = atCommandResult.processedQuery;
         } else {
-          // Normal query for Gemini
+          // Normal query for CodinGLM
           addItem(
             { type: MessageType.USER, text: trimmedQuery },
             userMessageTimestamp,
           );
-          localQueryToSendToGemini = trimmedQuery;
+          localQueryToSendToModel = trimmedQuery;
         }
       } else {
         // It's a function response (PartListUnion that isn't a string)
-        localQueryToSendToGemini = query;
+        localQueryToSendToModel = query;
       }
 
-      if (localQueryToSendToGemini === null) {
+      if (localQueryToSendToModel === null) {
         onDebugMessage(
-          'Query processing resulted in null, not sending to Gemini.',
+          'Query processing resulted in null, not sending to CodinGLM.',
         );
         return { queryToSend: null, shouldProceed: false };
       }
-      return { queryToSend: localQueryToSendToGemini, shouldProceed: true };
+      return { queryToSend: localQueryToSendToModel, shouldProceed: true };
     },
     [
       config,
@@ -477,35 +477,35 @@ export const useCodinGLMStream = (
   const handleContentEvent = useCallback(
     (
       eventValue: ContentEvent['value'],
-      currentGeminiMessageBuffer: string,
+      currentModelMessageBuffer: string,
       userMessageTimestamp: number,
     ): string => {
       if (turnCancelledRef.current) {
         // Prevents additional output after a user initiated cancel.
         return '';
       }
-      let newGeminiMessageBuffer = currentGeminiMessageBuffer + eventValue;
+      let newModelMessageBuffer = currentModelMessageBuffer + eventValue;
       if (
-        pendingHistoryItemRef.current?.type !== 'gemini' &&
-        pendingHistoryItemRef.current?.type !== 'gemini_content'
+        pendingHistoryItemRef.current?.type !== 'model' &&
+        pendingHistoryItemRef.current?.type !== 'model_content'
       ) {
         if (pendingHistoryItemRef.current) {
           addItem(pendingHistoryItemRef.current, userMessageTimestamp);
         }
-        setPendingHistoryItem({ type: 'gemini', text: '' });
-        newGeminiMessageBuffer = eventValue;
+        setPendingHistoryItem({ type: 'model', text: '' });
+        newModelMessageBuffer = eventValue;
       }
       // Split large messages for better rendering performance. Ideally,
       // we should maximize the amount of output sent to <Static />.
-      const splitPoint = findLastSafeSplitPoint(newGeminiMessageBuffer);
-      if (splitPoint === newGeminiMessageBuffer.length) {
+      const splitPoint = findLastSafeSplitPoint(newModelMessageBuffer);
+      if (splitPoint === newModelMessageBuffer.length) {
         // Update the existing message with accumulated content
         setPendingHistoryItem((item) => ({
-          type: item?.type as 'gemini' | 'gemini_content',
-          text: newGeminiMessageBuffer,
+          type: item?.type as 'model' | 'model_content',
+          text: newModelMessageBuffer,
         }));
       } else {
-        // This indicates that we need to split up this Gemini Message.
+        // This indicates that we need to split up this CodinGLM message.
         // Splitting a message is primarily a performance consideration. There is a
         // <Static> component at the root of App.tsx which takes care of rendering
         // content statically or dynamically. Everything but the last message is
@@ -513,21 +513,21 @@ export const useCodinGLMStream = (
         // multiple times per-second (as streaming occurs). Prior to this change you'd
         // see heavy flickering of the terminal. This ensures that larger messages get
         // broken up so that there are more "statically" rendered.
-        const beforeText = newGeminiMessageBuffer.substring(0, splitPoint);
-        const afterText = newGeminiMessageBuffer.substring(splitPoint);
+        const beforeText = newModelMessageBuffer.substring(0, splitPoint);
+        const afterText = newModelMessageBuffer.substring(splitPoint);
         addItem(
           {
             type: pendingHistoryItemRef.current?.type as
-              | 'gemini'
-              | 'gemini_content',
+              | 'model'
+              | 'model_content',
             text: beforeText,
           },
           userMessageTimestamp,
         );
-        setPendingHistoryItem({ type: 'gemini_content', text: afterText });
-        newGeminiMessageBuffer = afterText;
+        setPendingHistoryItem({ type: 'model_content', text: afterText });
+        newModelMessageBuffer = afterText;
       }
-      return newGeminiMessageBuffer;
+      return newModelMessageBuffer;
     },
     [addItem, pendingHistoryItemRef, setPendingHistoryItem],
   );
@@ -568,7 +568,7 @@ export const useCodinGLMStream = (
   );
 
   const handleErrorEvent = useCallback(
-    (eventValue: GeminiErrorEventValue, userMessageTimestamp: number) => {
+    (eventValue: LlmErrorEventValue, userMessageTimestamp: number) => {
       if (pendingHistoryItemRef.current) {
         addItem(pendingHistoryItemRef.current, userMessageTimestamp);
         setPendingHistoryItem(null);
@@ -581,7 +581,7 @@ export const useCodinGLMStream = (
             config.getContentGeneratorConfig()?.authType,
             undefined,
             config.getModel(),
-            DEFAULT_GEMINI_FLASH_MODEL,
+            DEFAULT_GLM_FLASH_MODEL,
           ),
         },
         userMessageTimestamp,
@@ -607,7 +607,7 @@ export const useCodinGLMStream = (
   );
 
   const handleFinishedEvent = useCallback(
-    (event: ServerGeminiFinishedEvent, userMessageTimestamp: number) => {
+    (event: ServerLlmFinishedEvent, userMessageTimestamp: number) => {
       const finishReason = event.value.reason;
       if (!finishReason) {
         return;
@@ -651,7 +651,7 @@ export const useCodinGLMStream = (
 
   const handleChatCompressionEvent = useCallback(
     (
-      eventValue: ServerGeminiChatCompressedEvent['value'],
+      eventValue: ServerLlmChatCompressedEvent['value'],
       userMessageTimestamp: number,
     ) => {
       if (pendingHistoryItemRef.current) {
@@ -714,9 +714,9 @@ export const useCodinGLMStream = (
     [addItem, onCancelSubmit, config],
   );
 
-  const processGeminiStreamEvents = useCallback(
+  const processLlmStreamEvents = useCallback(
     async (
-      stream: AsyncIterable<GeminiEvent>,
+      stream: AsyncIterable<ServerLlmStreamEvent>,
       userMessageTimestamp: number,
       signal: AbortSignal,
     ): Promise<StreamProcessingStatus> => {
@@ -724,57 +724,57 @@ export const useCodinGLMStream = (
       const toolCallRequests: ToolCallRequestInfo[] = [];
       for await (const event of stream) {
         switch (event.type) {
-          case ServerGeminiEventType.Thought:
+          case LlmEventType.Thought:
             setThought(event.value);
             break;
-          case ServerGeminiEventType.Content:
+          case LlmEventType.Content:
             geminiMessageBuffer = handleContentEvent(
               event.value,
               geminiMessageBuffer,
               userMessageTimestamp,
             );
             break;
-          case ServerGeminiEventType.ToolCallRequest:
+          case LlmEventType.ToolCallRequest:
             toolCallRequests.push(event.value);
             break;
-          case ServerGeminiEventType.UserCancelled:
+          case LlmEventType.UserCancelled:
             handleUserCancelledEvent(userMessageTimestamp);
             break;
-          case ServerGeminiEventType.Error:
+          case LlmEventType.Error:
             handleErrorEvent(event.value, userMessageTimestamp);
             break;
-          case ServerGeminiEventType.ChatCompressed:
+          case LlmEventType.ChatCompressed:
             handleChatCompressionEvent(event.value, userMessageTimestamp);
             break;
-          case ServerGeminiEventType.ToolCallConfirmation:
-          case ServerGeminiEventType.ToolCallResponse:
+          case LlmEventType.ToolCallConfirmation:
+          case LlmEventType.ToolCallResponse:
             // do nothing
             break;
-          case ServerGeminiEventType.MaxSessionTurns:
+          case LlmEventType.MaxSessionTurns:
             handleMaxSessionTurnsEvent();
             break;
-          case ServerGeminiEventType.ContextWindowWillOverflow:
+          case LlmEventType.ContextWindowWillOverflow:
             handleContextWindowWillOverflowEvent(
               event.value.estimatedRequestTokenCount,
               event.value.remainingTokenCount,
             );
             break;
-          case ServerGeminiEventType.Finished:
+          case LlmEventType.Finished:
             handleFinishedEvent(
-              event as ServerGeminiFinishedEvent,
+              event as ServerLlmFinishedEvent,
               userMessageTimestamp,
             );
             break;
-          case ServerGeminiEventType.Citation:
+          case LlmEventType.Citation:
             handleCitationEvent(event.value, userMessageTimestamp);
             break;
-          case ServerGeminiEventType.LoopDetected:
+          case LlmEventType.LoopDetected:
             // handle later because we want to move pending history to history
             // before we add loop detected message to history
             loopDetectedRef.current = true;
             break;
-          case ServerGeminiEventType.Retry:
-          case ServerGeminiEventType.InvalidStream:
+          case LlmEventType.Retry:
+          case LlmEventType.InvalidStream:
             // Will add the missing logic later
             break;
           default: {
@@ -837,7 +837,7 @@ export const useCodinGLMStream = (
             prompt_id = config.getSessionId() + '########' + getPromptCount();
           }
           return promptIdContext.run(prompt_id, async () => {
-            const { queryToSend, shouldProceed } = await prepareQueryForGemini(
+            const { queryToSend, shouldProceed } = await prepareQueryForLlm(
               query,
               userMessageTimestamp,
               abortSignal,
@@ -874,12 +874,12 @@ export const useCodinGLMStream = (
             lastPromptIdRef.current = prompt_id!;
 
             try {
-              const stream = geminiClient.sendMessageStream(
+              const stream = llmClient.sendMessageStream(
                 queryToSend,
                 abortSignal,
                 prompt_id!,
               );
-              const processingStatus = await processGeminiStreamEvents(
+              const processingStatus = await processLlmStreamEvents(
                 stream,
                 userMessageTimestamp,
                 abortSignal,
@@ -947,7 +947,7 @@ export const useCodinGLMStream = (
                       config.getContentGeneratorConfig()?.authType,
                       undefined,
                       config.getModel(),
-                      DEFAULT_GEMINI_FLASH_MODEL,
+                      DEFAULT_GLM_FLASH_MODEL,
                     ),
                   },
                   userMessageTimestamp,
@@ -964,13 +964,13 @@ export const useCodinGLMStream = (
     [
       streamingState,
       setModelSwitchedFromQuotaError,
-      prepareQueryForGemini,
-      processGeminiStreamEvents,
+      prepareQueryForLlm,
+      processLlmStreamEvents,
       pendingHistoryItemRef,
       addItem,
       setPendingHistoryItem,
       setInitError,
-      geminiClient,
+      llmClient,
       onAuthError,
       config,
       startNewPrompt,
@@ -1074,7 +1074,7 @@ export const useCodinGLMStream = (
         return;
       }
 
-      // If all the tools were cancelled, don't submit a response to Gemini.
+      // If all the tools were cancelled, don't submit a response to CodinGLM.
       const allToolsCancelled = geminiTools.every(
         (tc) => tc.status === 'cancelled',
       );
@@ -1093,13 +1093,13 @@ export const useCodinGLMStream = (
         }
         setIsResponding(false);
 
-        if (geminiClient) {
+        if (llmClient) {
           // We need to manually add the function responses to the history
           // so the model knows the tools were cancelled.
           const combinedParts = geminiTools.flatMap(
             (toolCall) => toolCall.response.responseParts,
           );
-          geminiClient.addHistory({
+          llmClient.addHistory({
             role: 'user',
             parts: combinedParts,
           });
@@ -1141,7 +1141,7 @@ export const useCodinGLMStream = (
     [
       submitQuery,
       markToolsAsSubmitted,
-      geminiClient,
+      llmClient,
       performMemoryRefresh,
       modelSwitchedFromQuotaError,
       addItem,
@@ -1231,7 +1231,7 @@ export const useCodinGLMStream = (
             const toolName = toolCall.request.name;
             const fileName = path.basename(filePath);
             const toolCallWithSnapshotFileName = `${timestamp}-${fileName}-${toolName}.json`;
-            const clientHistory = await geminiClient?.getHistory();
+            const clientHistory = await llmClient?.getHistory();
             const toolCallWithSnapshotFilePath = path.join(
               checkpointDir,
               toolCallWithSnapshotFileName,
@@ -1271,7 +1271,7 @@ export const useCodinGLMStream = (
     onDebugMessage,
     gitService,
     history,
-    geminiClient,
+    llmClient,
     storage,
   ]);
 

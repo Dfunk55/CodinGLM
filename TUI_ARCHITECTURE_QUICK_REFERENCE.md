@@ -12,7 +12,7 @@ Key Handler Broadcast
     ↓
 [Subscribed useKeypress handlers]
     ├─→ InputPrompt (text editing)
-    ├─→ useGeminiStream (streaming control)
+    ├─→ useCodinGLMStream (streaming control)
     └─→ AppContainer (global shortcuts)
 ```
 
@@ -24,7 +24,7 @@ AppContainer (Central Hub)
     ├─→ useHistory() 
     │   └─→ history[], addItem(), clearItems()
     │
-    ├─→ useGeminiStream()
+    ├─→ useCodinGLMStream()
     │   ├─→ streamingState
     │   ├─→ pendingHistoryItems
     │   ├─→ thought (LLM reasoning)
@@ -67,7 +67,7 @@ VimModeProvider (vim toggle)
     ↓
 AppContainer (state management)
     │
-    ├─→ useGeminiStream (API streaming)
+    ├─→ useCodinGLMStream (API streaming)
     ├─→ useHistory (chat history)
     ├─→ useMemoryMonitor (memory tracking)
     ├─→ [10+ more custom hooks]
@@ -99,7 +99,7 @@ DefaultAppLayout
 │   │   ├── AppHeader
 │   │   └── [Rendered messages]
 │   │       ├── UserMessage
-│   │       ├── GeminiMessage
+│   │       ├── CodinGLMMessage
 │   │       ├── ToolGroupMessage
 │   │       ├── ErrorMessage
 │   │       └── [15+ message types]
@@ -136,8 +136,8 @@ HistoryItemDisplay (router component)
     ↓
 MessageType check
     ├─→ 'user' → UserMessage
-    ├─→ 'gemini' → GeminiMessage
-    ├─→ 'gemini_content' → GeminiMessageContent
+    ├─→ 'gemini' → CodinGLMMessage
+    ├─→ 'model_content' → CodinGLMMessageContent
     ├─→ 'tool_group' → ToolGroupMessage
     ├─→ 'error' → ErrorMessage
     ├─→ 'warning' → WarningMessage
@@ -180,7 +180,7 @@ KeypressProvider.handleKeypress()
         ↓
         Subscribers:
         ├─→ InputPrompt (text + navigation)
-        ├─→ useGeminiStream (Escape cancel)
+        ├─→ useCodinGLMStream (Escape cancel)
         ├─→ AppContainer (global shortcuts)
         └─→ [Custom handlers]
 ```
@@ -219,7 +219,7 @@ AppContainer
 │       addItem(), clearItems(), loadHistory()
 │   }
 │
-├─→ useGeminiStream()
+├─→ useCodinGLMStream()
 │   ├─→ streamingState
 │   ├─→ submitQuery(partListUnion)
 │   ├─→ cancelOngoingRequest()
@@ -336,8 +336,8 @@ isSlashCommand(text) check
     │       ├─→ handleSlashCommand('/quit')
     │       └─→ [30+ commands]
     │
-    └─→ NO: Submit to Gemini
-        ├─→ useGeminiStream
+    └─→ NO: Submit to CodinGLM
+        ├─→ useCodinGLMStream
         ├─→ Streaming response
         └─→ Tool handling
 ```
@@ -414,7 +414,7 @@ Terminal
 ```
 Test Coverage
 ├─→ Unit Tests
-│   ├─→ Hook tests (useGeminiStream, useKeypress, etc.)
+│   ├─→ Hook tests (useCodinGLMStream, useKeypress, etc.)
 │   ├─→ Utility tests (text handling, formatting)
 │   └─→ Component tests (complex components)
 │
@@ -463,6 +463,6 @@ Start here for:
 - **Hooks**: /src/ui/hooks/
 - **State management**: /src/ui/contexts/
 - **Input handling**: KeypressContext.tsx
-- **API streaming**: useGeminiStream.ts
+- **API streaming**: useCodinGLMStream.ts
 - **Main state hub**: AppContainer.tsx
 

@@ -20,7 +20,7 @@
     "label": "Get Started",
     "items": [
       {
-        "label": "Gemini CLI Quickstart",
+        "label": "CodinGLM CLI Quickstart",
         "slug": "docs/get-started"
       },
       {

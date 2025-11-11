@@ -20,7 +20,7 @@ import type {
 import {
   DEFAULT_TRUNCATE_TOOL_OUTPUT_LINES,
   DEFAULT_TRUNCATE_TOOL_OUTPUT_THRESHOLD,
-  DEFAULT_GEMINI_MODEL,
+  DEFAULT_GLM_MODEL,
 } from '@codinglm/core';
 import type { CustomTheme } from '../ui/themes/theme.js';
 import type { SessionRetentionSettings } from './settings.js';
@@ -367,7 +367,7 @@ const SETTINGS_SCHEMA = {
         requiresRestart: false,
         default: false,
         description:
-          'Show CodingGLM status and thoughts in the terminal window title',
+          'Show CodinGLM status and thoughts in the terminal window title',
         showInDialog: true,
       },
       hideTips: {
@@ -624,7 +624,7 @@ const SETTINGS_SCHEMA = {
         category: 'Model',
         requiresRestart: false,
         default: undefined as string | undefined,
-        description: 'The Gemini model to use for conversations.',
+        description: 'The GLM model to use for conversations.',
         showInDialog: false,
       },
       maxSessionTurns: {
@@ -739,7 +739,7 @@ const SETTINGS_SCHEMA = {
         requiresRestart: false,
         default: false,
         description: oneLine`
-          Controls how /memory refresh loads GEMINI.md files.
+          Controls how /memory refresh loads CODINGLM.md files.
           When true, include directories are scanned; when false, only the current directory is used.
         `,
         showInDialog: true,
@@ -762,7 +762,7 @@ const SETTINGS_SCHEMA = {
             description: 'Respect .gitignore files when searching',
             showInDialog: true,
           },
-          respectGeminiIgnore: {
+          respectContextIgnore: {
             type: 'boolean',
             label: 'Respect .geminiignore',
             category: 'Context',
@@ -987,7 +987,7 @@ const SETTINGS_SCHEMA = {
         requiresRestart: true,
         default: false,
         description:
-          'Enable the hooks system for intercepting and customizing CodingGLM behavior. When enabled, hooks configured in settings will execute at appropriate lifecycle events (BeforeTool, AfterTool, BeforeModel, etc.). Requires MessageBus integration.',
+          'Enable the hooks system for intercepting and customizing CodinGLM behavior. When enabled, hooks configured in settings will execute at appropriate lifecycle events (BeforeTool, AfterTool, BeforeModel, etc.). Requires MessageBus integration.',
         showInDialog: false,
       },
     },
@@ -1273,7 +1273,7 @@ const SETTINGS_SCHEMA = {
             label: 'Model',
             category: 'Experimental',
             requiresRestart: true,
-            default: DEFAULT_GEMINI_MODEL,
+            default: DEFAULT_GLM_MODEL,
             description:
               'The model to use for the Codebase Investigator agent.',
             showInDialog: false,
@@ -1408,7 +1408,7 @@ export const SETTINGS_SCHEMA_DEFINITIONS: Record<
       extension: {
         type: 'object',
         description:
-          'Metadata describing the CodingGLM extension that owns this MCP server.',
+          'Metadata describing the CodinGLM extension that owns this MCP server.',
         additionalProperties: { type: ['string', 'boolean', 'number'] },
       },
       oauth: {
@@ -1440,7 +1440,7 @@ export const SETTINGS_SCHEMA_DEFINITIONS: Record<
   },
   TelemetrySettings: {
     type: 'object',
-    description: 'Telemetry configuration for CodingGLM.',
+    description: 'Telemetry configuration for CodinGLM.',
     additionalProperties: false,
     properties: {
       enabled: {
@@ -1504,7 +1504,7 @@ export const SETTINGS_SCHEMA_DEFINITIONS: Record<
   CustomTheme: {
     type: 'object',
     description:
-      'Custom theme definition used for styling CodingGLM output. Colors are provided as hex strings or named ANSI colors.',
+      'Custom theme definition used for styling CodinGLM output. Colors are provided as hex strings or named ANSI colors.',
     additionalProperties: false,
     properties: {
       type: {

@@ -10,9 +10,9 @@ import type { RoutingContext } from '../routingStrategy.js';
 import type { BaseLlmClient } from '../../core/baseLlmClient.js';
 import type { Config } from '../../config/config.js';
 import {
-  DEFAULT_GEMINI_MODEL,
-  DEFAULT_GEMINI_FLASH_MODEL,
-  DEFAULT_GEMINI_FLASH_LITE_MODEL,
+  DEFAULT_GLM_MODEL,
+  DEFAULT_GLM_FLASH_MODEL,
+  DEFAULT_GLM_FLASH_LITE_MODEL,
 } from '../../config/models.js';
 
 describe('FallbackStrategy', () => {
@@ -23,7 +23,7 @@ describe('FallbackStrategy', () => {
   it('should return null when not in fallback mode', async () => {
     const mockConfig = {
       isInFallbackMode: () => false,
-      getModel: () => DEFAULT_GEMINI_MODEL,
+      getModel: () => DEFAULT_GLM_MODEL,
     } as Config;
 
     const decision = await strategy.route(mockContext, mockConfig, mockClient);
@@ -34,7 +34,7 @@ describe('FallbackStrategy', () => {
     it('should downgrade a pro model to the flash model', async () => {
       const mockConfig = {
         isInFallbackMode: () => true,
-        getModel: () => DEFAULT_GEMINI_MODEL,
+        getModel: () => DEFAULT_GLM_MODEL,
       } as Config;
 
       const decision = await strategy.route(
@@ -44,7 +44,7 @@ describe('FallbackStrategy', () => {
       );
 
       expect(decision).not.toBeNull();
-      expect(decision?.model).toBe(DEFAULT_GEMINI_FLASH_MODEL);
+      expect(decision?.model).toBe(DEFAULT_GLM_FLASH_MODEL);
       expect(decision?.metadata.source).toBe('fallback');
       expect(decision?.metadata.reasoning).toContain('In fallback mode');
     });
@@ -52,7 +52,7 @@ describe('FallbackStrategy', () => {
     it('should honor a lite model request', async () => {
       const mockConfig = {
         isInFallbackMode: () => true,
-        getModel: () => DEFAULT_GEMINI_FLASH_LITE_MODEL,
+        getModel: () => DEFAULT_GLM_FLASH_LITE_MODEL,
       } as Config;
 
       const decision = await strategy.route(
@@ -62,14 +62,14 @@ describe('FallbackStrategy', () => {
       );
 
       expect(decision).not.toBeNull();
-      expect(decision?.model).toBe(DEFAULT_GEMINI_FLASH_LITE_MODEL);
+      expect(decision?.model).toBe(DEFAULT_GLM_FLASH_LITE_MODEL);
       expect(decision?.metadata.source).toBe('fallback');
     });
 
     it('should use the flash model if flash is requested', async () => {
       const mockConfig = {
         isInFallbackMode: () => true,
-        getModel: () => DEFAULT_GEMINI_FLASH_MODEL,
+        getModel: () => DEFAULT_GLM_FLASH_MODEL,
       } as Config;
 
       const decision = await strategy.route(
@@ -79,7 +79,7 @@ describe('FallbackStrategy', () => {
       );
 
       expect(decision).not.toBeNull();
-      expect(decision?.model).toBe(DEFAULT_GEMINI_FLASH_MODEL);
+      expect(decision?.model).toBe(DEFAULT_GLM_FLASH_MODEL);
       expect(decision?.metadata.source).toBe('fallback');
     });
   });

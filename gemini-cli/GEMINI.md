@@ -52,7 +52,7 @@ tests, aim to follow existing patterns. Key conventions include:
 
 - **Node.js built-ins**: `fs`, `fs/promises`, `os` (especially `os.homedir()`),
   `path`, `child_process` (`execSync`, `spawn`).
-- **External SDKs**: `@google/genai`, `@modelcontextprotocol/sdk`.
+- **External SDKs**: `@codinglm/genai`, `@modelcontextprotocol/sdk`.
 - **Internal Project Modules**: Dependencies from other project packages are
   often mocked.
 

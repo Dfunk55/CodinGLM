@@ -5,8 +5,17 @@
  */
 
 import { defineConfig } from 'vitest/config';
+import { resolve } from 'node:path';
+
+const coverageEnabled =
+  process.env['CORE_COVERAGE'] === 'true' || process.env['CI'] === 'true';
 
 export default defineConfig({
+  resolve: {
+    alias: {
+      '@codinglm/genai': resolve(__dirname, './src/shim/genai.ts'),
+    },
+  },
   test: {
     reporters: ['default', 'junit'],
     silent: true,
@@ -15,7 +24,7 @@ export default defineConfig({
       junit: 'junit.xml',
     },
     coverage: {
-      enabled: true,
+      enabled: coverageEnabled,
       provider: 'v8',
       reportsDirectory: './coverage',
       include: ['src/**/*'],

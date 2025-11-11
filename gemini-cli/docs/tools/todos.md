@@ -1,10 +1,10 @@
 # Todo Tool (`write_todos`)
 
-This document describes the `write_todos` tool for the Gemini CLI.
+This document describes the `write_todos` tool for the CodinGLM CLI.
 
 ## Description
 
-The `write_todos` tool allows the Gemini agent to create and manage a list of
+The `write_todos` tool allows the CodinGLM agent to create and manage a list of
 subtasks for complex user requests. This provides you, the user, with greater
 visibility into the agent's plan and its current progress. It also helps with
 alignment where the agent is less likely to lose track of its current goal.

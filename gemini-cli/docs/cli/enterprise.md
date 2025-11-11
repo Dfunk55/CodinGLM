@@ -1,13 +1,13 @@
-# Gemini CLI for the Enterprise
+# CodinGLM CLI for the Enterprise
 
 This document outlines configuration patterns and best practices for deploying
-and managing Gemini CLI in an enterprise environment. By leveraging system-level
+and managing CodinGLM CLI in an enterprise environment. By leveraging system-level
 settings, administrators can enforce security policies, manage tool access, and
 ensure a consistent experience for all users.
 
 > **A Note on Security:** The patterns described in this document are intended
 > to help administrators create a more controlled and secure environment for
-> using Gemini CLI. However, they should not be considered a foolproof security
+> using CodinGLM CLI. However, they should not be considered a foolproof security
 > boundary. A determined user with sufficient privileges on their local machine
 > may still be able to circumvent these configurations. These measures are
 > designed to prevent accidental misuse and enforce corporate policy in a
@@ -149,7 +149,7 @@ This results in the following merged configuration:
 - **Location**:
   - **Linux**: `/etc/gemini-cli/settings.json`
   - **Windows**: `C:\ProgramData\gemini-cli\settings.json`
-  - **macOS**: `/Library/Application Support/GeminiCli/settings.json`
+  - **macOS**: `/Library/Application Support/CodinGLMCli/settings.json`
   - The path can be overridden using the `GEMINI_CLI_SYSTEM_SETTINGS_PATH`
     environment variable.
 - **Control**: This file should be managed by system administrators and
@@ -161,7 +161,7 @@ configuration patterns described below.
 
 ## Restricting Tool Access
 
-You can significantly enhance security by controlling which tools the Gemini
+You can significantly enhance security by controlling which tools the CodinGLM
 model can use. This is achieved through the `tools.core` and `tools.exclude`
 settings. For a list of available tools, see the
 [Tools documentation](../tools/index.md).
@@ -231,7 +231,7 @@ effectively.
 
 ### How MCP Server Configurations are Merged
 
-Gemini CLI loads `settings.json` files from three levels: System, Workspace, and
+CodinGLM CLI loads `settings.json` files from three levels: System, Workspace, and
 User. When it comes to the `mcpServers` object, these configurations are
 **merged**:
 
@@ -370,7 +370,7 @@ You can also specify a custom, hardened Docker image for the sandbox using the
 
 ## Controlling Network Access via Proxy
 
-In corporate environments with strict network policies, you can configure Gemini
+In corporate environments with strict network policies, you can configure CodinGLM
 CLI to route all outbound traffic through a corporate proxy. This can be set via
 an environment variable, but it can also be enforced for custom tools via the
 `mcpServers` configuration.
@@ -394,7 +394,7 @@ an environment variable, but it can also be enforced for custom tools via the
 
 ## Telemetry and Auditing
 
-For auditing and monitoring purposes, you can configure Gemini CLI to send
+For auditing and monitoring purposes, you can configure CodinGLM CLI to send
 telemetry data to a central location. This allows you to track tool usage and
 other events. For more information, see the
 [telemetry documentation](./telemetry.md).
@@ -422,7 +422,7 @@ You can enforce a specific authentication method for all users by setting the
 from choosing a different authentication method. See the
 [Authentication docs](./authentication.md) for more details.
 
-**Example:** Enforce the use of Google login for all users.
+**Example:** Enforce the use of the legacy OAuth login for all users.
 
 ```json
 {
@@ -438,7 +438,7 @@ enforced one.
 ## Putting It All Together: Example System `settings.json`
 
 Here is an example of a system `settings.json` file that combines several of the
-patterns discussed above to create a secure, controlled environment for Gemini
+patterns discussed above to create a secure, controlled environment for CodinGLM
 CLI.
 
 ```json

@@ -58,25 +58,24 @@ class MockProcessExitError extends Error {
 }
 
 // Mock dependencies
-vi.mock('./config/settings.js', () => ({
-  loadSettings: vi.fn().mockReturnValue({
-    merged: {
-      advanced: {},
-      security: { auth: {} },
-      ui: {},
-    },
-    setValue: vi.fn(),
-    forScope: () => ({ settings: {}, originalSettings: {}, path: '' }),
-    errors: [],
-  }),
-  migrateDeprecatedSettings: vi.fn(),
-  SettingScope: {
-    User: 'user',
-    Workspace: 'workspace',
-    System: 'system',
-    SystemDefaults: 'system-defaults',
-  },
-}));
+vi.mock('./config/settings.js', async (importOriginal) => {
+  const actual =
+    await importOriginal<typeof import('./config/settings.js')>();
+  return {
+    ...actual,
+    loadSettings: vi.fn().mockReturnValue({
+      merged: {
+        advanced: {},
+        security: { auth: {} },
+        ui: {},
+      },
+      setValue: vi.fn(),
+      forScope: () => ({ settings: {}, originalSettings: {}, path: '' }),
+      errors: [],
+    }),
+    migrateDeprecatedSettings: vi.fn(),
+  };
+});
 
 vi.mock('./config/config.js', () => ({
   loadCliConfig: vi.fn().mockResolvedValue({
@@ -125,14 +124,14 @@ vi.mock('./config/sandboxConfig.js', () => ({
 }));
 
 describe('gemini.tsx main function', () => {
-  let originalEnvGeminiSandbox: string | undefined;
+  let originalEnvLegacySandbox: string | undefined;
   let originalEnvSandbox: string | undefined;
   let initialUnhandledRejectionListeners: NodeJS.UnhandledRejectionListener[] =
     [];
 
   beforeEach(() => {
     // Store and clear sandbox-related env variables to ensure a consistent test environment
-    originalEnvGeminiSandbox = process.env['GEMINI_SANDBOX'];
+    originalEnvLegacySandbox = process.env['GEMINI_SANDBOX'];
     originalEnvSandbox = process.env['SANDBOX'];
     delete process.env['GEMINI_SANDBOX'];
     delete process.env['SANDBOX'];
@@ -143,8 +142,8 @@ describe('gemini.tsx main function', () => {
 
   afterEach(() => {
     // Restore original env variables
-    if (originalEnvGeminiSandbox !== undefined) {
-      process.env['GEMINI_SANDBOX'] = originalEnvGeminiSandbox;
+    if (originalEnvLegacySandbox !== undefined) {
+      process.env['GEMINI_SANDBOX'] = originalEnvLegacySandbox;
     } else {
       delete process.env['GEMINI_SANDBOX'];
     }
@@ -195,7 +194,7 @@ describe('gemini.tsx main function', () => {
         getIdeMode: () => false,
         getExperimentalZedIntegration: () => false,
         getScreenReader: () => false,
-        getGeminiMdFileCount: () => 0,
+        getContextFileCount: () => 0,
         getProjectRoot: () => '/',
         getPolicyEngine: vi.fn(),
         getMessageBus: () => ({
@@ -203,7 +202,7 @@ describe('gemini.tsx main function', () => {
         }),
         getToolRegistry: vi.fn(),
         getContentGeneratorConfig: vi.fn(),
-        getModel: () => 'gemini-pro',
+        getModel: () => 'glm-4.6',
         getEmbeddingModel: () => 'embedding-001',
         getApprovalMode: () => 'default',
         getCoreTools: () => [],
@@ -345,14 +344,14 @@ describe('gemini.tsx main function kitty protocol', () => {
       getIdeMode: () => false,
       getExperimentalZedIntegration: () => false,
       getScreenReader: () => false,
-      getGeminiMdFileCount: () => 0,
+      getContextFileCount: () => 0,
       getPolicyEngine: vi.fn(),
       getMessageBus: () => ({
         subscribe: vi.fn(),
       }),
       getToolRegistry: vi.fn(),
       getContentGeneratorConfig: vi.fn(),
-      getModel: () => 'gemini-pro',
+      getModel: () => 'glm-4.6',
       getEmbeddingModel: () => 'embedding-001',
       getApprovalMode: () => 'default',
       getCoreTools: () => [],
@@ -458,7 +457,7 @@ describe('startInteractiveUI', () => {
     authError: null,
     themeError: null,
     shouldOpenAuthDialog: false,
-    geminiMdFileCount: 0,
+    contextFileCount: 0,
   };
 
   vi.mock('./utils/version.js', () => ({

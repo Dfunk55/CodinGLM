@@ -39,9 +39,9 @@ ENV PATH=$PATH:/usr/local/share/npm-global/bin
 # switch to non-root user node
 USER node
 
-# install gemini-cli and clean up
-COPY packages/cli/dist/google-gemini-cli-*.tgz /tmp/gemini-cli.tgz
-COPY packages/core/dist/google-gemini-cli-core-*.tgz /tmp/gemini-core.tgz
+# install codinglm cli and clean up
+COPY packages/cli/dist/codinglm-cli-*.tgz /tmp/gemini-cli.tgz
+COPY packages/core/dist/codinglm-core-*.tgz /tmp/gemini-core.tgz
 RUN npm install -g /tmp/gemini-cli.tgz /tmp/gemini-core.tgz \
   && npm cache clean --force \
   && rm -f /tmp/gemini-{cli,core}.tgz

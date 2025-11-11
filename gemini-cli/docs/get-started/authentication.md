@@ -2,8 +2,8 @@
 
 CodinGLM CLI authenticates against the Zhipu AI CodinGLM platform. To run the
 agent you only need to supply an API key via the `Z_AI_API_KEY` environment
-variable (or the compatibility alias `ZAI_API_KEY`). Unlike the upstream Gemini
-CLI, the CodinGLM build does **not** expose Google account login or Vertex AI
+variable (or the compatibility alias `ZAI_API_KEY`). Unlike the upstream CodinGLM
+CLI, the CodinGLM build does **not** expose the legacy OAuth or Vertex AI
 workflows—the GLM-4.6 API key path is the single, secure authentication method.
 
 ## Supported authentication modes
@@ -13,9 +13,9 @@ workflows—the GLM-4.6 API key path is the single, secure authentication method
 | Z.AI API key (interactive) | Daily workflows on your laptop or workstation | The CLI reads `Z_AI_API_KEY` from your shell or `.env` file before launching the REPL. |
 | Z.AI API key (headless / CI) | Scripts, cron jobs, GitHub Actions, or remote servers | Provide the same environment variable via secret management and run `codinglm -p ...`. |
 
-> Legacy Gemini account login, Gemini API keys, and Vertex AI credentials remain
-> available only when you run the upstream Google-branded CLI. If you need those
-> flows, install `@google/gemini-cli` separately.
+> Legacy CodinGLM account login, CodinGLM API keys, and Vertex AI credentials remain
+> available only when you run the upstream-branded CLI. If you need those
+> flows, install `@codinglm/cli` separately.
 
 ## Step 1: Generate a CodinGLM API key
 
@@ -112,20 +112,20 @@ visible to the current shell.
 - **Multiple keys in the same session** – The CLI uses the first non-empty
   variable it finds. Clear duplicates with `unset Z_AI_API_KEY ZAI_API_KEY` and
   re-export the one you intend to use.
-- **Running both CodinGLM and Gemini CLI** – Keep keys in separate `.env`
-  files. For example, use `.gemini/.env` for CodinGLM and `.env` for Gemini to
+- **Running both CodinGLM and CodinGLM CLI** – Keep keys in separate `.env`
+  files. For example, use `.gemini/.env` for CodinGLM and `.env` for CodinGLM to
   avoid mixing credentials.
 
 ## Legacy authentication flows
 
-If you still need to sign in with a Google account, a Gemini API key, or Vertex
-AI credentials, install the upstream package:
+If you still need the upstream OAuth sign-in, CodinGLM API key, or Vertex AI
+credentials, install the original package:
 
 ```bash
-npm install -g @google/gemini-cli
+npm install -g @codinglm/cli
 ```
 
-Launch that binary with the `gemini` command and follow the original
-[Gemini authentication guide](https://github.com/google-gemini/gemini-cli). Keep
+Launch that binary with the `codinglm` command and follow the original
+[CodinGLM authentication guide](https://github.com/Dfunk55/CodinGLM). Keep
 those profiles completely separate from your `codinglm` configuration to avoid
 confusing the CLI about which provider to use.

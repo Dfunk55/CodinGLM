@@ -12,7 +12,7 @@ import { SessionStatsProvider } from '../contexts/SessionContext.js';
 import type {
   Config,
   ToolExecuteConfirmationDetails,
-} from '@google/gemini-cli-core';
+} from '@codinglm/core';
 import { ToolGroupMessage } from './messages/ToolGroupMessage.js';
 import { renderWithProviders } from '../../test-utils/render.js';
 
@@ -200,7 +200,7 @@ describe('<HistoryItemDisplay />', () => {
   it('should render a truncated gemini item', () => {
     const item: HistoryItem = {
       id: 1,
-      type: 'gemini',
+      type: 'model',
       text: longCode,
     };
     const { lastFrame } = renderWithProviders(
@@ -218,7 +218,7 @@ describe('<HistoryItemDisplay />', () => {
   it('should render a full gemini item when using availableTerminalHeightCodinGLM', () => {
     const item: HistoryItem = {
       id: 1,
-      type: 'gemini',
+      type: 'model',
       text: longCode,
     };
     const { lastFrame } = renderWithProviders(
@@ -234,10 +234,10 @@ describe('<HistoryItemDisplay />', () => {
     expect(lastFrame()).toMatchSnapshot();
   });
 
-  it('should render a truncated gemini_content item', () => {
+  it('should render a truncated model_content item', () => {
     const item: HistoryItem = {
       id: 1,
-      type: 'gemini_content',
+      type: 'model_content',
       text: longCode,
     };
     const { lastFrame } = renderWithProviders(
@@ -252,10 +252,10 @@ describe('<HistoryItemDisplay />', () => {
     expect(lastFrame()).toMatchSnapshot();
   });
 
-  it('should render a full gemini_content item when using availableTerminalHeightCodinGLM', () => {
+  it('should render a full model_content item when using availableTerminalHeightCodinGLM', () => {
     const item: HistoryItem = {
       id: 1,
-      type: 'gemini_content',
+      type: 'model_content',
       text: longCode,
     };
     const { lastFrame } = renderWithProviders(

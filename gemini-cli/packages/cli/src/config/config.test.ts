@@ -9,8 +9,8 @@ import * as os from 'node:os';
 import * as path from 'node:path';
 import {
   DEFAULT_FILE_FILTERING_OPTIONS,
-  DEFAULT_GEMINI_MODEL,
-  DEFAULT_GEMINI_MODEL_AUTO,
+  DEFAULT_GLM_MODEL,
+  DEFAULT_GLM_MODEL_AUTO,
   OutputFormat,
   SHELL_TOOL_NAME,
   WRITE_FILE_TOOL_NAME,
@@ -117,11 +117,11 @@ vi.mock('@codinglm/core', async () => {
     ),
     DEFAULT_MEMORY_FILE_FILTERING_OPTIONS: {
       respectGitIgnore: false,
-      respectGeminiIgnore: true,
+      respectContextIgnore: true,
     },
     DEFAULT_FILE_FILTERING_OPTIONS: {
       respectGitIgnore: true,
-      respectGeminiIgnore: true,
+      respectContextIgnore: true,
     },
   };
 });
@@ -130,7 +130,7 @@ vi.mock('./extension-manager.js');
 
 // Global setup to ensure clean environment for all tests in this file
 const originalArgv = process.argv;
-const originalGeminiModel = process.env['GEMINI_MODEL'];
+const originalLegacyModel = process.env['GEMINI_MODEL'];
 
 beforeEach(() => {
   delete process.env['GEMINI_MODEL'];
@@ -138,8 +138,8 @@ beforeEach(() => {
 
 afterEach(() => {
   process.argv = originalArgv;
-  if (originalGeminiModel !== undefined) {
-    process.env['GEMINI_MODEL'] = originalGeminiModel;
+  if (originalLegacyModel !== undefined) {
+    process.env['GEMINI_MODEL'] = originalLegacyModel;
   } else {
     delete process.env['GEMINI_MODEL'];
   }
@@ -237,10 +237,10 @@ describe('parseArguments', () => {
   });
 
   it('should convert positional query argument to prompt by default', async () => {
-    process.argv = ['node', 'script.js', 'Hi Gemini'];
+    process.argv = ['node', 'script.js', 'Hi CodinGLM'];
     const argv = await parseArguments({} as Settings);
-    expect(argv.query).toBe('Hi Gemini');
-    expect(argv.prompt).toBe('Hi Gemini');
+    expect(argv.query).toBe('Hi CodinGLM');
+    expect(argv.prompt).toBe('Hi CodinGLM');
     expect(argv.promptInteractive).toBeUndefined();
   });
 
@@ -616,8 +616,8 @@ describe('loadCliConfig', () => {
     expect(config.getFileFilteringRespectGitIgnore()).toBe(
       DEFAULT_FILE_FILTERING_OPTIONS.respectGitIgnore,
     );
-    expect(config.getFileFilteringRespectGeminiIgnore()).toBe(
-      DEFAULT_FILE_FILTERING_OPTIONS.respectGeminiIgnore,
+    expect(config.getFileFilteringRespectContextIgnore()).toBe(
+      DEFAULT_FILE_FILTERING_OPTIONS.respectContextIgnore,
     );
   });
 });
@@ -642,7 +642,7 @@ describe('Hierarchical Memory Loading (config.ts) - Placeholder Suite', () => {
         name: 'ext1',
         id: 'ext1-id',
         version: '1.0.0',
-        contextFiles: ['/path/to/ext1/GEMINI.md'],
+        contextFiles: ['/path/to/ext1/CODINGLM.md'],
         isActive: true,
       },
       {
@@ -677,14 +677,14 @@ describe('Hierarchical Memory Loading (config.ts) - Placeholder Suite', () => {
       'tree',
       {
         respectGitIgnore: false,
-        respectGeminiIgnore: true,
+        respectContextIgnore: true,
       },
       undefined, // maxDirs
     );
   });
 
   // NOTE TO FUTURE DEVELOPERS:
-  // To re-enable tests for loadHierarchicalGeminiMemory, ensure that:
+  // To re-enable tests for loadHierarchicalContextMemory, ensure that:
   // 1. os.homedir() is reliably mocked *before* the config.ts module is loaded
   //    and its functions (which use os.homedir()) are called.
   // 2. fs/promises and fs mocks correctly simulate file/directory existence,
@@ -701,12 +701,12 @@ describe('Hierarchical Memory Loading (config.ts) - Placeholder Suite', () => {
     );
     const MOCK_GLOBAL_PATH_LOCAL = path.join(
       MOCK_GEMINI_DIR_LOCAL,
-      'GEMINI.md',
+      'CODINGLM.md',
     );
     mockFs({
       [MOCK_GLOBAL_PATH_LOCAL]: { type: 'file', content: 'GlobalContentOnly' },
     });
-    const memory = await loadHierarchicalGeminiMemory('/some/other/cwd', false);
+    const memory = await loadHierarchicalContextMemory('/some/other/cwd', false);
     expect(memory).toBe('GlobalContentOnly');
     expect(vi.mocked(os.homedir)).toHaveBeenCalled();
     expect(fsPromises.readFile).toHaveBeenCalledWith(
@@ -1355,7 +1355,7 @@ describe('loadCliConfig model selection with model router', () => {
       argv,
     );
 
-    expect(config.getModel()).toBe(DEFAULT_GEMINI_MODEL_AUTO);
+    expect(config.getModel()).toBe(DEFAULT_GLM_MODEL_AUTO);
   });
 
   it('should use default model when useModelRouter is false and no model is provided', async () => {
@@ -1371,7 +1371,7 @@ describe('loadCliConfig model selection with model router', () => {
       argv,
     );
 
-    expect(config.getModel()).toBe(DEFAULT_GEMINI_MODEL);
+    expect(config.getModel()).toBe(DEFAULT_GLM_MODEL);
   });
 
   it('should prioritize argv over useModelRouter', async () => {
@@ -2105,13 +2105,13 @@ describe('loadCliConfig fileFiltering', () => {
       value: false,
     },
     {
-      property: 'respectGeminiIgnore',
-      getter: (c) => c.getFileFilteringRespectGeminiIgnore(),
+      property: 'respectContextIgnore',
+      getter: (c) => c.getFileFilteringRespectContextIgnore(),
       value: true,
     },
     {
-      property: 'respectGeminiIgnore',
-      getter: (c) => c.getFileFilteringRespectGeminiIgnore(),
+      property: 'respectContextIgnore',
+      getter: (c) => c.getFileFilteringRespectContextIgnore(),
       value: false,
     },
     {

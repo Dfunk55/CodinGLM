@@ -7,12 +7,12 @@
 import type React from 'react';
 import { Box, Text } from 'ink';
 import { theme } from '../semantic-colors.js';
-import { type IdeContext, type MCPServerConfig } from '@google/gemini-cli-core';
+import { type IdeContext, type MCPServerConfig } from '@codinglm/core';
 import { useTerminalSize } from '../hooks/useTerminalSize.js';
 import { isNarrowWidth } from '../utils/isNarrowWidth.js';
 
 interface ContextSummaryDisplayProps {
-  geminiMdFileCount: number;
+  contextFileCount: number;
   contextFileNames: string[];
   mcpServers?: Record<string, MCPServerConfig>;
   blockedMcpServers?: Array<{ name: string; extensionName: string }>;
@@ -20,7 +20,7 @@ interface ContextSummaryDisplayProps {
 }
 
 export const ContextSummaryDisplay: React.FC<ContextSummaryDisplayProps> = ({
-  geminiMdFileCount,
+  contextFileCount,
   contextFileNames,
   mcpServers,
   blockedMcpServers,
@@ -33,7 +33,7 @@ export const ContextSummaryDisplay: React.FC<ContextSummaryDisplayProps> = ({
   const openFileCount = ideContext?.workspaceState?.openFiles?.length ?? 0;
 
   if (
-    geminiMdFileCount === 0 &&
+    contextFileCount === 0 &&
     mcpServerCount === 0 &&
     blockedMcpServerCount === 0 &&
     openFileCount === 0
@@ -50,14 +50,14 @@ export const ContextSummaryDisplay: React.FC<ContextSummaryDisplayProps> = ({
     } (ctrl+g to view)`;
   })();
 
-  const geminiMdText = (() => {
-    if (geminiMdFileCount === 0) {
+  const contextFileText = (() => {
+    if (contextFileCount === 0) {
       return '';
     }
     const allNamesTheSame = new Set(contextFileNames).size < 2;
     const name = allNamesTheSame ? contextFileNames[0] : 'context';
-    return `${geminiMdFileCount} ${name} file${
-      geminiMdFileCount > 1 ? 's' : ''
+    return `${contextFileCount} ${name} file${
+      contextFileCount > 1 ? 's' : ''
     }`;
   })();
 
@@ -83,7 +83,7 @@ export const ContextSummaryDisplay: React.FC<ContextSummaryDisplayProps> = ({
     return parts.join(', ');
   })();
 
-  const summaryParts = [openFilesText, geminiMdText, mcpText].filter(Boolean);
+  const summaryParts = [openFilesText, contextFileText, mcpText].filter(Boolean);
 
   if (isNarrow) {
     return (

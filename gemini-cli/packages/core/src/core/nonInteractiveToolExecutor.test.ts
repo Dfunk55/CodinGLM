@@ -19,7 +19,7 @@ import {
   ToolErrorType,
   ApprovalMode,
 } from '../index.js';
-import type { Part } from '@google/genai';
+import type { Part } from '@codinglm/genai';
 import { MockTool } from '../test-utils/mock-tool.js';
 
 describe('executeToolCall', () => {
@@ -61,7 +61,7 @@ describe('executeToolCall', () => {
       getTruncateToolOutputLines: () => DEFAULT_TRUNCATE_TOOL_OUTPUT_LINES,
       getUseSmartEdit: () => false,
       getUseModelRouter: () => false,
-      getGeminiClient: () => null, // No client needed for these tests
+      getLlmClient: () => null, // No client needed for these tests
       getEnableMessageBusIntegration: () => false,
       getMessageBus: () => null,
       getPolicyEngine: () => null,

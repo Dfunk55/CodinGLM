@@ -11,7 +11,7 @@ import type {
   GenerateContentResponse,
 } from '../llm/types.js';
 import type { LlmClient } from '../core/client.js';
-import { DEFAULT_GEMINI_FLASH_LITE_MODEL } from '../config/models.js';
+import { DEFAULT_GLM_FLASH_LITE_MODEL } from '../config/models.js';
 import { getResponseText, partToString } from './partUtils.js';
 import { debugLogger } from './debugLogger.js';
 
@@ -23,7 +23,7 @@ import { debugLogger } from './debugLogger.js';
  */
 export type Summarizer = (
   result: ToolResult,
-  geminiClient: LlmClient,
+  llmClient: LlmClient,
   abortSignal: AbortSignal,
 ) => Promise<string>;
 
@@ -31,13 +31,13 @@ export type Summarizer = (
  * The default summarizer for tool results.
  *
  * @param result The result of the tool execution.
- * @param geminiClient The Gemini client to use for summarization.
+ * @param llmClient The CodinGLM client to use for summarization.
  * @param abortSignal The abort signal to use for summarization.
  * @returns The summary of the result.
  */
 export const defaultSummarizer: Summarizer = (
   result: ToolResult,
-  _geminiClient: LlmClient,
+  _llmClient: LlmClient,
   _abortSignal: AbortSignal,
 ) => Promise.resolve(JSON.stringify(result.llmContent));
 
@@ -55,16 +55,16 @@ Text to summarize:
 Return the summary string which should first contain an overall summarization of text followed by the full stack trace of errors and warnings in the tool output.
 `;
 
-export const llmSummarizer: Summarizer = (result, geminiClient, abortSignal) =>
+export const llmSummarizer: Summarizer = (result, llmClient, abortSignal) =>
   summarizeToolOutput(
     partToString(result.llmContent),
-    geminiClient,
+    llmClient,
     abortSignal,
   );
 
 export async function summarizeToolOutput(
   textToSummarize: string,
-  geminiClient: LlmClient,
+  llmClient: LlmClient,
   abortSignal: AbortSignal,
   maxOutputTokens: number = 2000,
 ): Promise<string> {
@@ -83,11 +83,11 @@ export async function summarizeToolOutput(
     maxOutputTokens,
   };
   try {
-    const parsedResponse = (await geminiClient.generateContent(
+    const parsedResponse = (await llmClient.generateContent(
       contents,
       toolOutputSummarizerConfig,
       abortSignal,
-      DEFAULT_GEMINI_FLASH_LITE_MODEL,
+      DEFAULT_GLM_FLASH_LITE_MODEL,
     )) as unknown as GenerateContentResponse;
     return getResponseText(parsedResponse) || textToSummarize;
   } catch (error) {

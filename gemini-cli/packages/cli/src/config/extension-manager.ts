@@ -40,7 +40,7 @@ import {
   type ExtensionEvents,
   type MCPServerConfig,
   type ExtensionInstallMetadata,
-  type GeminiCLIExtension,
+  type CodinGLMExtension,
 } from '@codinglm/core';
 import { maybeRequestConsentOrFail } from './extensions/consent.js';
 import { resolveEnvVarsInObject } from '../utils/envVarResolver.js';
@@ -81,7 +81,7 @@ export class ExtensionManager extends ExtensionLoader {
     | undefined;
   private telemetryConfig: Config;
   private workspaceDir: string;
-  private loadedExtensions: GeminiCLIExtension[] | undefined;
+  private loadedExtensions: CodinGLMExtension[] | undefined;
 
   constructor(options: ExtensionManagerParams) {
     super(options.eventEmitter);
@@ -115,7 +115,7 @@ export class ExtensionManager extends ExtensionLoader {
     this.requestSetting = requestSetting;
   }
 
-  getExtensions(): GeminiCLIExtension[] {
+  getExtensions(): CodinGLMExtension[] {
     if (!this.loadedExtensions) {
       throw new Error(
         'Extensions not yet loaded, must call `loadExtensions` first',
@@ -127,11 +127,11 @@ export class ExtensionManager extends ExtensionLoader {
   async installOrUpdateExtension(
     installMetadata: ExtensionInstallMetadata,
     previousExtensionConfig?: ExtensionConfig,
-  ): Promise<GeminiCLIExtension> {
+  ): Promise<CodinGLMExtension> {
     const isUpdate = !!previousExtensionConfig;
     let newExtensionConfig: ExtensionConfig | null = null;
     let localSourcePath: string | undefined;
-    let extension: GeminiCLIExtension | null;
+    let extension: CodinGLMExtension | null;
     try {
       if (!isWorkspaceTrusted(this.settings).isTrusted) {
         if (
@@ -416,7 +416,7 @@ export class ExtensionManager extends ExtensionLoader {
   /**
    * Loads all installed extensions, should only be called once.
    */
-  async loadExtensions(): Promise<GeminiCLIExtension[]> {
+  async loadExtensions(): Promise<CodinGLMExtension[]> {
     if (this.loadedExtensions) {
       throw new Error('Extensions already loaded, only load extensions once.');
     }
@@ -437,7 +437,7 @@ export class ExtensionManager extends ExtensionLoader {
    */
   private async loadExtension(
     extensionDir: string,
-  ): Promise<GeminiCLIExtension | null> {
+  ): Promise<CodinGLMExtension | null> {
     this.loadedExtensions ??= [];
     if (!fs.statSync(extensionDir).isDirectory()) {
       return null;
@@ -514,7 +514,7 @@ export class ExtensionManager extends ExtensionLoader {
    * appropriate.
    */
   private unloadExtension(
-    extension: GeminiCLIExtension,
+    extension: CodinGLMExtension,
   ): Promise<void> | undefined {
     this.loadedExtensions = this.getExtensions().filter(
       (entry) => extension !== entry,
@@ -556,7 +556,7 @@ export class ExtensionManager extends ExtensionLoader {
     }
   }
 
-  toOutputString(extension: GeminiCLIExtension): string {
+  toOutputString(extension: CodinGLMExtension): string {
     const userEnabled = this.extensionEnablementManager.isEnabled(
       extension.name,
       os.homedir(),
@@ -671,7 +671,7 @@ export async function copyExtension(
 
 function getContextFileNames(config: ExtensionConfig): string[] {
   if (!config.contextFileName) {
-    return ['GEMINI.md'];
+    return ['CODINGLM.md'];
   } else if (!Array.isArray(config.contextFileName)) {
     return [config.contextFileName];
   }

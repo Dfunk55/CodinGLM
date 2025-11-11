@@ -7,7 +7,7 @@
 import type { Mock } from 'vitest';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import type { Content } from '../llm/types.js';
-import { DEFAULT_GEMINI_FLASH_MODEL } from '../config/models.js';
+import { DEFAULT_GLM_FLASH_MODEL } from '../config/models.js';
 import { BaseLlmClient } from '../core/baseLlmClient.js';
 import type { ContentGenerator } from '../core/contentGenerator.js';
 import type { Config } from '../config/config.js';
@@ -41,7 +41,7 @@ vi.mock('node:fs', () => {
   };
 });
 
-// Mock GeminiClient and Config constructor
+// Mock LlmClient and Config constructor
 vi.mock('../core/baseLlmClient.js');
 vi.mock('../config/config.js');
 
@@ -73,7 +73,7 @@ describe('checkNextSpeaker', () => {
       mockConfig,
     );
 
-    // GeminiChat will receive the mocked instances via the mocked GoogleGenAI constructor
+    // ChatSession will receive the mocked instances via the mocked provider constructor
     chatInstance = new ChatSession(
       mockConfig,
       {},
@@ -266,7 +266,7 @@ describe('checkNextSpeaker', () => {
     expect(mockBaseLlmClient.generateJson).toHaveBeenCalled();
     const generateJsonCall = (mockBaseLlmClient.generateJson as Mock).mock
       .calls[0];
-    expect(generateJsonCall[0].model).toBe(DEFAULT_GEMINI_FLASH_MODEL);
+    expect(generateJsonCall[0].model).toBe(DEFAULT_GLM_FLASH_MODEL);
     expect(generateJsonCall[0].promptId).toBe(promptId);
   });
 });

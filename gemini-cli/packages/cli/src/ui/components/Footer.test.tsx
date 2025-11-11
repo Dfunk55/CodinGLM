@@ -10,12 +10,12 @@ import {
   createMockSettings,
 } from '../../test-utils/render.js';
 import { Footer } from './Footer.js';
-import { tildeifyPath, ToolCallDecision } from '@google/gemini-cli-core';
+import { tildeifyPath, ToolCallDecision } from '@codinglm/core';
 import type { SessionStatsState } from '../contexts/SessionContext.js';
 
-vi.mock('@google/gemini-cli-core', async (importOriginal) => {
+vi.mock('@codinglm/core', async (importOriginal) => {
   const original =
-    await importOriginal<typeof import('@google/gemini-cli-core')>();
+    await importOriginal<typeof import('@codinglm/core')>();
   return {
     ...original,
     shortenPath: (p: string, len: number) => {
@@ -28,7 +28,7 @@ vi.mock('@google/gemini-cli-core', async (importOriginal) => {
 });
 
 const defaultProps = {
-  model: 'gemini-pro',
+  model: 'glm-4.6',
   targetDir:
     '/Users/test/project/foo/bar/and/some/more/directories/to/make/it/long',
   branchName: 'main',
