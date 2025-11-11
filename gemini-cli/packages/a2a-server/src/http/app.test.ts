@@ -88,10 +88,12 @@ vi.mock('../config/config.js', async () => {
 // Mock the LlmClient to avoid actual API calls
 const sendMessageStreamSpy = vi.fn();
 vi.mock('@codinglm/core', async () => {
-  const actual = await vi.importActual('@codinglm/core');
+  const actual = await vi.importActual<typeof import('@codinglm/core')>(
+    '@codinglm/core',
+  );
   return {
     ...actual,
-    LlmEventType: actual.LlmEventType,
+    LlmEventType: actual['LlmEventType'],
     LlmClient: vi.fn().mockImplementation(() => ({
       sendMessageStream: sendMessageStreamSpy,
       getUserTier: vi.fn().mockReturnValue('free'),
@@ -201,7 +203,7 @@ describe('E2E Tests', () => {
       .expect(200);
 
     const events = streamToSSEEvents(res.text);
-    if (process.env.DEBUG_EVENT_LOG === '1') {
+    if (process.env['DEBUG_EVENT_LOG'] === '1') {
       fs.writeFileSync(
         '/tmp/a2a-events.json',
         JSON.stringify(
