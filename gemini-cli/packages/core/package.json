@@ -11,7 +11,15 @@
   "exports": {
     ".": "./dist/index.js",
     "./testing": "./dist/testing.js",
+    "./llm/*": "./dist/src/llm/*.js",
     "./src/*": "./src/*"
+  },
+  "typesVersions": {
+    "*": {
+      "testing": ["dist/testing.d.ts"],
+      "llm/*": ["dist/src/llm/*.d.ts"],
+      "src/*": ["src/*"]
+    }
   },
   "scripts": {
     "build": "node ../../scripts/build_package.js",
