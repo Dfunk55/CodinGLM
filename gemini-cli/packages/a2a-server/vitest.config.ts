@@ -6,8 +6,20 @@
 
 /// <reference types="vitest" />
 import { defineConfig } from 'vitest/config';
+import { fileURLToPath } from 'node:url';
+import path from 'node:path';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig({
+  resolve: {
+    alias: {
+      '@codinglm/core/testing': path.resolve(
+        __dirname,
+        '../core/testing.ts',
+      ),
+    },
+  },
   test: {
     include: ['**/*.{test,spec}.?(c|m)[jt]s?(x)'],
     exclude: ['**/node_modules/**', '**/dist/**'],

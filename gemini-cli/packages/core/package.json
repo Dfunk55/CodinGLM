@@ -8,6 +8,11 @@
   },
   "type": "module",
   "main": "dist/index.js",
+  "exports": {
+    ".": "./dist/index.js",
+    "./testing": "./dist/testing.js",
+    "./src/*": "./src/*"
+  },
   "scripts": {
     "build": "node ../../scripts/build_package.js",
     "lint": "eslint . --ext .ts,.tsx",

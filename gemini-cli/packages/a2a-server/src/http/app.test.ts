@@ -6,7 +6,7 @@
 
 import type { Config } from '@codinglm/core';
 import {
-  GeminiEventType,
+  LlmEventType,
   ApprovalMode,
   type ToolCallConfirmationDetails,
 } from '@codinglm/core';
@@ -16,6 +16,7 @@ import type {
 } from '@a2a-js/sdk';
 import type express from 'express';
 import type { Server } from 'node:http';
+import * as fs from 'node:fs';
 import request from 'supertest';
 import {
   afterAll,
@@ -34,7 +35,7 @@ import {
   createStreamMessageRequest,
   createMockConfig,
 } from '../utils/testing_utils.js';
-import { MockTool } from '@codinglm/core';
+import { MockTool } from '@codinglm/core/testing';
 
 const mockToolConfirmationFn = async () =>
   ({}) as unknown as ToolCallConfirmationDetails;
@@ -90,6 +91,7 @@ vi.mock('@codinglm/core', async () => {
   const actual = await vi.importActual('@codinglm/core');
   return {
     ...actual,
+    LlmEventType: actual.LlmEventType,
     LlmClient: vi.fn().mockImplementation(() => ({
       sendMessageStream: sendMessageStreamSpy,
       getUserTier: vi.fn().mockReturnValue('free'),
@@ -166,7 +168,7 @@ describe('E2E Tests', () => {
     sendMessageStreamSpy.mockImplementationOnce(async function* () {
       yield* [
         {
-          type: GeminiEventType.ToolCallRequest,
+          type: LlmEventType.ToolCallRequest,
           value: {
             callId: 'test-call-id',
             name: 'test-tool',
@@ -199,7 +201,26 @@ describe('E2E Tests', () => {
       .expect(200);
 
     const events = streamToSSEEvents(res.text);
+    if (process.env.DEBUG_EVENT_LOG === '1') {
+      fs.writeFileSync(
+        '/tmp/a2a-events.json',
+        JSON.stringify(
+          events.map((event) => event.result),
+          null,
+          2,
+        ),
+      );
+    }
     assertTaskCreationAndWorkingStatus(events);
+
+    // Temporary debug: log event states to diagnose failures.
+    console.error(
+      events.map((event, idx) => ({
+        idx,
+        kind: (event.result as TaskStatusUpdateEvent).kind,
+        state: (event.result as TaskStatusUpdateEvent).status?.state,
+      })),
+    );
 
     // Status update: working
     const workingEvent2 = events[2].result as TaskStatusUpdateEvent;
@@ -250,7 +271,7 @@ describe('E2E Tests', () => {
     sendMessageStreamSpy.mockImplementationOnce(async function* () {
       yield* [
         {
-          type: GeminiEventType.ToolCallRequest,
+          type: LlmEventType.ToolCallRequest,
           value: {
             callId: 'test-call-id-1',
             name: 'test-tool-1',
@@ -258,7 +279,7 @@ describe('E2E Tests', () => {
           },
         },
         {
-          type: GeminiEventType.ToolCallRequest,
+          type: LlmEventType.ToolCallRequest,
           value: {
             callId: 'test-call-id-2',
             name: 'test-tool-2',
@@ -403,7 +424,7 @@ describe('E2E Tests', () => {
     sendMessageStreamSpy.mockImplementationOnce(async function* () {
       yield* [
         {
-          type: GeminiEventType.ToolCallRequest,
+          type: LlmEventType.ToolCallRequest,
           value: {
             callId: 'test-call-id-1',
             name: 'test-tool-1',
@@ -411,7 +432,7 @@ describe('E2E Tests', () => {
           },
         },
         {
-          type: GeminiEventType.ToolCallRequest,
+          type: LlmEventType.ToolCallRequest,
           value: {
             callId: 'test-call-id-2',
             name: 'test-tool-2',
@@ -545,7 +566,7 @@ describe('E2E Tests', () => {
     sendMessageStreamSpy.mockImplementationOnce(async function* () {
       yield* [
         {
-          type: GeminiEventType.ToolCallRequest,
+          type: LlmEventType.ToolCallRequest,
           value: {
             callId: 'test-call-id-no-approval',
             name: 'test-tool-no-approval',
@@ -673,7 +694,7 @@ describe('E2E Tests', () => {
     sendMessageStreamSpy.mockImplementationOnce(async function* () {
       yield* [
         {
-          type: GeminiEventType.ToolCallRequest,
+          type: LlmEventType.ToolCallRequest,
           value: {
             callId: 'test-call-id-yolo',
             name: 'test-tool-yolo',

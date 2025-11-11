@@ -15,11 +15,8 @@ import {
   type Mock,
 } from 'vitest';
 import { validateNonInteractiveAuth } from './validateNonInterActiveAuth.js';
-import {
-  AuthType,
-  OutputFormat,
-  makeFakeConfig,
-} from '@codinglm/core';
+import { AuthType, OutputFormat } from '@codinglm/core';
+import { makeFakeConfig } from '@codinglm/core/testing';
 import type { Config } from '@codinglm/core';
 import * as auth from './config/auth.js';
 import { type LoadedSettings } from './config/settings.js';
@@ -31,7 +28,7 @@ function createLocalMockConfig(overrides: Partial<Config> = {}): Config {
 }
 
 describe('validateNonInterActiveAuth', () => {
-  let originalEnvGeminiApiKey: string | undefined;
+  let originalEnvLegacyApiKey: string | undefined;
   let originalEnvVertexAi: string | undefined;
   let originalEnvGcp: string | undefined;
   let originalEnvZaiApiKey: string | undefined;
@@ -43,7 +40,7 @@ describe('validateNonInterActiveAuth', () => {
   let resolveAuthTypeSpy: MockInstance;
 
   beforeEach(() => {
-    originalEnvGeminiApiKey = process.env['GEMINI_API_KEY'];
+    originalEnvLegacyApiKey = process.env['GEMINI_API_KEY'];
     originalEnvVertexAi = process.env['GOOGLE_GENAI_USE_VERTEXAI'];
     originalEnvGcp = process.env['GOOGLE_GENAI_USE_GCA'];
     originalEnvZaiApiKey = process.env['Z_AI_API_KEY'];
@@ -86,8 +83,8 @@ describe('validateNonInterActiveAuth', () => {
   });
 
   afterEach(() => {
-    if (originalEnvGeminiApiKey !== undefined) {
-      process.env['GEMINI_API_KEY'] = originalEnvGeminiApiKey;
+    if (originalEnvLegacyApiKey !== undefined) {
+      process.env['GEMINI_API_KEY'] = originalEnvLegacyApiKey;
     } else {
       delete process.env['GEMINI_API_KEY'];
     }

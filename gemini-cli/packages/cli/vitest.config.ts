@@ -14,6 +14,28 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 export default defineConfig({
   resolve: {
     conditions: ['test'],
+    alias: [
+      {
+        find: 'react',
+        replacement: path.resolve(__dirname, '../../node_modules/react'),
+      },
+      {
+        find: '@codinglm/core/testing',
+        replacement: path.resolve(__dirname, '../core/testing.ts'),
+      },
+      {
+        find: /^@codinglm\/core\/(.*)/,
+        replacement: path.resolve(__dirname, '../core/src') + '/$1',
+      },
+      {
+        find: '@codinglm/core',
+        replacement: path.resolve(__dirname, '../core/src/index.ts'),
+      },
+      {
+        find: '@codinglm/genai',
+        replacement: path.resolve(__dirname, '../core/src/shim/genai.ts'),
+      },
+    ],
   },
   test: {
     include: ['**/*.{test,spec}.{js,ts,jsx,tsx}', 'config.test.ts'],
@@ -24,9 +46,6 @@ export default defineConfig({
 
     outputFile: {
       junit: 'junit.xml',
-    },
-    alias: {
-      react: path.resolve(__dirname, '../../node_modules/react'),
     },
     setupFiles: ['./test-setup.ts'],
     coverage: {
@@ -51,7 +70,7 @@ export default defineConfig({
     },
     server: {
       deps: {
-        inline: [/@google\/gemini-cli-core/],
+        inline: [/@codinglm\/core/],
       },
     },
   },

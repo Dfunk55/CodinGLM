@@ -26,9 +26,8 @@ import { AuthProviderType } from '../config/config.js';
 import { GoogleCredentialProvider } from '../mcp/google-auth-provider.js';
 import { ServiceAccountImpersonationProvider } from '../mcp/sa-impersonation-provider.js';
 import { DiscoveredMCPTool } from './mcp-tool.js';
-
+import { mcpToTool } from '../shim/genai.js';
 import type { FunctionDeclaration } from '../llm/types.js';
-import type { CallableTool } from './mcp-tool.js';
 import { basename } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { MCPOAuthProvider } from '../mcp/oauth-provider.js';
@@ -665,56 +664,6 @@ export async function discoverTools(
     }
     return [];
   }
-}
-
-// Minimal local implementation to avoid dependency on @google/genai
-function mcpToTool(
-  mcpClient: Client,
-  _options?: { timeout?: number },
-): CallableTool {
-  return {
-    async tool(): Promise<{ functionDeclarations?: FunctionDeclaration[] }> {
-      try {
-        const resp = await mcpClient.request({ method: 'tools/list', params: {} }, undefined as any);
-        const tools = Array.isArray(resp?.tools) ? resp.tools : [];
-        const functionDeclarations: FunctionDeclaration[] = tools.map((t: any) => ({
-          name: t?.name,
-          description: t?.description,
-          parametersJsonSchema: t?.inputSchema,
-        }));
-        return { functionDeclarations };
-      } catch (_err) {
-        return { functionDeclarations: [] };
-      }
-    },
-    async callTool(functionCalls) {
-      // Best-effort wrapper for single tool call
-      const call = functionCalls?.[0];
-      try {
-        const result = await mcpClient.request(
-          { method: 'tools/call', params: { name: call?.name, arguments: call?.args } },
-          undefined as any,
-        );
-        return [
-          {
-            functionResponse: {
-              name: call?.name,
-              response: result ?? {},
-            },
-          },
-        ] as any;
-      } catch (e) {
-        return [
-          {
-            functionResponse: {
-              name: call?.name,
-              response: { error: { isError: true, message: String(e) } },
-            },
-          },
-        ] as any;
-      }
-    },
-  };
 }
 
 /**

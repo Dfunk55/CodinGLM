@@ -22,10 +22,10 @@ import {
   UserTierId,
   AuthType,
   TerminalQuotaError,
-  makeFakeConfig,
   type GoogleApiError,
   RetryableQuotaError,
-} from '@google/gemini-cli-core';
+} from '@codinglm/core';
+import { makeFakeConfig } from '@codinglm/core/testing';
 import { useQuotaAndFallback } from './useQuotaAndFallback.js';
 import type { UseHistoryManagerReturn } from './useHistoryManager.js';
 import { AuthState, MessageType } from '../types.js';
@@ -137,7 +137,7 @@ describe('useQuotaAndFallback', () => {
           error: new Error('some error'),
           expectedMessageSnippets: [
             'Automatically switching from model-A to model-B for faster responses',
-            'upgrade to a Gemini Code Assist Standard or Enterprise plan',
+            'upgrade your Zhipu AI plan',
           ],
         },
         {
@@ -146,7 +146,7 @@ describe('useQuotaAndFallback', () => {
           error: new Error('some error'),
           expectedMessageSnippets: [
             'Automatically switching from model-A to model-B for faster responses',
-            'switch to using a paid API key from AI Studio',
+            'switch to a Z.AI API key',
           ],
         },
         {
@@ -160,7 +160,7 @@ describe('useQuotaAndFallback', () => {
           expectedMessageSnippets: [
             'Your requests are being throttled right now due to server being at capacity for model-A',
             'Automatically switching from model-A to model-B',
-            'upgrading to a Gemini Code Assist Standard or Enterprise plan',
+            'upgrading your Zhipu AI plan',
           ],
         },
         {
@@ -174,7 +174,7 @@ describe('useQuotaAndFallback', () => {
           expectedMessageSnippets: [
             'Your requests are being throttled right now due to server being at capacity for model-A',
             'Automatically switching from model-A to model-B',
-            'switch to using a paid API key from AI Studio',
+            'switch to a Z.AI API key',
           ],
         },
       ];

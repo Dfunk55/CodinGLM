@@ -21,19 +21,19 @@ import { BuiltinCommandLoader } from '../../services/BuiltinCommandLoader.js';
 import { FileCommandLoader } from '../../services/FileCommandLoader.js';
 import { McpPromptLoader } from '../../services/McpPromptLoader.js';
 import {
-  type GeminiClient,
+  type LlmClient,
   SlashCommandStatus,
   ToolConfirmationOutcome,
-  makeFakeConfig,
-} from '@google/gemini-cli-core';
+} from '@codinglm/core';
+import { makeFakeConfig } from '@codinglm/core/testing';
 
 const { logSlashCommand } = vi.hoisted(() => ({
   logSlashCommand: vi.fn(),
 }));
 
-vi.mock('@google/gemini-cli-core', async (importOriginal) => {
+vi.mock('@codinglm/core', async (importOriginal) => {
   const original =
-    await importOriginal<typeof import('@google/gemini-cli-core')>();
+    await importOriginal<typeof import('@codinglm/core')>();
 
   return {
     ...original,
@@ -163,7 +163,7 @@ describe('useSlashCommandProcessor', () => {
           vi.fn(), // refreshStatic
           vi.fn(), // toggleVimEnabled
           setIsProcessing,
-          vi.fn(), // setGeminiMdFileCount
+          vi.fn(), // setContextFileCount
           {
             openAuthDialog: mockOpenAuthDialog,
             openThemeDialog: mockOpenThemeDialog,
@@ -470,8 +470,8 @@ describe('useSlashCommandProcessor', () => {
       const mockClient = {
         setHistory: vi.fn(),
         stripThoughtsFromHistory: vi.fn(),
-      } as unknown as GeminiClient;
-      vi.spyOn(mockConfig, 'getGeminiClient').mockReturnValue(mockClient);
+      } as unknown as LlmClient;
+      vi.spyOn(mockConfig, 'getLlmClient').mockReturnValue(mockClient);
 
       const command = createTestCommand({
         name: 'load',
@@ -499,8 +499,8 @@ describe('useSlashCommandProcessor', () => {
       const mockClient = {
         setHistory: vi.fn(),
         stripThoughtsFromHistory: vi.fn(),
-      } as unknown as GeminiClient;
-      vi.spyOn(mockConfig, 'getGeminiClient').mockReturnValue(mockClient);
+      } as unknown as LlmClient;
+      vi.spyOn(mockConfig, 'getLlmClient').mockReturnValue(mockClient);
 
       const historyWithThoughts = [
         {
@@ -512,7 +512,7 @@ describe('useSlashCommandProcessor', () => {
         name: 'loadwiththoughts',
         action: vi.fn().mockResolvedValue({
           type: 'load_history',
-          history: [{ type: MessageType.GEMINI, text: 'response' }],
+          history: [{ type: MessageType.MODEL_RESPONSE, text: 'response' }],
           clientHistory: historyWithThoughts,
         }),
       });

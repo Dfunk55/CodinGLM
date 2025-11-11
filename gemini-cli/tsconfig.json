@@ -30,7 +30,9 @@
     "baseUrl": ".",
     "paths": {
       "@codinglm/core": ["packages/core/src/index.ts"],
-      "@codinglm/core/*": ["packages/core/src/*"]
+      "@codinglm/core/*": ["packages/core/src/*"],
+      "@codinglm/core/testing": ["packages/core/testing.ts"],
+      "@codinglm/genai": ["packages/core/src/shim/genai.ts"]
     }
   }
 }

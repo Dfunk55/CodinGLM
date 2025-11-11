@@ -20,10 +20,10 @@ import { act, useContext } from 'react';
 import { AppContainer } from './AppContainer.js';
 import {
   type Config,
-  makeFakeConfig,
   CoreEvent,
   type UserFeedbackPayload,
-} from '@google/gemini-cli-core';
+} from '@codinglm/core';
+import { makeFakeConfig } from '@codinglm/core/testing';
 
 // Mock coreEvents
 const mockCoreEvents = vi.hoisted(() => ({
@@ -33,9 +33,9 @@ const mockCoreEvents = vi.hoisted(() => ({
   emit: vi.fn(),
 }));
 
-vi.mock('@google/gemini-cli-core', async (importOriginal) => {
+vi.mock('@codinglm/core', async (importOriginal) => {
   const actual =
-    await importOriginal<typeof import('@google/gemini-cli-core')>();
+    await importOriginal<typeof import('@codinglm/core')>();
   return {
     ...actual,
     coreEvents: mockCoreEvents,
@@ -136,7 +136,7 @@ import { useLoadingIndicator } from './hooks/useLoadingIndicator.js';
 import { useKeypress, type Key } from './hooks/useKeypress.js';
 import { measureElement } from 'ink';
 import { useTerminalSize } from './hooks/useTerminalSize.js';
-import { ShellExecutionService } from '@google/gemini-cli-core';
+import { ShellExecutionService } from '@codinglm/core';
 import { type ExtensionManager } from '../config/extension-manager.js';
 import { enableMouseEvents, disableMouseEvents } from './utils/mouse.js';
 
@@ -180,8 +180,8 @@ describe('AppContainer State Management', () => {
     vi.mock('../utils/windowTitle.js', async () => ({
       computeWindowTitle: vi.fn(
         (folderName: string) =>
-          // Default behavior: return "Gemini - {folderName}" unless CLI_TITLE is set
-          process.env['CLI_TITLE'] || `Gemini - ${folderName}`,
+          // Default behavior: return "CodinGLM - {folderName}" unless CLI_TITLE is set
+          process.env['CLI_TITLE'] || `CodinGLM - ${folderName}`,
       ),
     }));
 
@@ -834,7 +834,7 @@ describe('AppContainer State Management', () => {
       );
       expect(titleWrites).toHaveLength(1);
       expect(titleWrites[0][0]).toBe(
-        `\x1b]2;${'Gemini - workspace'.padEnd(80, ' ')}\x07`,
+        `\x1b]2;${'CodinGLM - workspace'.padEnd(80, ' ')}\x07`,
       );
       unmount();
     });
@@ -995,7 +995,7 @@ describe('AppContainer State Management', () => {
       } as unknown as LoadedSettings;
 
       // Mock CLI_TITLE environment variable
-      vi.stubEnv('CLI_TITLE', 'Custom Gemini Title');
+      vi.stubEnv('CLI_TITLE', 'Custom CodinGLM Title');
 
       // Mock the streaming state as Idle with no thought
       mockedUseCodinGLMStream.mockReturnValue({
@@ -1023,7 +1023,7 @@ describe('AppContainer State Management', () => {
       );
       expect(titleWrites).toHaveLength(1);
       expect(titleWrites[0][0]).toBe(
-        `\x1b]2;${'Custom Gemini Title'.padEnd(80, ' ')}\x07`,
+        `\x1b]2;${'Custom CodinGLM Title'.padEnd(80, ' ')}\x07`,
       );
       unmount();
     });
