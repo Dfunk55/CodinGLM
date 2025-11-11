@@ -11,6 +11,18 @@ import { configureCodinglmEnvironment } from './src/utils/codinglmDefaults.js';
 
 configureCodinglmEnvironment();
 
+if (
+  !process.env['Z_AI_API_KEY'] &&
+  !process.env['ZAI_API_KEY'] &&
+  process.env['CODINGLM'] === '1'
+) {
+  console.error(
+    'CodinGLM requires Z_AI_API_KEY (or ZAI_API_KEY) to be set before launching.',
+  );
+  console.error('Export your key, then re-run: export Z_AI_API_KEY="..."');
+  process.exit(1);
+}
+
 import('./src/gemini.js')
   .then(({ main }) =>
     main().catch((error) => {

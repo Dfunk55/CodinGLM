@@ -159,7 +159,7 @@ export async function startInteractiveUI(
   // Disabling line wrapping reduces Ink rendering artifacts particularly when
   // the terminal is resized on terminals that full respect this escape code
   // such as Ghostty. Some terminals such as Iterm2 only respect line wrapping
-  // when using the alternate buffer, which Gemini CLI does not use because we
+  // when using the alternate buffer, which CodinGLM CLI does not use because we
   // do not yet have support for scrolling in that mode.
   if (!config.getScreenReader()) {
     process.stdout.write('\x1b[?7l');
@@ -346,6 +346,18 @@ export async function main() {
             settings.merged.security.auth.selectedType,
           );
         } catch (err) {
+          const message =
+            err instanceof Error ? err.message : String(err);
+          console.error(`Authentication error: ${message}`);
+          if (
+            process.env['CODINGLM'] === '1' &&
+            !process.env['Z_AI_API_KEY'] &&
+            !process.env['ZAI_API_KEY']
+          ) {
+            console.error(
+              'Set Z_AI_API_KEY (or ZAI_API_KEY) before launching CodinGLM to talk to GLM-4.6.',
+            );
+          }
           debugLogger.error('Error authenticating:', err);
           process.exit(1);
         }
@@ -392,7 +404,7 @@ export async function main() {
   }
 
   // We are now past the logic handling potentially launching a child process
-  // to run Gemini CLI. It is now safe to perform expensive initialization that
+  // to run CodinGLM CLI. It is now safe to perform expensive initialization that
   // may have side effects.
   {
     const config = await loadCliConfig(settings.merged, sessionId, argv);
@@ -451,6 +463,19 @@ export async function main() {
       ...(await getStartupWarnings()),
       ...(await getUserStartupWarnings()),
     ];
+
+    const requiresZaiKey =
+      process.env['CODINGLM'] === '1' &&
+      !process.env['Z_AI_API_KEY'] &&
+      !process.env['ZAI_API_KEY'];
+
+    if (requiresZaiKey) {
+      console.error(
+        'CodinGLM requires Z_AI_API_KEY (or ZAI_API_KEY) to be set before launching.',
+      );
+      console.error('Export your key, then re-run: export Z_AI_API_KEY="..."');
+      process.exit(1);
+    }
 
     // Render UI, passing necessary config values. Check that there is no command line question.
     if (config.isInteractive()) {
