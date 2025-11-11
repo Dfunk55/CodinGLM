@@ -37,11 +37,14 @@ export {
   logApiResponse,
   logFlashFallback,
   logSlashCommand,
+  logIdeConnection,
+  logModelSlashCommand,
   logConversationFinishedEvent,
   logKittySequenceOverflow,
   logChatCompression,
   logToolOutputTruncated,
   logExtensionEnable,
+  logExtensionDisable,
   logExtensionInstallEvent,
   logExtensionUninstall,
   logExtensionUpdateEvent,
@@ -63,6 +66,16 @@ export {
   ToolOutputTruncatedEvent,
   WebFetchFallbackAttemptEvent,
   ToolCallDecision,
+} from './types.js';
+export {
+  ModelSlashCommandEvent,
+  IdeConnectionEvent,
+  IdeConnectionType,
+  ExtensionInstallEvent,
+  ExtensionEnableEvent,
+  ExtensionDisableEvent,
+  ExtensionUninstallEvent,
+  ExtensionUpdateEvent,
 } from './types.js';
 export { makeSlashCommandEvent, makeChatCompressionEvent } from './types.js';
 export type { TelemetryEvent } from './types.js';

@@ -47,11 +47,13 @@ export * from './utils/schemaValidator.js';
 export * from './utils/errors.js';
 export * from './utils/getFolderStructure.js';
 export * from './utils/memoryDiscovery.js';
+export * from './utils/pathReader.js';
 export * from './utils/getPty.js';
 export * from './utils/gitIgnoreParser.js';
 export * from './utils/gitUtils.js';
 export * from './utils/editor.js';
 export * from './utils/quotaErrorDetection.js';
+export * from './utils/googleErrors.js';
 export * from './utils/googleQuotaErrors.js';
 export * from './utils/fileUtils.js';
 export * from './utils/retry.js';
@@ -121,6 +123,7 @@ export * from './tools/write-todos.js';
 export { MCPOAuthProvider } from './mcp/oauth-provider.js';
 export type { OAuthToken, OAuthCredentials } from './mcp/token-storage/types.js';
 export { MCPOAuthTokenStorage } from './mcp/oauth-token-storage.js';
+export { KeychainTokenStorage } from './mcp/token-storage/keychain-token-storage.js';
 export type { MCPOAuthConfig } from './mcp/oauth-provider.js';
 export type {
   OAuthAuthorizationServerMetadata,
