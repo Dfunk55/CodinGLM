@@ -19,12 +19,12 @@ import { extensionsCommand } from '../commands/extensions.js';
 import {
   Config,
   loadServerHierarchicalMemory,
-  setGeminiMdFilename as setServerGeminiMdFilename,
-  getCurrentGeminiMdFilename,
+  setContextFilename as setServerLlmMdFilename,
+  getCurrentContextFilename,
   ApprovalMode,
-  DEFAULT_GEMINI_MODEL,
-  DEFAULT_GEMINI_MODEL_AUTO,
-  DEFAULT_GEMINI_EMBEDDING_MODEL,
+  DEFAULT_GLM_MODEL,
+  DEFAULT_GLM_MODEL_AUTO,
+  DEFAULT_GLM_EMBEDDING_MODEL,
   DEFAULT_FILE_FILTERING_OPTIONS,
   DEFAULT_MEMORY_FILE_FILTERING_OPTIONS,
   FileDiscoveryService,
@@ -94,7 +94,7 @@ export async function parseArguments(settings: Settings): Promise<CliArgs> {
       description: 'Run in debug mode?',
       default: false,
     })
-    .command('$0 [query..]', 'Launch CodingGLM', (yargsInstance) =>
+    .command('$0 [query..]', 'Launch CodinGLM', (yargsInstance) =>
       yargsInstance
         .positional('query', {
           description:
@@ -300,9 +300,9 @@ export async function parseArguments(settings: Settings): Promise<CliArgs> {
 // This function is now a thin wrapper around the server's implementation.
 // It's kept in the CLI for now as App.tsx directly calls it for memory refresh.
 // TODO: Consider if App.tsx should get memory via a server call or if Config should refresh itself.
-export async function loadHierarchicalGeminiMemory(
+export async function loadHierarchicalContextMemory(
   currentWorkingDirectory: string,
-  includeDirectoriesToReadGemini: readonly string[] = [],
+  includeDirectoriesToReadContext: readonly string[] = [],
   debugMode: boolean,
   fileService: FileDiscoveryService,
   settings: Settings,
@@ -329,7 +329,7 @@ export async function loadHierarchicalGeminiMemory(
   // Directly call the server function with the corrected path.
   return loadServerHierarchicalMemory(
     effectiveCwd,
-    includeDirectoriesToReadGemini,
+    includeDirectoriesToReadContext,
     debugMode,
     fileService,
     extensionLoader,
@@ -400,13 +400,13 @@ export async function loadCliConfig(
 
   // Set the context filename in the server's memoryTool module BEFORE loading memory
   // TODO(b/343434939): This is a bit of a hack. The contextFileName should ideally be passed
-  // directly to the Config constructor in core, and have core handle setGeminiMdFilename.
-  // However, loadHierarchicalGeminiMemory is called *before* createServerConfig.
+  // directly to the Config constructor in core, and have core handle setContextFilename.
+  // However, loadHierarchicalContextMemory is called *before* createServerConfig.
   if (settings.context?.fileName) {
-    setServerGeminiMdFilename(settings.context.fileName);
+    setServerLlmMdFilename(settings.context.fileName);
   } else {
     // Reset to default if not provided in settings.
-    setServerGeminiMdFilename(getCurrentGeminiMdFilename());
+    setServerLlmMdFilename(getCurrentContextFilename());
   }
 
   const fileService = new FileDiscoveryService(cwd);
@@ -435,9 +435,9 @@ export async function loadCliConfig(
   });
   await extensionManager.loadExtensions();
 
-  // Call the (now wrapper) loadHierarchicalGeminiMemory which calls the server's version
+  // Call the (now wrapper) loadHierarchicalContextMemory which calls the server's version
   const { memoryContent, fileCount, filePaths } =
-    await loadHierarchicalGeminiMemory(
+    await loadHierarchicalContextMemory(
       cwd,
       settings.context?.loadMemoryFromIncludeDirectories
         ? includeDirectories
@@ -528,7 +528,9 @@ export async function loadCliConfig(
   const allowedToolsSet = new Set(allowedTools);
 
   // Interactive mode: explicit -i flag or (TTY + no args + no -p flag)
-  const hasQuery = !!argv.query;
+  const hasQuery = Array.isArray(argv.query)
+    ? argv.query.length > 0
+    : !!argv.query;
   const interactive =
     !!argv.promptInteractive ||
     (process.stdin.isTTY && !hasQuery && !argv.prompt);
@@ -572,8 +574,8 @@ export async function loadCliConfig(
 
   const useModelRouter = settings.experimental?.useModelRouter ?? true;
   const defaultModel = useModelRouter
-    ? DEFAULT_GEMINI_MODEL_AUTO
-    : DEFAULT_GEMINI_MODEL;
+    ? DEFAULT_GLM_MODEL_AUTO
+    : DEFAULT_GLM_MODEL;
   const resolvedModel: string =
     argv.model ||
     process.env['GEMINI_MODEL'] ||
@@ -590,7 +592,7 @@ export async function loadCliConfig(
 
   return new Config({
     sessionId,
-    embeddingModel: DEFAULT_GEMINI_EMBEDDING_MODEL,
+    embeddingModel: DEFAULT_GLM_EMBEDDING_MODEL,
     sandbox: sandboxConfig,
     targetDir: cwd,
     includeDirectories,
