@@ -93,7 +93,6 @@ const codinglmConfig = {
       __dirname,
       'packages/core/index.ts',
     ),
-    '@codinglm/core': path.resolve(__dirname, 'packages/core/index.ts'),
     '@codinglm/core/llm': path.resolve(__dirname, 'packages/core/src/llm'),
     '@codinglm/genai': path.resolve(
       __dirname,

@@ -10,6 +10,8 @@ import { StreamingContext } from './contexts/StreamingContext.js';
 import { QuittingDisplay } from './components/QuittingDisplay.js';
 import { ScreenReaderAppLayout } from './layouts/ScreenReaderAppLayout.js';
 import { DefaultAppLayout } from './layouts/DefaultAppLayout.js';
+import { ErrorBoundary } from './components/ErrorBoundary.js';
+import { debugLogger } from '@codinglm/core';
 
 export const App = () => {
   const uiState = useUIState();
@@ -20,8 +22,18 @@ export const App = () => {
   }
 
   return (
-    <StreamingContext.Provider value={uiState.streamingState}>
-      {isScreenReaderEnabled ? <ScreenReaderAppLayout /> : <DefaultAppLayout />}
-    </StreamingContext.Provider>
+    <ErrorBoundary
+      onError={(error, errorInfo) => {
+        debugLogger.error('Fatal UI error:', {
+          message: error.message,
+          stack: error.stack,
+          componentStack: errorInfo.componentStack,
+        });
+      }}
+    >
+      <StreamingContext.Provider value={uiState.streamingState}>
+        {isScreenReaderEnabled ? <ScreenReaderAppLayout /> : <DefaultAppLayout />}
+      </StreamingContext.Provider>
+    </ErrorBoundary>
   );
 };

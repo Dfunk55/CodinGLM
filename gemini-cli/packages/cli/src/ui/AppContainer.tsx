@@ -240,6 +240,10 @@ export const AppContainer = (props: AppContainerProps) => {
     computeWindowTitle(basename(config.getTargetDir())),
   );
   const lastTitleRef = useRef<string | null>(null);
+  /**
+   * Additional height (in lines) allocated for static UI elements at the bottom.
+   * This accounts for spacing, borders, and the status line.
+   */
   const staticExtraHeight = 3;
 
   useEffect(() => {
@@ -825,8 +829,8 @@ Logging in with Google... Please restart CodinGLM to continue.
       !showPrivacyNotice &&
       llmClient?.isInitialized?.()
     ) {
-      handleFinalSubmit(initialPrompt);
       initialPromptSubmitted.current = true;
+      handleFinalSubmit(initialPrompt);
     }
   }, [
     initialPrompt,
@@ -889,14 +893,13 @@ Logging in with Google... Please restart CodinGLM to continue.
   }, [ideNeedsRestart]);
 
   useEffect(() => {
-    if (queueErrorMessage) {
-      const timer = setTimeout(() => {
-        setQueueErrorMessage(null);
-      }, QUEUE_ERROR_DISPLAY_DURATION_MS);
+    if (!queueErrorMessage) return;
 
-      return () => clearTimeout(timer);
-    }
-    return undefined;
+    const timer = setTimeout(() => {
+      setQueueErrorMessage(null);
+    }, QUEUE_ERROR_DISPLAY_DURATION_MS);
+
+    return () => clearTimeout(timer);
   }, [queueErrorMessage, setQueueErrorMessage]);
 
   useEffect(() => {
@@ -963,7 +966,7 @@ Logging in with Google... Please restart CodinGLM to continue.
   useEffect(() => {
     if (ctrlDTimerRef.current) {
       clearTimeout(ctrlDTimerRef.current);
-      ctrlCTimerRef.current = null;
+      ctrlDTimerRef.current = null;
     }
     if (ctrlDPressCount > 2) {
       recordExitFail(config);
@@ -1221,7 +1224,6 @@ Logging in with Google... Please restart CodinGLM to continue.
     showPrivacyNotice ||
     showIdeRestartPrompt ||
     !!proQuotaRequest ||
-    isAuthDialogOpen ||
     authState === AuthState.AwaitingApiKeyInput;
 
   const pendingHistoryItems = useMemo(

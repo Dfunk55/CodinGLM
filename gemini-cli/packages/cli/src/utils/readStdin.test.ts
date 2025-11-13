@@ -109,4 +109,74 @@ describe('readStdin', () => {
 
     await expect(promise).resolves.toBe('chunk1chunk2');
   });
+
+  it('should truncate and resolve when input exceeds MAX_STDIN_SIZE', async () => {
+    const MAX_STDIN_SIZE = 8 * 1024 * 1024; // 8MB
+    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+    // Create a large chunk that exceeds the limit
+    const largeChunk = 'x'.repeat(MAX_STDIN_SIZE + 1000);
+
+    mockStdin.read
+      .mockReturnValueOnce(largeChunk)
+      .mockReturnValueOnce(null);
+
+    const promise = readStdin();
+
+    // Trigger readable event
+    onReadableHandler();
+
+    // Promise should resolve with truncated data
+    const result = await promise;
+
+    // Verify truncation
+    expect(result.length).toBe(MAX_STDIN_SIZE);
+    expect(result).toBe('x'.repeat(MAX_STDIN_SIZE));
+
+    // Verify stream was destroyed
+    expect(mockStdin.destroy).toHaveBeenCalledOnce();
+
+    // Verify user warning was shown
+    expect(consoleErrorSpy).toHaveBeenCalledWith(
+      expect.stringContaining('⚠️  Warning: Input too large'),
+    );
+
+    consoleErrorSpy.mockRestore();
+  });
+
+  it('should handle size limit with multiple chunks', async () => {
+    const MAX_STDIN_SIZE = 8 * 1024 * 1024; // 8MB
+    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+    // Create chunks that together exceed the limit
+    const chunk1 = 'a'.repeat(MAX_STDIN_SIZE - 100); // Just under limit
+    const chunk2 = 'b'.repeat(200); // This pushes over the limit
+
+    mockStdin.read
+      .mockReturnValueOnce(chunk1)
+      .mockReturnValueOnce(chunk2)
+      .mockReturnValueOnce(null);
+
+    const promise = readStdin();
+
+    // Trigger readable event (processes both chunks)
+    onReadableHandler();
+
+    const result = await promise;
+
+    // Should have exactly MAX_STDIN_SIZE bytes
+    expect(result.length).toBe(MAX_STDIN_SIZE);
+    // Should be chunk1 + 100 bytes of chunk2
+    expect(result).toBe(chunk1 + 'b'.repeat(100));
+
+    // Verify stream was destroyed
+    expect(mockStdin.destroy).toHaveBeenCalledOnce();
+
+    // Verify user warning was shown
+    expect(consoleErrorSpy).toHaveBeenCalledWith(
+      expect.stringContaining('⚠️  Warning: Input too large'),
+    );
+
+    consoleErrorSpy.mockRestore();
+  });
 });

@@ -36,6 +36,10 @@ execSync('npm run build --workspaces', { stdio: 'inherit', cwd: root });
 
 // also build container image if sandboxing is enabled
 // skip (-s) npm install + build since we did that above
+const requireSandboxBuild =
+  process.env.REQUIRE_SANDBOX_BUILD === '1' ||
+  process.env.REQUIRE_SANDBOX_BUILD === 'true';
+
 try {
   execSync('node scripts/sandbox_command.js -q', {
     stdio: 'inherit',
@@ -50,6 +54,19 @@ try {
       cwd: root,
     });
   }
-} catch {
-  // ignore
+} catch (error) {
+  // Properly handle sandbox build failures
+  const errorMessage = error instanceof Error ? error.message : String(error);
+
+  if (requireSandboxBuild) {
+    // Fail the build if sandbox is required
+    console.error('❌ FATAL: Sandbox build failed and REQUIRE_SANDBOX_BUILD is set');
+    console.error('Error:', errorMessage);
+    process.exit(1);
+  } else {
+    // Log warning but continue if sandbox is optional
+    console.warn('⚠️  Warning: Sandbox build failed (skipping)');
+    console.warn('Set REQUIRE_SANDBOX_BUILD=1 to make this error fatal');
+    console.warn('Error details:', errorMessage);
+  }
 }

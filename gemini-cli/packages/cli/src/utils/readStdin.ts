@@ -32,10 +32,21 @@ export async function readStdin(): Promise<string> {
         if (totalSize + chunk.length > MAX_STDIN_SIZE) {
           const remainingSize = MAX_STDIN_SIZE - totalSize;
           data += chunk.slice(0, remainingSize);
+          totalSize = MAX_STDIN_SIZE;
+
+          // Log warning for truncation
           debugLogger.warn(
-            `Warning: stdin input truncated to ${MAX_STDIN_SIZE} bytes.`,
+            `stdin input truncated to ${MAX_STDIN_SIZE} bytes (${MAX_STDIN_SIZE / 1024 / 1024}MB).`,
           );
-          process.stdin.destroy(); // Stop reading further
+          console.error(
+            `⚠️  Warning: Input too large. Only the first ${MAX_STDIN_SIZE / 1024 / 1024}MB will be processed.`,
+          );
+
+          // Properly drain the stream and trigger completion
+          process.stdin.destroy();
+          // Call onEnd() immediately to resolve the promise
+          // since the stream won't emit 'end' after destroy()
+          onEnd();
           break;
         }
         data += chunk;

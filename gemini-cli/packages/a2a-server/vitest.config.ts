@@ -13,12 +13,20 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig({
   resolve: {
-    alias: {
-      '@codinglm/core/testing': path.resolve(
-        __dirname,
-        '../core/testing.ts',
-      ),
-    },
+    alias: [
+      {
+        find: '@codinglm/core/testing',
+        replacement: path.resolve(__dirname, '../core/testing.ts'),
+      },
+      {
+        find: /^@codinglm\/core\/(.*)/,
+        replacement: path.resolve(__dirname, '../core/src') + '/$1',
+      },
+      {
+        find: '@codinglm/core',
+        replacement: path.resolve(__dirname, '../core/src/index.ts'),
+      },
+    ],
   },
   test: {
     include: ['**/*.{test,spec}.?(c|m)[jt]s?(x)'],
@@ -51,7 +59,7 @@ export default defineConfig({
     },
     server: {
       deps: {
-        inline: [/@google\/gemini-cli-core/],
+        inline: [/@google\/gemini-cli-core/, /@codinglm\/core/],
       },
     },
   },

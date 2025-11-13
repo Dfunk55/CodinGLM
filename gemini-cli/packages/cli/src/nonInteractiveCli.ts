@@ -276,11 +276,25 @@ export async function runNonInteractive({
           prompt_id,
         );
 
+        // Track abort state to prevent race conditions
+        let isAborted = false;
+        const abortListener = () => {
+          isAborted = true;
+        };
+
+        // Register abort listener before processing events
+        abortController.signal.addEventListener('abort', abortListener);
+
+        const MAX_JSON_OUTPUT_SIZE = 32 * 1024 * 1024; // 32MB limit for JSON output
         let responseText = '';
-        for await (const event of responseStream) {
-          if (abortController.signal.aborted) {
-            handleCancellationError(config);
-          }
+        let outputSizeLimitReached = false;
+
+        try {
+          for await (const event of responseStream) {
+            // Check abort flag at the start of each iteration to prevent race conditions
+            if (isAborted || abortController.signal.aborted) {
+              break; // Exit loop cleanly instead of throwing immediately
+            }
 
           if (event.type === LlmEventType.Content) {
             if (streamFormatter) {
@@ -292,7 +306,25 @@ export async function runNonInteractive({
                 delta: true,
               });
             } else if (config.getOutputFormat() === OutputFormat.JSON) {
-              responseText += event.value;
+              // Check if adding this content would exceed the limit
+              if (!outputSizeLimitReached) {
+                if (responseText.length + event.value.length > MAX_JSON_OUTPUT_SIZE) {
+                  // Truncate to fit within limit
+                  const remainingSize = MAX_JSON_OUTPUT_SIZE - responseText.length;
+                  responseText += event.value.slice(0, remainingSize);
+                  outputSizeLimitReached = true;
+
+                  debugLogger.warn(
+                    `JSON output truncated to ${MAX_JSON_OUTPUT_SIZE} bytes (${MAX_JSON_OUTPUT_SIZE / 1024 / 1024}MB).`,
+                  );
+                  console.error(
+                    `⚠️  Warning: Output too large. Only the first ${MAX_JSON_OUTPUT_SIZE / 1024 / 1024}MB will be included in JSON output.`,
+                  );
+                } else {
+                  responseText += event.value;
+                }
+              }
+              // Silently drop content after limit is reached
             } else {
               if (event.value) {
                 textOutput.write(event.value);
@@ -330,6 +362,15 @@ export async function runNonInteractive({
           } else if (event.type === LlmEventType.Error) {
             throw event.value.error;
           }
+          }
+        } finally {
+          // Always cleanup the abort listener to prevent memory leaks
+          abortController.signal.removeEventListener('abort', abortListener);
+        }
+
+        // Check if aborted after stream processing
+        if (isAborted || abortController.signal.aborted) {
+          handleCancellationError(config);
         }
 
         if (toolCallRequests.length > 0) {

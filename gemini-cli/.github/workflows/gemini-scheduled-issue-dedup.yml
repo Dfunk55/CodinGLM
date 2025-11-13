@@ -5,6 +5,13 @@ on:
     - cron: '0 * * * *' # Runs every hour
   workflow_dispatch:
 
+# Centralized Docker image configuration
+env:
+  DOCKER_REGISTRY: 'ghcr.io'
+  DOCKER_REPOSITORY: 'Dfunk55/CodinGLM'
+  TRIAGE_IMAGE: 'ghcr.io/Dfunk55/CodinGLM-issue-triage'
+  TRIAGE_IMAGE_SHA: 'sha256:e3de1523f6c83aabb3c54b76d08940a2bf42febcb789dd2da6f95169641f94d3'
+
 concurrency:
   group: '${{ github.workflow }}'
   cancel-in-progress: true
@@ -71,7 +78,7 @@ jobs:
                     "-e", "GCP_PROJECT",
                     "-e", "GOOGLE_APPLICATION_CREDENTIALS=/app/gcp-credentials.json",
                     "-v", "${GOOGLE_APPLICATION_CREDENTIALS}:/app/gcp-credentials.json",
-                    "ghcr.io/Dfunk55/CodinGLM-issue-triage@sha256:e3de1523f6c83aabb3c54b76d08940a2bf42febcb789dd2da6f95169641f94d3"
+                    "${{ env.TRIAGE_IMAGE }}@${{ env.TRIAGE_IMAGE_SHA }}"
                   ],
                   "env": {
                     "GITHUB_TOKEN": "${GITHUB_TOKEN}",

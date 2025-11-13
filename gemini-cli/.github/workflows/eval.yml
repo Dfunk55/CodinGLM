@@ -3,6 +3,13 @@ name: 'Eval'
 on:
   workflow_dispatch:
 
+# Centralized Docker image configuration
+env:
+  DOCKER_REGISTRY: 'ghcr.io'
+  DOCKER_REPOSITORY: 'Dfunk55/CodinGLM'
+  EVAL_IMAGE: 'ghcr.io/Dfunk55/CodinGLM-swe-agent-eval'
+  EVAL_IMAGE_SHA: 'sha256:cd5edc4afd2245c1f575e791c0859b3c084a86bb3bd9a6762296da5162b35a8f'
+
 defaults:
   run:
     shell: 'bash'
@@ -19,7 +26,7 @@ jobs:
       github.repository == 'Dfunk55/CodinGLM'
     runs-on: 'ubuntu-latest'
     container:
-      image: 'ghcr.io/Dfunk55/CodinGLM-swe-agent-eval@sha256:cd5edc4afd2245c1f575e791c0859b3c084a86bb3bd9a6762296da5162b35a8f'
+      image: '${{ env.EVAL_IMAGE }}@${{ env.EVAL_IMAGE_SHA }}'
       credentials:
         username: '${{ github.actor }}'
         password: '${{ secrets.GITHUB_TOKEN }}'
